@@ -1,0 +1,28 @@
+{% load call_method %}
+{% load humanize %}
+{% if products.count > 0 and search_text != " " %}
+    {% for product in products %}
+        <div class="results col-sm-12 row">
+            <div class="col-sm-3 col-md-3 imagescrollimg rounded" style="margin: 5px;height: 118px; width: 118px;">
+                <img style="object-fit: fill;" class="rounded" src="{{ product.featured_url.url }}" alt="">
+            </div>
+            <div class=" col-sm-8 col-md-8 searchdetails d-flex flex-column">
+                <h3 class="text-capitalize">{{ product.name|truncatechars:30 }}({{ product.product_brand.name }}) </h3>
+                <span>
+                    {% if  product.price_after_offer and product.id|product_on_offer %}
+                        <div style="display: flex;flex-flow: column;">
+                            <span class="font-weight-bold"> {{ product.price_after_offer|floatformat:1|intcomma }}Kshs</span>
+                            <span class="striked-price ">{{ product.unit_cost|floatformat:1|intcomma }} Kshs</span>
+                        </div>
+                    {% else %}
+                        <span style=""> {{ product.unit_cost|floatformat:1|intcomma }}Kshs</span>
+                    {% endif %}
+                </span>
+                <a href="{% url "Shoppy:shoppy_product_details" product.id %}" class="btn btn-warning">View</a>
+            </div>
+        </div>
+    {% endfor %}
+{% else %}
+    <h2 class="text-center">No Products with {{ search_text }} Words</h2>
+{#    <div class="results col-sm-12 row"></div>#}
+{% endif %}

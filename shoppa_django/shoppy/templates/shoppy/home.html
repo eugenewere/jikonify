@@ -1,0 +1,1085 @@
+{% extends 'shoppy/layout.html' %}
+{% load static %}
+{% load humanize %}
+{% load call_method %}
+
+    {% block links %}
+        <link rel="stylesheet" type="text/css" href="{% static 'css/carousel.css' %}">
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+        <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+        <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.9"></script>
+        <link rel="stylesheet" href="{% static 'css/product_card.css' %}">
+        <link rel="stylesheet" href="{% static 'css/shop.css' %}">
+        <link rel="stylesheet" href="{% static 'css/owl-carousel.css' %}" />
+        <link rel="stylesheet" href="{% static 'css/owl-carousel-theme.css' %}"/>
+
+    {% endblock %}
+{% block content %}
+
+{#    couresellstart#}
+    <div class="h-50 position-relative overflow-hidden">
+        <div class="col-sm-12 col-md-12 p-0">
+            <div class="row">
+                <div class="col-sm-2 col-md-2 col-lg-2 col-xl-2 position-relative">
+                    <ul class="position-absolute bg-white " style="height: 100%;top:0; margin: 0; padding: 0; width: 100%;z-index: 999;">
+                        <div class="col-sm-12" style="height: 100%;">
+                            <ul class="cat_menu p-0 pl-0">
+                                {% for category in request|categories|slice:12 %}
+{#                                    {% if category.children.count > 0 %}#}
+                                    <li class="hassubs">
+                                        <a style="text-transform: capitalize;" {% if not category.children %} href="{% url 'Shoppy:product_list' category.id  %}" {% else %} href="#" {% endif %} class="green_color side-category">{{ category.name }}<i class=" fas fa-chevron-right"></i></a>
+                                        <ul>
+                                            {% for sub_category in category.children %}
+                                                <li class="hassubs">
+                                                    <a style="text-transform: capitalize;" class="side-category"  href="{% url 'Shoppy:product_list' sub_category.id  %}" >{{ sub_category.name }}</a>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </li>
+{#                                    {% endif %}#}
+                                {% endfor %}
+
+                                <li class=""><a style="text-transform: capitalize;"  href="#">View all Categories</a></li>
+                            </ul>
+                        </div>
+                    </ul>
+                </div>
+                <div class="col-sm-10 col-md-10 col-lg-10 col-xl-10 position-relative carousel-container w-100 ">
+                        <div style="height: 100%" id="carouselExampleFade" class="carousel carousel-custom slide carousel-fade" data-ride="carousel">
+                              <ol class="carousel-indicators" style="bottom: 70px !important;">
+                                  {% for carousel in carousels %}
+                                      <li data-target="#carouselExampleFade" data-slide-to="k{{ carousels.id }}" class="{% if forloop.first%}active{%endif%}">k{{ carousel.id }}</li>
+                                  {% endfor %}
+                              </ol>
+                              <div class="carousel-inner h-100" >
+                              {% for carousel in carousels %}
+
+                                    <div class="carousel-item w-100 h-100 {% if forloop.first %}active{% endif %}">
+                                        <a href="{% url 'Shoppy:shoppy_product_details' carousel.product.id %}">
+                                            <img style="object-fit: fill; height: 100%; width: 100%;" src="{{ carousel.image.url }}" class="d-block w-100 animated fadeInUp" alt="{{ carousel.description }}">
+                                        </a>
+                                        <div  class="carousel-caption-custom carousel-caption d-none d-md-block">
+                                            <div class="animated fadeInUp carousel-caption-wrapper mb-4">
+                                                <h5 id="k_{{ carousel.id }}" title="{{ carousel.description }}" class="text">{{ carousel.description|truncatechars:30 }}</h5>
+                                            </div><br>
+                                            <a class="animated fadeInLeftBig product-button btn-lg float-left" href="{% url 'Shoppy:shoppy_product_details' carousel.product.id %}">Shop Now</a>
+                                        </div>
+                                    </div>
+
+                              {% endfor %}
+                              </div>
+
+
+                               <a href="#carouselExampleFade" class="carousel-control-prev-container">
+                                   <a class="carousel-control-prev" href="#carouselExampleFade" role="button" data-slide="prev">
+                                       <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                       <span class="sr-only">Previous</span>
+                                   </a>
+                               </a>
+                               <a href="#carouselExampleFade" class="carousel-control-next-container">
+                                   <a class="carousel-control-next" href="#carouselExampleFade" role="button" data-slide="next">
+                                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                        <span class="sr-only">Next</span>
+                                   </a>
+                               </a>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+    <div class="categorybutton d-none">
+        <button class="product-button position-absolute">Category</button>
+    </div>
+    <div class="col-sm-2 col-md-2 col-lg-2 col-xl-2 position-absolute " style="height: 100%; display: none;">
+        <ul class="position-absolute bg-white " style="height: 100%;top:0; margin: 0; padding: 0; width: 100%;z-index: 999;">
+            <div class="col-sm-12" style="height: 100%;">
+                <ul class="cat_menu p-0 pl-0">
+                    {% for category in request|categories|slice:12 %}
+{#                                    {% if category.children.count > 0 %}#}
+                        <li class="hassubs">
+                            <a style="text-transform: capitalize;" {% if not category.children %} href="{% url 'Shoppy:product_list' category.id %}" {% else %} href="#" {% endif %}>{{ category.name }}<i class=" fas fa-chevron-right"></i></a>
+                            <ul>
+                                {% for sub_category in category.children %}
+                                    <li class="hassubs">
+                                        <a style="text-transform: capitalize;"  href="{% url 'Shoppy:product_list' sub_category.id %}" >{{ sub_category.name }}</a>
+                                    </li>
+                                {% endfor %}
+
+                            </ul>
+                        </li>
+{#                                    {% endif %}#}
+                    {% endfor %}
+
+                    <li class=""><a style="text-transform: capitalize;"  href="{% comment %}{% url 'Shoppy:product_list' c %}{% endcomment %}">View all Categories</a></li>
+                </ul>
+            </div>
+        </ul>
+    </div>
+    {#    coursellend#}
+    {% if featured_products %}
+    {#    featuredproduct#}
+        <div class="featured-products-container ">
+            <div class="col-sm-12 pt-3 px-2">
+                <div class="featured-product-pill d-flex justify-contents-center bg-danger mt-4">
+                    <div class="col-sm-6">
+                        <span class="featured-product-title">Featured Product</span>
+                    </div>
+
+                    <div class="col-sm-6 text-right link">
+{#                        <a class="featured-product-title" href="#">See All <i class="fas fa-arrow-right"></i></a>#}
+                    </div>
+                </div>
+
+                <div class="divider-custom"></div>
+
+
+                <div class="row">
+                    <div class="owl-carousel owl-theme ">
+
+                        {% for product in featured_products %}
+                            <div class=" " style="display: block; height: 317px;">
+                                <a href="{% url 'Shoppy:shoppy_product_details' product.id %}">
+                                <div class="make-3D-space rounded">
+                                <div class="product-card">
+                                    <div class="product-front">
+                                        <div class="shadow"></div>
+                                        <img style="object-fit:fill;" class="w-100 h-100" src="{{ product.featured_url.url }}" alt="" />
+                                        <div class="image_overlay"></div>
+                                        {% if product.id|is_product_in_cart:request.user %}
+                                            <a href="" class="view_detailz" data-toggle="modal" data-target="#"><i class=" text-white fa fa-cart-plus"></i></a>
+                                        {% else %}
+                                            <a  href="" class="view_detailz" data-toggle="modal" data-target="#kk{{ product.id }}">
+                                                <span>Add to cart</span><br>
+                                                {% if  product.price_after_offer and product.id|product_on_offer %}
+                                                    {% for offer in product.id|product_on_offer %}
+                                                        <span class="" style="margin-top:5rem;">
+                                                            <span title="{{ offer.end_time|date:"Y-m-d h:i A" }}" id="pokl_{{ product.id }}" class="eta"></span>
+                                                        </span>
+                                                    {% endfor %}
+                                                {% endif %}
+                                            </a>
+                                        {% endif %}
+
+
+                                        {% if product.id|product_on_offer %}
+                                            {% for offer in product.id|product_on_offer %}
+                                                <span class="badge-custom">
+                                                    Save {{ offer.offer_percentage }}%
+                                                </span>
+                                            {% endfor %}
+                                        {% endif %}
+                                        <div class="stats">
+                                            <div class="stats-container">
+                                                <div class="d-flex flex-column">
+                                                    <span class=" m-0 p-0 row product_name d-flex justify-content-between m-0">
+                                                        <a class="text-dark" data-toggle="tooltip" data-placement="bottom" title="{{ product.name }}" href="{% url 'Shoppy:shoppy_product_details' product.id %}"><span class="text-capitalize font-weight-bold">{{ product.name|truncatechars:20  }}</span></a>
+
+                                                        <span>({{ product.inventory_qty }})</span>
+                                                    </span>
+                                                    <span class=" row m-0 p-0">
+                                                        {% if  product.price_after_offer and product.id|product_on_offer %}
+                                                            <span class="product_price">{{ product.price_after_offer|floatformat:1|intcomma }} Kshs</span>
+                                                            <p class="striked-price">{{ product.unit_cost_inclusive_of_vat|floatformat:1|intcomma }} Kshs</p>
+                                                        {% else %}
+                                                             <span class="product_price"> {{ product.price_after_offer|floatformat:1|intcomma }}Kshs</span>
+                                                        {% endif %}
+                                                    </span>
+                                                  <div class="product-options">
+                                                    <strong>Ratings</strong>
+                                                    <span>
+                                                        <div class="col-sm-12 card-ratings-wrapper">
+                                                           <div class="mr-auto">
+                                                               {% if product.id|average_ratings >= 5 %}
+                                                                    <div class="rate">
+                                                                    <input disabled checked type="radio"  value="5" />
+                                                                        <label for="star5" title="text">5 stars</label>
+                                                                    <input disabled  type="radio"  value="4" />
+                                                                        <label for="star4" title="text">4 stars</label>
+                                                                    <input disabled  type="radio"  value="3" />
+                                                                        <label for="star3" title="text">3 stars</label>
+                                                                    <input disabled  type="radio"  value="2" />
+                                                                        <label for="star2" title="text">2 stars</label>
+                                                                    <input disabled  type="radio"  value="1" />
+                                                                        <label for="star1" title="text">1 star</label>
+                                                                </div>
+
+                                                               {% elif product.id|average_ratings >= 4 %}
+                                                                   <div class="rate">
+                                                                    <input disabled  type="radio" value="5" />
+                                                                        <label for="star5" title="text">5 stars</label>
+                                                                    <input disabled checked type="radio" value="4" />
+                                                                        <label for="star4" title="text">4 stars</label>
+                                                                    <input disabled  type="radio" value="3" />
+                                                                        <label for="star3" title="text">3 stars</label>
+                                                                    <input disabled  type="radio" value="2" />
+                                                                        <label for="star2" title="text">2 stars</label>
+                                                                    <input disabled  type="radio" value="1" />
+                                                                        <label for="star1" title="text">1 star</label>
+                                                                </div>
+
+                                                               {% elif product.id|average_ratings >= 3 %}
+                                                                   <div class="rate">
+                                                                    <input disabled  type="radio" value="5" />
+                                                                        <label for="star5" title="text">5 stars</label>
+                                                                    <input disabled  type="radio" value="4" />
+                                                                        <label for="star4" title="text">4 stars</label>
+                                                                    <input disabled checked type="radio" value="3" />
+                                                                        <label for="star3" title="text">3 stars</label>
+                                                                    <input disabled  type="radio" value="2" />
+                                                                        <label for="star2" title="text">2 stars</label>
+                                                                    <input disabled  type="radio" value="1" />
+                                                                        <label for="star1" title="text">1 star</label>
+                                                                </div>
+
+                                                               {% elif product.id|average_ratings >= 2 %}
+                                                                   <div class="rate">
+                                                                    <input disabled  type="radio" value="5" />
+                                                                        <label for="star5" title="text">5 stars</label>
+                                                                    <input disabled  type="radio" value="4" />
+                                                                        <label for="star4" title="text">4 stars</label>
+                                                                    <input disabled  type="radio" value="3" />
+                                                                        <label for="star3" title="text">3 stars</label>
+                                                                    <input disabled checked type="radio" value="2" />
+                                                                        <label for="star2" title="text">2 stars</label>
+                                                                    <input disabled  type="radio" value="1" />
+                                                                        <label for="star1" title="text">1 star</label>
+                                                                </div>
+
+                                                               {% elif product.id|average_ratings >= 1 %}
+                                                                   <div class="rate">
+                                                                    <input  type="radio" disabled value="5" />
+                                                                        <label for="star5" title="text">5 stars</label>
+                                                                    <input  type="radio" disabled value="4" />
+                                                                        <label for="star4" title="text">4 stars</label>
+                                                                    <input  type="radio" disabled value="3" />
+                                                                        <label for="star3" title="text">3 stars</label>
+                                                                    <input  type="radio" disabled value="2" />
+                                                                        <label for="star2" title="text">2 stars</label>
+                                                                    <input checked type="radio" disabled value="1" />
+                                                                        <label for="star1" title="text">1 star</label>
+                                                                </div>
+                                                               {% else %}
+                                                                   <div class="rate">
+                                                                    <input  type="radio" disabled value="5" />
+                                                                        <label for="star5" title="text">5 stars</label>
+                                                                    <input  type="radio" disabled value="4" />
+                                                                        <label for="star4" title="text">4 stars</label>
+                                                                    <input  type="radio" disabled value="3" />
+                                                                        <label for="star3" title="text">3 stars</label>
+                                                                    <input  type="radio" disabled value="2" />
+                                                                        <label for="star2" title="text">2 stars</label>
+                                                                    <input  type="radio" disabled value="1" />
+                                                                        <label for="star1" title="text">1 star</label>
+                                                                   </div>
+                                                               {% endif %}
+                                                           </div>
+                                                        </div>
+                                                    </span>
+                                                    <div class="colors">
+                                                        <div class="d-flex align-content-center">
+                                                            {% if product.id|is_product_in_wishlist:request.user %}
+                                                                <a style=" display: flex; justify-content: center;" href="{% url 'Shoppy:remove_from_wishlist' product.id request.path|make_safe  %}" title="Remove Item From Your Wishlist">
+                                                                    <i style="color: red; font-size: 30px;" class=" fas fa-heart "></i>
+                                                                </a>
+                                                            {% else %}
+                                                                <a style=" display: flex; justify-content: center;" href="{% url 'Shoppy:add_to_wishlist' product.id request.path|make_safe %}"  class="">
+                                                                    <i style="color: #FEAA12; font-size: 30px;" class=" fas fa-heart"></i>
+                                                                </a>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            </a>
+                            </div>
+                        {% endfor %}
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    {#    end of featured#}
+    {% endif %}
+
+     <!-- add to cart modal -->
+    {% for product in products %}
+        <!-- Modal -->
+        <div class="modal  fade" id="kk{{ product.id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+          <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+              <div class="modal-header bg-orange-shoppy text-white">
+                <h5 class="modal-title" id="exampleModalLongTitle">Add To {{ product.name }} Cart</h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true"><i class="fas fa-times-circle"></i></span>
+                </button>
+              </div>
+              <form action="{% url 'Shoppy:shoppy-add-cart' product.id %}" method="post">
+                  {% csrf_token %}
+                  <div class="modal-body">
+                    <div class="col-sm-12">
+                        <div class="row">
+                            <div class="col-md-4  add-to-cart-image p-0">
+                                 <img id="expandedcartimg" class="expandedimg" src="{{ product.featured_url.url }}" alt="{{ product.name }}">
+                            </div>
+                            <div class="col-md-6 pl-5">
+                                <div class="row ">
+                                    <h2 data-toggle="tooltip" data-placement="bottom" title="{{ product.name  }}" class="text-capitalize">{{ product.name }}</h2>
+                                </div>
+                                <div class="row py-2">
+                                    {% if  product.price_after_offer and product.id|product_on_offer %}
+                                        <div style="display: flex; flex-direction: column;">
+                                            <span> {{ product.price_after_offer|floatformat:1|intcomma }}Kshs</span>
+                                            <span class="striked-price">{{ product.unit_cost_inclusive_of_vat|floatformat:1|intcomma }} Kshs</span>
+                                        </div>
+                                    {% else %}
+                                        <span style=""> {{ product.unit_cost_inclusive_of_vat|floatformat:1|intcomma }}Kshs</span>
+                                    {% endif %}
+        {#                            <span class="size2 text-muted font-italic">{{ product.unit_cost_inclusive_of_vat }} Kshs</span>#}
+                                </div>
+                                <div class="row">
+                                    <span>{{ product.short_description }}</span>
+                                </div>
+        {#                                    <input type="text" hidden name="buyer">#}
+                                <div class="row py-3">
+                                    <div class="col-sm-12 row pt-3">
+        {#                                            {% if product.product_variant_options.count > 0 %}#}
+                                        {% if product.variants %}
+                                        {% for variant in  product.variants %}
+                                           <div class="flex  col-sm-12 col-md-6 ">
+                                                <div class="control-label py-2 text-capitalize">{{ variant.name}}</div>
+                                                <div class=" respon6-next w-100">
+                                                    <div class="rs1-select2 bor8 bg0">
+                                                        <select class="browser-primary custom-select" name="variant_options[]">
+                                                          <option class="text-muted" disabled selected>Open this select menu</option>
+
+                                                            {% for option in product.id|variant_options:variant.id %}
+                                                                <option class="text-capitalize" value="{{ option.id }}">{{ option.name }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                        <div class="dropDownSelect2"></div>
+                                                    </div>
+                                                </div>
+                                           </div>
+                                        {% endfor %}
+                                        {% else %}
+                                            <div class="flex  col-sm-12 col-md-6 ">
+                                                <div class="control-label py-2 text-capitalize">No Options for this product</div>
+                                                <div class=" respon6-next w-100">
+                                                    <div class="rs1-select2 bor8 bg0">
+                                                        <select disabled class="browser-primary custom-select" name="">
+                                                           <options value="No Variant Options For This Product"  >No Variant Options For This Product</options>
+                                                        </select>
+                                                        <div class="dropDownSelect2"></div>
+                                                    </div>
+                                                </div>
+                                           </div>
+                                        {% endif %}
+
+                                    </div>
+                                </div>
+
+                                {% if  product.price_after_offer and product.id|product_on_offer %}
+                                    <label>
+                                        <input name="unit_cost" type="number" hidden value="{{ product.price_after_offer }}">
+                                    </label>
+                                {% else %}
+                                    <label>
+                                        <input name="unit_cost" type="number" hidden value="{{ product.unit_cost_inclusive_of_vat }}">
+                                    </label>
+                                {% endif %}
+
+                                <div class="row py-3 pl-3 d-flex flex-column">
+                                    <div class="control-label py-2">Quantity</div>
+                                    <div class="slider-container ">
+                                        <button class="btn-num-product-down slider-contents slider-contents-control border-right"><i class="fas fa-minus"></i></button>
+                                        <input value="1" class="slider-contents slider-contents-center num-product d-flex justify-content-center align-items-center slider_count" type="number" name="quantity" >
+                                        <button class="btn-num-product-up slider-contents slider-contents-control border-left"><i class="fas fa-plus"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn bg-org">Add to Cart</button>
+                  </div>
+              </form>
+            </div>
+          </div>
+        </div>
+    {% endfor %}
+
+    <!-- add to cart modal -->
+    {% for product in featured_products %}
+        <!-- Modal -->
+        <div class="modal  fade" id="fp{{ product.id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+          <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+              <div class="modal-header bg-orange-shoppy text-white">
+                <h5 class="modal-title" id="exampleModalLongTitle">Add To {{ product.name }} Cart</h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true"><i class="fas fa-times-circle"></i></span>
+                </button>
+              </div>
+              <form action="{% url 'Shoppy:shoppy-add-cart' product.id %}" method="post">
+                  {% csrf_token %}
+                  <div class="modal-body">
+                    <div class="col-sm-12">
+                        <div class="row">
+                            <div class="col-md-4  add-to-cart-image p-0">
+                                 <img id="expandedcartimg" class="expandedimg" src="{{ product.featured_url.url }}" alt="{{ product.name }}">
+                            </div>
+                            <div class="col-md-6 pl-5">
+                                <div class="row ">
+                                    <h2 data-toggle="tooltip" data-placement="bottom" title="{{ product.name  }}" class="text-capitalize">{{ product.name }}</h2>
+                                </div>
+                                <div class="row py-2">
+                                    {% if  product.price_after_offer and product.id|product_on_offer %}
+                                        <div style="display: flex; flex-direction: column;">
+                                            <span> {{ product.price_after_offer|floatformat:1|intcomma }}Kshs</span>
+                                            <span class="striked-price">{{ product.unit_cost_inclusive_of_vat|floatformat:1|intcomma }} Kshs</span>
+                                        </div>
+                                    {% else %}
+                                        <span style=""> {{ product.unit_cost_inclusive_of_vat|floatformat:1|intcomma }}Kshs</span>
+                                    {% endif %}
+        {#                            <span class="size2 text-muted font-italic">{{ product.unit_cost_inclusive_of_vat }} Kshs</span>#}
+                                </div>
+                                <div class="row">
+                                    <span>{{ product.short_description }}</span>
+                                </div>
+        {#                                    <input type="text" hidden name="buyer">#}
+                                <div class="row py-3">
+                                    <div class="col-sm-12 row pt-3">
+        {#                                            {% if product.product_variant_options.count > 0 %}#}
+                                        {% if product.variants %}
+                                        {% for variant in  product.variants %}
+                                           <div class="flex  col-sm-12 col-md-6 ">
+                                                <div class="control-label py-2 text-capitalize">{{ variant.name}}</div>
+                                                <div class=" respon6-next w-100">
+                                                    <div class="rs1-select2 bor8 bg0">
+                                                        <select class="browser-primary custom-select" name="variant_options[]">
+                                                          <option disabled class="text-muted" selected>Open this select menu</option>
+
+                                                            {% for option in variant.product_variant_options %}
+                                                                <option class="text-capitalize" value="{{ option.id }}">{{ option.name }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                        <div class="dropDownSelect2"></div>
+                                                    </div>
+                                                </div>
+                                           </div>
+                                        {% endfor %}
+                                        {% else %}
+                                            <div class="flex  col-sm-12 col-md-6 ">
+                                                <div class="control-label py-2 text-capitalize">No Options for this product</div>
+                                                <div class=" respon6-next w-100">
+                                                    <div class="rs1-select2 bor8 bg0">
+                                                        <select disabled class="browser-primary custom-select" name="">
+                                                           <options value="No Variant Options For This Product"  >No Variant Options For This Product</options>
+                                                        </select>
+                                                        <div class="dropDownSelect2"></div>
+                                                    </div>
+                                                </div>
+                                           </div>
+                                        {% endif %}
+
+                                    </div>
+                                </div>
+                                {% if  product.price_after_offer and product.id|product_on_offer %}
+                                    <input name="unit_cost" type="number" hidden value="{{ product.price_after_offer }}">
+                                {% else %}
+                                    <input name="unit_cost" type="number" hidden value="{{ product.unit_cost_inclusive_of_vat }}">
+                                {% endif %}
+                                <div class="row py-3 pl-3 d-flex flex-column">
+                                    <div class="control-label py-2">Quantity</div>
+                                    <div class="slider-container ">
+                                        <button class="btn-num-product-down slider-contents slider-contents-control border-right"><i class="fas fa-minus"></i></button>
+                                        <input value="1" class="slider-contents slider-contents-center num-product d-flex justify-content-center align-items-center slider_count" type="number" name="quantity" >
+                                        <button class="btn-num-product-up slider-contents slider-contents-control border-left"><i class="fas fa-plus"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn bg-org">Add to Cart</button>
+                  </div>
+              </form>
+            </div>
+          </div>
+        </div>
+    {% endfor %}
+
+{#    all deals normalproduct#}
+    <div class="featured-products-container py-4 " style="margin-top: 80px;">
+        <div class="col-sm-12 paddingprodlist">
+            <div class="normal-product-pill d-flex justify-contents-between mt-4">
+                <div class="col-sm-4 ">
+                    <span class="featured-product-title">All Deals</span>
+                </div>
+                <div class="col-sm-4 text-right link ml-auto">
+{#                    <a class="featured-product-title" href="#">See All <i class="fas fa-arrow-right"></i></a>#}
+                </div>
+            </div>
+
+           <div class="divider"></div>
+            <div class="product_grid_border"></div>
+
+            <div class="row" style="padding: 42px 0px;display: flex;  justify-content: center;  flex-wrap: wrap;">
+                {% for product in products|slice:15 %}
+                    <div class="col-xs-12 col-sm-4 col-md-4 col-lg-3 col-xl-2 m-2  p-0 position-relative " style="display: block; height: 317px;">
+                        <a href="{% url 'Shoppy:shoppy_product_details' product.id %}">
+                        <div class="make-3D-space rounded">
+                        <div class="product-card">
+                            <div class="product-front">
+                                <div class="shadow"></div>
+                                <img style="object-fit:fill;" class="w-100 h-100" src="{{ product.featured_url.url }}" alt="" />
+                                <div class="image_overlay"></div>
+                                {% if product.id|is_product_in_cart:request.user %}
+                                    <a href="" class="view_detailz" data-toggle="modal" data-target="#"><i class=" text-white fa fa-cart-plus"></i></a>
+                                {% else %}
+                                    <a  href="" class="view_detailz" data-toggle="modal" data-target="#kk{{ product.id }}">
+                                        <span>Add to cart</span><br>
+                                        {% if  product.price_after_offer and product.id|product_on_offer %}
+                                            {% for offer in product.id|product_on_offer %}
+                                                <span class="" style="margin-top:5rem;">
+                                                    <span title="{{ offer.end_time|date:"Y-m-d h:i A" }}" id="p_{{ product.id }}" class="eta"></span>
+                                                </span>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </a>
+                                {% endif %}
+
+
+                                {% if product.id|product_on_offer %}
+                                    {% for offer in product.id|product_on_offer %}
+                                        <span class="badge-custom">
+                                            Save {{ offer.offer_percentage }}%
+                                        </span>
+                                    {% endfor %}
+                                {% endif %}
+                                <div class="stats">
+                                    <div class="stats-container">
+                                        <div class="d-flex flex-column">
+                                            <span class=" m-0 p-0 row product_name d-flex justify-content-between m-0">
+                                                <a data-toggle="tooltip" data-placement="bottom" title="{{ product.name  }}" class="text-dark" href="{% url 'Shoppy:shoppy_product_details' product.id %}"><span class="text-capitalize font-weight-bold">{{ product.name|truncatechars:20  }}</span></a>
+
+                                                <span>({{ product.inventory_qty }})</span>
+                                            </span>
+                                            <span class=" row m-0 p-0">
+
+                                                {% if  product.price_after_offer and product.id|product_on_offer %}
+                                                    <span class="product_price">{{ product.price_after_offer|floatformat:1|intcomma }} Kshs</span>
+                                                    <p class="striked-price">{{ product.unit_cost_inclusive_of_vat|floatformat:1|intcomma }} Kshs</p>
+                                                {% else %}
+                                                     <span class="product_price"> {{ product.price_after_offer|floatformat:1|intcomma }}Kshs</span>
+                                                {% endif %}
+                                            </span>
+                                          <div class="product-options">
+                                            <strong>Ratings</strong>
+                                            <span>
+                                                <div class="col-sm-12 card-ratings-wrapper">
+                                                   <div class="mr-auto">
+                                                       {% if product.id|average_ratings >= 5 %}
+                                                            <div class="rate">
+                                                            <input disabled checked type="radio"  value="5" />
+                                                                <label for="star5" title="text">5 stars</label>
+                                                            <input disabled  type="radio"  value="4" />
+                                                                <label for="star4" title="text">4 stars</label>
+                                                            <input disabled  type="radio"  value="3" />
+                                                                <label for="star3" title="text">3 stars</label>
+                                                            <input disabled  type="radio"  value="2" />
+                                                                <label for="star2" title="text">2 stars</label>
+                                                            <input disabled  type="radio"  value="1" />
+                                                                <label for="star1" title="text">1 star</label>
+                                                        </div>
+
+                                                       {% elif product.id|average_ratings >= 4 %}
+                                                           <div class="rate">
+                                                            <input disabled  type="radio" value="5" />
+                                                                <label for="star5" title="text">5 stars</label>
+                                                            <input disabled checked type="radio" value="4" />
+                                                                <label for="star4" title="text">4 stars</label>
+                                                            <input disabled  type="radio" value="3" />
+                                                                <label for="star3" title="text">3 stars</label>
+                                                            <input disabled  type="radio" value="2" />
+                                                                <label for="star2" title="text">2 stars</label>
+                                                            <input disabled  type="radio" value="1" />
+                                                                <label for="star1" title="text">1 star</label>
+                                                        </div>
+
+                                                       {% elif product.id|average_ratings >= 3 %}
+                                                           <div class="rate">
+                                                            <input disabled  type="radio" value="5" />
+                                                                <label for="star5" title="text">5 stars</label>
+                                                            <input disabled  type="radio" value="4" />
+                                                                <label for="star4" title="text">4 stars</label>
+                                                            <input disabled checked type="radio" value="3" />
+                                                                <label for="star3" title="text">3 stars</label>
+                                                            <input disabled  type="radio" value="2" />
+                                                                <label for="star2" title="text">2 stars</label>
+                                                            <input disabled  type="radio" value="1" />
+                                                                <label for="star1" title="text">1 star</label>
+                                                        </div>
+
+                                                       {% elif product.id|average_ratings >= 2 %}
+                                                           <div class="rate">
+                                                            <input disabled  type="radio" value="5" />
+                                                                <label for="star5" title="text">5 stars</label>
+                                                            <input disabled  type="radio" value="4" />
+                                                                <label for="star4" title="text">4 stars</label>
+                                                            <input disabled  type="radio" value="3" />
+                                                                <label for="star3" title="text">3 stars</label>
+                                                            <input disabled checked type="radio" value="2" />
+                                                                <label for="star2" title="text">2 stars</label>
+                                                            <input disabled  type="radio" value="1" />
+                                                                <label for="star1" title="text">1 star</label>
+                                                        </div>
+
+                                                       {% elif product.id|average_ratings >= 1 %}
+                                                           <div class="rate">
+                                                            <input  type="radio" disabled value="5" />
+                                                                <label for="star5" title="text">5 stars</label>
+                                                            <input  type="radio" disabled value="4" />
+                                                                <label for="star4" title="text">4 stars</label>
+                                                            <input  type="radio" disabled value="3" />
+                                                                <label for="star3" title="text">3 stars</label>
+                                                            <input  type="radio" disabled value="2" />
+                                                                <label for="star2" title="text">2 stars</label>
+                                                            <input checked type="radio" disabled value="1" />
+                                                                <label for="star1" title="text">1 star</label>
+                                                        </div>
+                                                       {% else %}
+                                                           <div class="rate">
+                                                            <input  type="radio" disabled value="5" />
+                                                                <label for="star5" title="text">5 stars</label>
+                                                            <input  type="radio" disabled value="4" />
+                                                                <label for="star4" title="text">4 stars</label>
+                                                            <input  type="radio" disabled value="3" />
+                                                                <label for="star3" title="text">3 stars</label>
+                                                            <input  type="radio" disabled value="2" />
+                                                                <label for="star2" title="text">2 stars</label>
+                                                            <input  type="radio" disabled value="1" />
+                                                                <label for="star1" title="text">1 star</label>
+                                                           </div>
+                                                       {% endif %}
+                                                   </div>
+                                                </div>
+                                            </span>
+                                            <div class="colors">
+                                                <div class="d-flex align-content-center">
+                                                    {% if product.id|is_product_in_wishlist:request.user %}
+                                                        <a style=" display: flex; justify-content: center;" href="{% url 'Shoppy:remove_from_wishlist' product.id request.path|make_safe  %}" title="Remove Item From Your Wishlist">
+                                                            <i style="color: red; font-size: 30px;" class=" fas fa-heart "></i>
+                                                        </a>
+                                                    {% else %}
+                                                        <a style=" display: flex; justify-content: center;" href="{% url 'Shoppy:add_to_wishlist' product.id request.path|make_safe %}"  class="">
+                                                            <i style="color: #FEAA12; font-size: 30px;" class=" fas fa-heart"></i>
+                                                        </a>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </a>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{#    end of normal#}
+{#    phonedeals#}
+    <div class="featured-products-container ">
+        <div class="col-sm-12  paddingprodlist">
+            <div class="normal-product-pill d-flex justify-contents-between mt-4">
+                <div class="col-sm-4 ">
+                    <span class="featured-product-title text-capitalize">{% for product in product_brands|slice:1 %}{{ product.product_brand.name }}{% endfor %} Deals</span>
+                </div>
+
+                <div class="col-sm-4 text-right link ml-auto">
+{#                    <a class="featured-product-title" href="#">See All <i class="fas fa-arrow-right"></i></a>#}
+                </div>
+            </div>
+
+           <div class="divider"></div>
+            <div class="row" style="padding: 42px 0px;display: flex;  justify-content: center;  flex-wrap: wrap;">
+                {% for product in product_brands|slice:15%}
+                    <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3 col-xl-2 m-2  p-0 position-relative " style="display: block; height: 317px;">
+                        <a href="{% url 'Shoppy:shoppy_product_details' product.id %}">
+                        <div class="make-3D-space rounded">
+                        <div class="product-card">
+                            <div class="product-front">
+                                <div class="shadow"></div>
+                                <img style="object-fit:fill;" class="w-100 h-100" src="{{ product.featured_url.url }}" alt="" />
+                                <div class="image_overlay"></div>
+                                {% if product.id|is_product_in_cart:request.user %}
+                                    <a href="" class="view_detailz" data-toggle="modal" data-target="#"><i class=" text-white fa fa-cart-plus"></i></a>
+                                {% else %}
+                                    <a  href="" class="view_detailz" data-toggle="modal" data-target="#kk{{ product.id }}">
+                                        <span>Add to cart</span> <br>
+                                        {% if  product.price_after_offer and product.id|product_on_offer %}
+                                            {% for offer in product.id|product_on_offer %}
+                                                <span class=" " style="margin-top:5rem;">
+                                                    <span title="{{ offer.end_time|date:"Y-m-d h:i A" }}" id="gt_{{ product.id }}" class="eta"></span>
+                                                </span>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </a>
+                                {% endif %}
+
+
+                                {% if product.id|product_on_offer %}
+                                    {% for offer in product.id|product_on_offer %}
+                                        <span class="badge-custom">
+                                            Save {{ offer.offer_percentage }}%
+                                        </span>
+                                    {% endfor %}
+                                {% endif %}
+                                <div class="stats">
+                                    <div class="stats-container">
+                                        <div class="d-flex flex-column">
+                                            <span class=" m-0 p-0 row product_name d-flex justify-content-between m-0">
+                                                <a data-toggle="tooltip" data-placement="bottom" title="{{ product.name  }}" class="text-dark" href="{% url 'Shoppy:shoppy_product_details' product.id %}"><span class="text-capitalize font-weight-bold">{{ product.name|truncatechars:20  }}</span></a>
+
+                                                <span>({{ product.inventory_qty}})</span>
+                                            </span>
+                                            <span class=" row m-0 p-0">
+
+                                                {% if  product.price_after_offer and product.id|product_on_offer %}
+                                                    <span class="product_price">{{ product.price_after_offer|floatformat:1|intcomma }} Kshs</span>
+                                                    <p class="striked-price">{{ product.unit_cost_inclusive_of_vat|floatformat:1|intcomma }} Kshs</p>
+                                                {% else %}
+                                                     <span class="product_price"> {{ product.price_after_offer|floatformat:1|intcomma }}Kshs</span>
+                                                {% endif %}
+                                            </span>
+                                          <div class="product-options">
+                                            <strong>Ratings</strong>
+                                            <span>
+                                                <div class="col-sm-12 card-ratings-wrapper">
+                                                   <div class="mr-auto">
+                                                       {% if product.id|average_ratings >= 5 %}
+                                                            <div class="rate">
+                                                            <input disabled checked type="radio"  value="5" />
+                                                                <label for="star5" title="text">5 stars</label>
+                                                            <input disabled  type="radio"  value="4" />
+                                                                <label for="star4" title="text">4 stars</label>
+                                                            <input disabled  type="radio"  value="3" />
+                                                                <label for="star3" title="text">3 stars</label>
+                                                            <input disabled  type="radio"  value="2" />
+                                                                <label for="star2" title="text">2 stars</label>
+                                                            <input disabled  type="radio"  value="1" />
+                                                                <label for="star1" title="text">1 star</label>
+                                                        </div>
+
+                                                       {% elif product.id|average_ratings >= 4 %}
+                                                           <div class="rate">
+                                                            <input disabled  type="radio" value="5" />
+                                                                <label for="star5" title="text">5 stars</label>
+                                                            <input disabled checked type="radio" value="4" />
+                                                                <label for="star4" title="text">4 stars</label>
+                                                            <input disabled  type="radio" value="3" />
+                                                                <label for="star3" title="text">3 stars</label>
+                                                            <input disabled  type="radio" value="2" />
+                                                                <label for="star2" title="text">2 stars</label>
+                                                            <input disabled  type="radio" value="1" />
+                                                                <label for="star1" title="text">1 star</label>
+                                                        </div>
+
+                                                       {% elif product.id|average_ratings >= 3 %}
+                                                           <div class="rate">
+                                                            <input disabled  type="radio" value="5" />
+                                                                <label for="star5" title="text">5 stars</label>
+                                                            <input disabled  type="radio" value="4" />
+                                                                <label for="star4" title="text">4 stars</label>
+                                                            <input disabled checked type="radio" value="3" />
+                                                                <label for="star3" title="text">3 stars</label>
+                                                            <input disabled  type="radio" value="2" />
+                                                                <label for="star2" title="text">2 stars</label>
+                                                            <input disabled  type="radio" value="1" />
+                                                                <label for="star1" title="text">1 star</label>
+                                                        </div>
+
+                                                       {% elif product.id|average_ratings >= 2 %}
+                                                           <div class="rate">
+                                                            <input disabled  type="radio" value="5" />
+                                                                <label for="star5" title="text">5 stars</label>
+                                                            <input disabled  type="radio" value="4" />
+                                                                <label for="star4" title="text">4 stars</label>
+                                                            <input disabled  type="radio" value="3" />
+                                                                <label for="star3" title="text">3 stars</label>
+                                                            <input disabled checked type="radio" value="2" />
+                                                                <label for="star2" title="text">2 stars</label>
+                                                            <input disabled  type="radio" value="1" />
+                                                                <label for="star1" title="text">1 star</label>
+                                                        </div>
+
+                                                       {% elif product.id|average_ratings >= 1 %}
+                                                           <div class="rate">
+                                                            <input  type="radio" disabled value="5" />
+                                                                <label for="star5" title="text">5 stars</label>
+                                                            <input  type="radio" disabled value="4" />
+                                                                <label for="star4" title="text">4 stars</label>
+                                                            <input  type="radio" disabled value="3" />
+                                                                <label for="star3" title="text">3 stars</label>
+                                                            <input  type="radio" disabled value="2" />
+                                                                <label for="star2" title="text">2 stars</label>
+                                                            <input checked type="radio" disabled value="1" />
+                                                                <label for="star1" title="text">1 star</label>
+                                                        </div>
+                                                       {% else %}
+                                                           <div class="rate">
+                                                            <input  type="radio" disabled value="5" />
+                                                                <label for="star5" title="text">5 stars</label>
+                                                            <input  type="radio" disabled value="4" />
+                                                                <label for="star4" title="text">4 stars</label>
+                                                            <input  type="radio" disabled value="3" />
+                                                                <label for="star3" title="text">3 stars</label>
+                                                            <input  type="radio" disabled value="2" />
+                                                                <label for="star2" title="text">2 stars</label>
+                                                            <input  type="radio" disabled value="1" />
+                                                                <label for="star1" title="text">1 star</label>
+                                                           </div>
+                                                       {% endif %}
+                                                   </div>
+                                                </div>
+                                            </span>
+                                            <div class="colors">
+                                                <div class="d-flex align-content-center">
+                                                    {% if product.id|is_product_in_wishlist:request.user %}
+                                                        <a style=" display: flex; justify-content: center;" href="{% url 'Shoppy:remove_from_wishlist' product.id request.path|make_safe  %}" title="Remove Item From Your Wishlist">
+                                                            <i style="color: red; font-size: 30px;" class=" fas fa-heart "></i>
+                                                        </a>
+                                                    {% else %}
+                                                        <a style=" display: flex; justify-content: center;" href="{% url 'Shoppy:add_to_wishlist' product.id request.path|make_safe %}"  class="">
+                                                            <i style="color: #FEAA12; font-size: 30px;" class=" fas fa-heart"></i>
+                                                        </a>
+                                                    {% endif %}
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </a>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{#    end of phone deals #}
+
+
+{% endblock content %}
+    {% block scripts %}
+
+        <script>
+          {#setInterval(carouselSliderText,2000);#}
+          {##}
+          {#function carouselSliderText() {#}
+          {#  var texts = document.getElementsByClassName('text');#}
+          {#  for(var i=0; i<texts.length; i++){#}
+          {#      setTypingEffect(texts.item(i).id, texts.item(i).title);#}
+          {##}
+
+          {##}
+          {#function setTypingEffect(id, title) {#}
+          {#      var t = id;#}
+          {#      var typed = new Typed(id, {#}
+          {#      strings: [title.innerText],#}
+          {#      loop: true,#}
+          {#      typeSpeed:2000,#}
+          {#      backSpeed:1000,#}
+          {#      backDelay:1000,#}
+          {#      smartBackspace: true,#}
+          {#      showCursor: true,#}
+          {#      cursorChar: '|',#}
+          {#      autoInsertCss: true,#}
+          {#    });#}
+          {##}
+
+
+        </script>
+        <script>
+            setInterval(updateETA, 1000);
+
+                function updateETA() {
+                    var eta_elements = document.getElementsByClassName('eta');
+                    for(var i = 0; i < eta_elements.length; i++) {
+                        setEta(eta_elements.item(i).id, eta_elements.item(i).title);
+                    }
+                }
+                function setEta(id, time) {
+                    // Set the date we're counting down to
+                    var countDownDate = new Date(time).getTime();
+                    // Get todays date and time
+                    var now = new Date().getTime();
+                    // Find the distance between now and the count down date
+                    var distance = countDownDate - now;
+                    // Time calculations for days, hours, minutes and seconds
+                    var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                    var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                    var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                    // Output the result in an element with id given
+                    document.getElementById(id).innerHTML = days + "d " + hours + "h "
+                        + minutes + "m " + seconds + "s ";
+
+                    // If the count down is over, write some text
+                    if (distance < 0) {
+
+                        document.getElementById(id).innerHTML = "EXPIRED";
+                    }
+                }
+            </script>
+
+
+
+
+        <script type="text/javascript" src="{% static 'js/product_carousel.js' %}"></script>
+        <!-- Include jQuery -->
+        <script src="{% static 'css/jquery-2.2.4.min.js' %}"></script>
+
+        <!-- Include Multislider -->
+        <script src="{% static 'css/multislider.min.js' %}"></script>
+
+        <!-- Initialize element with Multislider -->
+{#        typedjs#}
+        <script type="text/javascript" src="{% static 'js/typed.js' %}"></script>
+
+        <script>
+            {#$('.carousel').carousel({#}
+            {#    interval: 6000})#}
+        </script>
+        <script>
+            // imageswap for product details images
+            function imageSwaps(imgs) {
+               console.log(imgs);
+               var expandImg = document.getElementsByClassName("expandedimg");
+                 {#for(r=0; r<imgs.length; r++){#}
+                for (i=0;i<expandImg.length;i++){
+                      // Use the same src in the expanded image as the image being clicked on from the grid
+                      expandImg[i].src = imgs.src;
+                        // Show the container element (hidden with CSS)
+                      expandImg[i].parentElement.style.display = "block";
+                }
+
+
+            }
+        </script>
+        <script>
+        $('.exampleSlider').multislider({
+            interval: 8000,
+            slideAll: true,
+            duration: 4500,
+
+        });
+        </script>
+        <script>
+            $('.btn-num-product-down').on('click', function(e){
+            e.preventDefault();
+            var numProduct = Number($(this).next().val());
+            if(numProduct > 1) $(this).next().val(numProduct - 1);
+            });
+
+            $('.btn-num-product-up').on('click', function(e){
+                e.preventDefault();
+                var numProduct = Number($(this).prev().val());
+                $(this).prev().val(numProduct + 1);
+            });
+        </script>
+
+        <script>
+
+
+        </script>
+            <script type="text/javascript" src="{% static 'js/product_carousel.js' %}"></script>
+            <script type="text/javascript" src="{% static 'js/productcard.js' %}"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+            <script>
+                $(document).ready(function(){
+                  $(".owl-carousel").owlCarousel({
+                       loop:true,
+                        margin:20,
+                      marginLeft:10,
+                        autoHeight: true,
+                        lazyLoad: true,
+                        items: 1,
+                        autoplay: true,
+                        nav: false,
+                        dots: true,
+                        loop: true,
+                        center:true,
+                        responsiveClass:true,
+                        navigationText: [
+                           "<i class='fa fa-chevron-left'></i>",
+                           "<i class='fa fa-chevron-right'></i>"
+                        ],
+                        responsive:{
+                            0:{
+                                items:1,
+                                nav:true,
+                                loop:true,
+                                center:true
+                            },
+                            450:{
+                                 items:1,
+                                nav:true,
+                                loop:true,
+                                center:true
+                            },
+                            690:{
+                                items:2,
+                                nav:false,
+                                loop:true,
+                            },
+                            790:{
+                                items:3,
+                                nav:true,
+                                loop:true,
+                            },
+                            1000:{
+                                items:3,
+                                nav:true,
+                                loop:true,
+                            },
+                             1100:{
+                                items:4,
+                                nav:true,
+                                loop:true,
+                            },
+
+                            1200:{
+                                items:7,
+                                nav:true,
+                                loop:true,
+                            }
+                        }
+                  });
+
+                });
+            </script>
+    {% endblock %}

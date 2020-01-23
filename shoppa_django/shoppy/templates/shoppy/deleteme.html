@@ -1,0 +1,187 @@
+{% extends 'shoppy/layout.html' %}
+{% load static %}
+{% load call_method %}
+{% load humanize %}
+{% block links %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/carousel.css' %}">
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+        <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+        <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.9"></script>
+        <link rel="stylesheet" href="{% static 'css/product_card.css' %}">
+        <link rel="stylesheet" href="{% static 'css/shop.css' %}">
+        <link rel="stylesheet" href="{% static 'css/owl-carousel.css' %}" />
+        <link rel="stylesheet" href="{% static 'css/owl-carousel-theme.css' %}"/>
+{% endblock links %}
+{% block content %}
+
+        <div class="row" style="padding: 42px 79px;">
+            {% for product in products|slice:10%}
+                <div class="col-xs-4 col-sm-4 col-md-3 col-lg-2 col-xl-2 mb-3  p-0 position-relative " style="display: block; height: 317px;">
+                    <a href="{% url 'Shoppy:shoppy_product_details' product.id %}">
+                    <div class="make-3D-space rounded">
+                    <div class="product-card">
+                        <div class="product-front">
+                            <div class="shadow"></div>
+                            <img style="object-fit:fill;" class="w-100 h-100" src="{{ product.featured_url.url }}" alt="" />
+                            <div class="image_overlay"></div>
+                            {% if product.id|is_product_in_cart:request.user %}
+                                <a href="" class="view_detailz" data-toggle="modal" data-target="#"><i class=" text-white fa fa-cart-plus"></i></a>
+                            {% else %}
+                                <a  href="" class="view_detailz" data-toggle="modal" data-target="#kk{{ product.id }}">Add to cart</a>
+                            {% endif %}
+
+                            {% if  product.price_after_offer and product.id|product_on_offer %}
+                                {% for offer in product.id|product_on_offer %}
+                                    <div class="view_detailz " style="margin-top:5rem;">
+                                        <span title="{{ offer.end_time|date:"Y-m-d h:i A" }}" id="p_{{ product.id }}" class="eta"></span>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                            {% if product.id|product_on_offer %}
+                                {% for offer in product.id|product_on_offer %}
+                                    <span class="badge-custom">
+                                        Save {{ offer.discount }}%
+                                    </span>
+                                {% endfor %}
+                            {% endif %}
+                            <div class="stats">
+                                <div class="stats-container">
+                                    <div class="d-flex flex-column">
+                                        <span class=" m-0 p-0 row product_name d-flex justify-content-between m-0">
+                                            <a class="text-dark" href="{% url 'Shoppy:shoppy_product_details' product.id %}"><span class="text-capitalize font-weight-bold">{{ product.name|truncatechars:20  }}</span></a>
+
+                                            <span>({{ product.inventory_qty|floatformat:0 }})</span>
+                                        </span>
+                                        <span class=" row m-0 p-0">
+
+                                            {% if  product.price_after_offer and product.id|product_on_offer %}
+                                                <span class="product_price">{{ product.price_after_offer|floatformat:1|intcomma }} Kshs</span>
+                                                <p class="striked-price">{{ product.unit_cost_inclusive_of_vat|floatformat:1|intcomma }} Kshs</p>
+                                            {% else %}
+                                                 <span class="product_price"> {{ product.price_after_offer|floatformat:1|intcomma }}Kshs</span>
+                                            {% endif %}
+                                        </span>
+                                      <div class="product-options">
+                                        <strong>Ratings</strong>
+                                        <span>
+                                            <div class="col-sm-12 card-ratings-wrapper">
+                                               <div class="mr-auto">
+                                                   {% if product.id|average_ratings >= 5 %}
+                                                        <div class="rate">
+                                                        <input disabled checked type="radio"  value="5" />
+                                                            <label for="star5" title="text">5 stars</label>
+                                                        <input disabled  type="radio"  value="4" />
+                                                            <label for="star4" title="text">4 stars</label>
+                                                        <input disabled  type="radio"  value="3" />
+                                                            <label for="star3" title="text">3 stars</label>
+                                                        <input disabled  type="radio"  value="2" />
+                                                            <label for="star2" title="text">2 stars</label>
+                                                        <input disabled  type="radio"  value="1" />
+                                                            <label for="star1" title="text">1 star</label>
+                                                    </div>
+
+                                                   {% elif product.id|average_ratings >= 4 %}
+                                                       <div class="rate">
+                                                        <input disabled  type="radio" value="5" />
+                                                            <label for="star5" title="text">5 stars</label>
+                                                        <input disabled checked type="radio" value="4" />
+                                                            <label for="star4" title="text">4 stars</label>
+                                                        <input disabled  type="radio" value="3" />
+                                                            <label for="star3" title="text">3 stars</label>
+                                                        <input disabled  type="radio" value="2" />
+                                                            <label for="star2" title="text">2 stars</label>
+                                                        <input disabled  type="radio" value="1" />
+                                                            <label for="star1" title="text">1 star</label>
+                                                    </div>
+
+                                                   {% elif product.id|average_ratings >= 3 %}
+                                                       <div class="rate">
+                                                        <input disabled  type="radio" value="5" />
+                                                            <label for="star5" title="text">5 stars</label>
+                                                        <input disabled  type="radio" value="4" />
+                                                            <label for="star4" title="text">4 stars</label>
+                                                        <input disabled checked type="radio" value="3" />
+                                                            <label for="star3" title="text">3 stars</label>
+                                                        <input disabled  type="radio" value="2" />
+                                                            <label for="star2" title="text">2 stars</label>
+                                                        <input disabled  type="radio" value="1" />
+                                                            <label for="star1" title="text">1 star</label>
+                                                    </div>
+
+                                                   {% elif product.id|average_ratings >= 2 %}
+                                                       <div class="rate">
+                                                        <input disabled  type="radio" value="5" />
+                                                            <label for="star5" title="text">5 stars</label>
+                                                        <input disabled  type="radio" value="4" />
+                                                            <label for="star4" title="text">4 stars</label>
+                                                        <input disabled  type="radio" value="3" />
+                                                            <label for="star3" title="text">3 stars</label>
+                                                        <input disabled checked type="radio" value="2" />
+                                                            <label for="star2" title="text">2 stars</label>
+                                                        <input disabled  type="radio" value="1" />
+                                                            <label for="star1" title="text">1 star</label>
+                                                    </div>
+
+                                                   {% elif product.id|average_ratings >= 1 %}
+                                                       <div class="rate">
+                                                        <input  type="radio" disabled value="5" />
+                                                            <label for="star5" title="text">5 stars</label>
+                                                        <input  type="radio" disabled value="4" />
+                                                            <label for="star4" title="text">4 stars</label>
+                                                        <input  type="radio" disabled value="3" />
+                                                            <label for="star3" title="text">3 stars</label>
+                                                        <input  type="radio" disabled value="2" />
+                                                            <label for="star2" title="text">2 stars</label>
+                                                        <input checked type="radio" disabled value="1" />
+                                                            <label for="star1" title="text">1 star</label>
+                                                    </div>
+                                                   {% else %}
+                                                       <div class="rate">
+                                                        <input  type="radio" disabled value="5" />
+                                                            <label for="star5" title="text">5 stars</label>
+                                                        <input  type="radio" disabled value="4" />
+                                                            <label for="star4" title="text">4 stars</label>
+                                                        <input  type="radio" disabled value="3" />
+                                                            <label for="star3" title="text">3 stars</label>
+                                                        <input  type="radio" disabled value="2" />
+                                                            <label for="star2" title="text">2 stars</label>
+                                                        <input  type="radio" disabled value="1" />
+                                                            <label for="star1" title="text">1 star</label>
+                                                       </div>
+                                                   {% endif %}
+                                               </div>
+                                            </div>
+                                        </span>
+                                        <div class="colors">
+                                            <div class="d-flex align-content-center">
+                                                {% if product.id|is_product_in_wishlist:request.user %}
+                                                    <a style=" display: flex; justify-content: center;" href="{% url 'Shoppy:remove_from_wishlist' product.id request.path|make_safe  %}" title="Remove Item From Your Wishlist">
+                                                        <i style="color: red; font-size: 30px;" class=" fas fa-heart "></i>
+                                                    </a>
+                                                {% else %}
+                                                    <a style=" display: flex; justify-content: center;" href="{% url 'Shoppy:add_to_wishlist' product.id request.path|make_safe %}"  class="">
+                                                        <i style="color: #FEAA12; font-size: 30px;" class=" fas fa-heart"></i>
+                                                    </a>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </a>
+                </div>
+            {% endfor %}
+        </div>
+
+{% endblock content %}
+{% block scripts %}
+     <script type="text/javascript" src="{% static 'js/product_carousel.js' %}"></script>
+            <script type="text/javascript" src="{% static 'js/productcard.js' %}"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+{% endblock scripts %}

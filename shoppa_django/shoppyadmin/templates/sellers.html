@@ -1,0 +1,100 @@
+{% extends 'aaa_layout.html' %}
+{% load static %}
+{% block links %}
+     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap.min.css">
+
+{% endblock %}
+{% block content %}
+
+		
+	<div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">
+		<div class="row">
+			<ol class="breadcrumb">
+				<li><a href="#">
+					<em class="fa fa-home"></em>
+				</a></li>
+				<li class="active">Sellers</li>
+			</ol>
+		</div><!--/.row-->
+		
+		<div class="row">
+			<div class="col-lg-12">
+				<h1 class="page-header">Sellers</h1>
+			</div>
+		</div><!--/.row-->
+		
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						Sellers
+
+						<span class="pull-right clickable panel-toggle panel-button-tab-left"><em class="fa fa-toggle-up"></em></span></div>
+					<div class="panel-body">
+						<div class="canvas-wrapper">
+							<div class="main-chart" id="line-chart" height="200" width="600">
+                                <table id="example" class="example table table-striped table-bordered" style="width:100%;">
+                                    <thead >
+                                        <tr class="text-capitalize">
+                                            <th>Id</th>
+                                            <th>Logo</th>
+                                            <th>Name</th>
+                                            <th>Business_No</th>
+                                            <th>Store_name</th>
+                                            <th>Status</th>
+                                            <th>County</th>
+                                            <th>Created At</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                         {% for seller in seller %}
+                                            <tr class="text-center ">
+                                                <td class="tb-data">{{ seller.id }}</td>
+                                                <td class="tb-data tb-data">
+                                                    <div class="store-logo-image">
+                                                       <img src="{{ seller.store_logo.url }}" alt="">
+                                                    </div>
+                                                </td>
+                                                <td class="product-details">{{ seller.first_name }} {{ seller.last_name }}</td>
+                                                <td class="tb-data">{{ seller.business_no }}</td>
+                                                <td class="tb-data">{{ seller.store_name }}</td>
+                                                <td class="tb-data">{{ seller.status }}</td>
+                                                <td class="tb-data">{{ seller.country }}</td>
+                                                <td class="tb-data">{{ seller.date_joined|date:'Y-m-d[H:i]'  }}</td>
+                                                <td class="text-center tb-data" width="296">
+                                                    <a href="#" class="btn btn-info"><i class="fas fa-eye"></i> View</a>
+                                                    <a href="#" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Delete</a>
+                                                    {% if seller.status == 'UNVERIFIED' %}
+                                                    <a href="{% url 'ShoppyAdmin:shoppy-admin-status-change' seller.id %}" class="btn btn-success"><i class="fas fa-plus"></i> Activate</a>
+                                                    {% else %}
+                                                    <a href="{% url 'ShoppyAdmin:shoppy-admin-status-change' seller.id %}" class="btn btn-brown"><i class="fas fa-pencil-alt"></i> Deactivate</a>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                         {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div><!--/.row-->
+	</div>	<!--/.main-->
+	  
+
+
+
+
+{% endblock %}
+{% block scripts %}
+    <script>
+        $(document).ready(function() {
+            $('.example').DataTable();
+        } );
+    </script>
+
+    <script src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap.min.js"></script>
+{% endblock %}

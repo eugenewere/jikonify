@@ -1,0 +1,229 @@
+{% extends 'aaa_layout.html' %}
+{% load static %}
+{% load humanize %}
+{% block links %}
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/css/bootstrap-select.min.css" rel="stylesheet" />
+
+{% endblock links %}
+{% block content %}
+ <div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">
+    <div class="row">
+        <ol class="breadcrumb">
+            <li>
+                <a href="#">
+                <em class="fa fa-home"></em>
+                </a>
+            </li>
+            <li class="active">Regions</li>
+        </ol>
+    </div><!--/.row-->
+   <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">Regions</h1>
+        </div>
+   </div><!--/.row-->
+                    {% for region in regions %}
+                    <!-- Modal -->
+                    <div class="modal fade" id="{{ region.id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                      <div class="modal-dialog" >
+                        <div class="modal-content modal-dialog-centered">
+                          <div class="modal-header bg-orange-shoppy">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title text-white" id="myModalLabel">Edit Regions</h4>
+                          </div>
+                          <div class="modal-body">
+                            <form action="{% url 'ShoppyAdmin:shoppy-admin-edit-regions' region.id %}" method="POST" >
+                                {% csrf_token %}
+                                <div class="input-group col-sm-12 marginY" >
+                                   <div class="form-group">
+                                        <label class="custom-control" for=region_name">Region:</label>
+                                        <input value="{{ region.name }}" placeholder="Region Name" name="name" type="text" class="form-control" id="region_name">
+                                   </div>
+                                </div>
+                                <div class="input-group col-sm-12 marginY">
+                                   <div class="form-group">
+                                        <label class="custom-control" for="region_cost">Region Cost</label>
+                                        <input value="{{ region.region_cost }}" name="region_cost" placeholder="Region Destination cost"  type="number" class="form-control" id="region_cost" required>
+                                   </div>
+                                </div>
+                                <button type="submit" class="btn btn-success marginY"><i class="fas fa-file"></i> Save</button>
+                                <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fa fa-close"></i> Close</button>
+
+                            </form>
+                          </div>
+
+                        </div>
+                      </div>
+                    </div>
+                    {% endfor %}
+   <div class="row">
+            <div class="col-lg-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading panel-warning-custom">
+                       All Regions
+                        <ul class="pull-right panel-settings panel-button-tab-right">
+                            <li class="dropdown"><a class="pull-right dropdown-toggle" data-toggle="dropdown" href="#">
+                                <em class="fa fa-cogs"></em>
+                            </a>
+                                <ul class="dropdown-menu dropdown-menu-right">
+                                    <li>
+                                        <ul class="dropdown-settings">
+                                            <li><a href="#">
+                                                <em class="fa fa-cog"></em> Settings 1
+                                            </a></li>
+                                            <li class="divider"></li>
+                                            <li><a href="#">
+                                                <em class="fa fa-cog"></em> Settings 2
+                                            </a></li>
+                                            <li class="divider"></li>
+                                            <li><a href="#">
+                                                <em class="fa fa-cog"></em> Settings 3
+                                            </a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <span class="pull-right clickable panel-toggle panel-button-tab-left"><em class="fa fa-toggle-up"></em></span></div>
+                    <div class="panel-body">
+                        <div class="canvas-wrapper">
+                            <div class="main-chart" id="line-chart" height="200" width="600">
+                                <form action="{% url 'ShoppyAdmin:shoppy-admin-view-regions' %}" method="POST" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    <div class="input-group col-sm-12 marginY" >
+                                       <div class="form-group">
+                                            <label class="custom-control" for=region_name">Region:</label>
+                                            <input placeholder="Region Name" name="name" type="text" class="form-control" id="region_name">
+                                       </div>
+                                    </div>
+                                    <div class="input-group col-sm-12 marginY">
+                                       <div class="form-group">
+                                            <label class="custom-control" for="region_cost">Region Cost</label>
+                                            <input name="region_cost" placeholder="Region Destination cost"  type="number" class="form-control" id="region_cost" required>
+                                       </div>
+                                    </div>
+{#                                    <div class="form-group has-feedback  col-sm-12">#}
+{#                                      <label for="sel3">Seller</label> <br>#}
+{#                                      <select required name="seller" id="sel3" class="selectpicker" data-show-subtext="true" data-live-search="true">#}
+{#                                        <option value="">Choose A Seller</option>#}
+{#                                        {% for seller in sellers %}#}
+{#                                         <option data-subtext="{{ seller.first_name }}" value="{{ seller.id }}">{{ seller.first_name }}{{ seller.last_name }}</option>#}
+{#                                        {% endfor %}#}
+{#                                      </select>#}
+{#                                    </div>#}
+                                    <button type="submit" class="btn btn-success marginY"><i class="fas fa-plus-circle"></i> Add</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!--/.row-->
+
+   <div class="row">
+            <div class="col-lg-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading panel-warning-custom">
+                        All Regions
+                        <ul class="pull-right panel-settings panel-button-tab-right">
+                            <li class="dropdown"><a class="pull-right dropdown-toggle" data-toggle="dropdown" href="#">
+                                <em class="fa fa-cogs"></em>
+                            </a>
+                                <ul class="dropdown-menu dropdown-menu-right">
+                                    <li>
+                                        <ul class="dropdown-settings">
+                                            <li><a href="#">
+                                                <em class="fa fa-cog"></em> Settings 1
+                                            </a></li>
+                                            <li class="divider"></li>
+                                            <li><a href="#">
+                                                <em class="fa fa-cog"></em> Settings 2
+                                            </a></li>
+                                            <li class="divider"></li>
+                                            <li><a href="#">
+                                                <em class="fa fa-cog"></em> Settings 3
+                                            </a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <span class="pull-right clickable panel-toggle panel-button-tab-left"><em class="fa fa-toggle-up"></em></span></div>
+                    <div class="panel-body">
+                        <div class="canvas-wrapper">
+                            <div class="main-chart" id="line-chart" height="200" width="600">
+                                <table id="" class="example table table-striped table-bordered" style="width:100%;">
+                                    <thead>
+                                        <tr class="text-capitalize">
+                                            <th>Id</th>
+                                            <th>Name</th>
+                                            <th>Region Cost</th>
+                                            <th>Created At</th>
+                                            <th>Updated At</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for region in regions %}
+                                            <tr class="text-center ">
+                                                <td class="tb-data">{{ region.id }}</td>
+                                                <td class="tb-data font-weight-bolder text-capitalize">{{ region.name }}</td>
+                                                <td class="tb-data">{{ region.region_cost|floatformat:1|intcomma }} Ksh</td>
+                                                <td class="tb-data">{{ region.created_at }}</td>
+                                                <td class="tb-data">{{ region.updated_at }}</td>
+                                                <td class="tb-data">
+                                                    <a data-toggle="modal" data-target="#rd{{ region.id }}" href="#" class="btn btn-danger"><i class="fas fa-trash"></i> Delete</a>
+                                                    <a data-toggle="modal" data-target="#{{ region.id }}" href="{% url 'ShoppyAdmin:shoppy-admin-edit-regions' region.id %}" class="btn btn-success" >
+                                                        <i class="fas fa-pencil-alt"></i> Edit
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+              {% for region in regions %}
+              <!-- Modal -->
+              <div class="modal fade " id="rd{{ region.id }}" role="dialog">
+                <div class="modal-dialog modal-sm ">
+                  <div class="modal-content ">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                      <h4 class="modal-title">Region Delete Confirmation</h4>
+                    </div>
+                    <div class="modal-body">
+                      <h4>Are you sure you want to delete {{ region.name }} </h4>
+                    </div>
+                    <div class="modal-footer">
+                      <a href="{% url 'ShoppyAdmin:shoppy-admin-delete-regions' region.id %}" class="btn btn-danger"><i class="fas fa-trash"></i> Delete</a>
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+
+        </div><!--/.row-->
+
+</div>
+
+
+
+
+{% endblock %}
+{% block scripts %}
+    <script>
+        $(document).ready(function() {
+            $('#example').DataTable();
+        } );
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/bootstrap-select.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap.min.js"></script>
+{% endblock scripts %}

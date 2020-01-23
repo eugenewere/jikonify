@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+{% load static %}
+{% load call_method %}
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	{% if title %}
+       <title>Jikonify</title>
+    {% else %}
+        <title>Jikonify</title>
+    {% endif %}
+    <link rel="icon" type="image/png" href="{% static 'sitelogo/favicone.png' %}"/>
+
+
+
+    {#    preloader css#}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+    <link rel="stylesheet" href="{% static 'css/preloadercss/style.css' %}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prefixfree/1.0.7/prefixfree.min.js"></script>
+    {#end-preloadercss#}
+	<link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+	<link href="{% static 'css/font-awesome.min.css' %}" rel="stylesheet">
+	<link href="{% static 'css/datepicker3.css' %}" rel="stylesheet">
+	<link href="{% static 'css/styles.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+	<!--Custom Font-->
+	<link href="https://fonts.googleapis.com/css?family=Montserrat:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+    {% block links %}
+
+    {% endblock links %}
+    <!--[if lt IE 9]>
+    <![endif]-->
+</head>
+<body style="zoom: 76% !important;">
+    {#preloader#}
+{#    <header class="loader_wrapper">#}
+{#        <div class='body'>#}
+{#        <span>#}
+{#          <span></span>#}
+{#          <span></span>#}
+{#          <span></span>#}
+{#          <span></span>#}
+{#        </span>#}
+{#        <div class='base'>#}
+{#          <span></span>#}
+{#          <div class='face'></div>#}
+{#        </div>#}
+{#      </div>#}
+{#      <div class='longfazers'>#}
+{#        <span></span>#}
+{#        <span></span>#}
+{#        <span></span>#}
+{#        <span></span>#}
+{#      </div>#}
+{#      <h1 class="loading_text">Loading Mashkys Admin</h1>#}
+{#    </header>#}
+    {#endpreloader#}
+    <div class="col-sm-12 col-md-12 col-lg-12">
+         <nav style="margin: 0;" class="navbar navbar-custom navbar-fixed-top" role="navigation">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#sidebar-collapse"><span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span></button>
+				<a class="navbar-brand logo-admin" href="{% url 'ShoppyAdmin:shoppy-admin-home' %}">
+                    <img style="height: 61px;width: 202px;" src="{% static 'images/siteimages/jikonify_black - Copy.png' %}" alt="">
+                </a>
+                <div class="dropdown pull-right">
+                  <button style="" class="username dropdown-toggle " type="button" data-toggle="dropdown">
+                      {% if request.user.is_authenticated %}
+                          {% if not request.user|is_seller %}
+                             Hi Admin
+                          {% else %}
+                             Hi {{ request.user.first_name }}
+                          {% endif %}
+                      {% else %}
+                        <span class="">
+                            <i class="fas fa-user-alt"></i>
+                        </span>
+                      {% endif %}
+                      <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-custom" role="menu" aria-labelledby="menu1">
+                    <li role="presentation" ><a class="" role="menuitem" href="{% url 'ShoppyAdmin:shoppy-user-account' %}">My account</a></li>
+                    <li role="presentation" ><a class="" role="menuitem" href="{% url 'ShoppyAdmin:shoppy-changepassword' %}"> Bad password</a></li>
+                    <li role="presentation" class="divider"></li>
+                    <li role="presentation"><a  class="btn login-btn color-white" role="menuitem" href="{% url 'Shoppy:shoppy-logout' %}">Logout</a></li>
+                  </ul>
+                </div>
+			</div>
+		</div><!-- /.container-fluid -->
+	</nav>
+    </div>
+
+	<div id="sidebar-collapse" class="col-sm-3 col-lg-2 sidebar">
+
+		<div class="divider" style="margin-bottom: 130px;"></div>
+
+		<ul class="nav menu">
+            <li><a href="{%  url 'ShoppyAdmin:shoppy-admin-home' %}"><em class="fas fa-tachometer-alt">&nbsp;</em> Dashboard</a></li>
+            <li class=""><a href="{% url 'ShoppyAdmin:shoppy-admin-orders' %}"><em class="fa fa-toggle-off">&nbsp;</em> Orders</a></li>
+
+			<li class="parent">
+                <a  data-toggle="collapse" href="#productssubmenus">
+				     <em class="fas  fa-capsules ">&nbsp;</em>
+                        Products
+                     <span data-toggle="collapse" href="#productssubmenus" class="icon pull-right">
+                         <em class="fa fa-plus"></em>
+                     </span>
+				</a>
+				<ul class="children collapse" id="productssubmenus">
+					<li><a class="" href="{% url 'ShoppyAdmin:view_products' %}">
+						<span class="fa fa-arrow-right">&nbsp;</span> View Products
+					</a></li>
+{#                    {% if not request.user|is_seller %}#}
+					<li><a class="" href="{% url 'ShoppyAdmin:featuredproduct' %}">
+						<span class="fa fa-arrow-right">&nbsp;</span> Featured Products
+					</a></li>
+{#                    {% endif %}#}
+
+                    <li><a class="" href="{% url 'ShoppyAdmin:view_product_offer' %}">
+						<span class="fa fa-arrow-right">&nbsp;</span> Product Offer
+					</a></li>
+
+                    {% if request.user|is_seller %}
+                    <li><a class="" href="{% url 'ShoppyAdmin:variants' %}">
+						<span class="fa fa-arrow-right">&nbsp;</span> Variants
+					</a></li>
+                    {% endif %}
+                    {% if not request.user|is_seller %}
+                    <li><a class="" href="{% url 'ShoppyAdmin:view_carousel' %}">
+						<span class="fa fa-arrow-right">&nbsp;</span> Advertisement
+					</a></li>
+
+                    {% endif %}
+				</ul>
+			</li>
+             {% if request.user|is_seller %}
+                <li class=""><a href="{% url 'ShoppyAdmin:shoppy-payments' %}"><em class="fa fa-money-bill-alt">&nbsp;</em> Payments</a></li>
+            {% endif %}
+            {% if not request.user|is_seller %}
+                <div class="divider" style="margin-bottom: 20px; border: 1px solid white; background-color: white;"></div>
+                <li class="parent">
+                    <a  href="{% url 'ShoppyAdmin:shoppy_admin_add_brand'  %}">
+                         <em class="fas fa-file-alt">&nbsp;</em>
+                            Brands
+                    </a>
+
+                </li>
+                <li class="parent">
+                    <a href="{% url 'ShoppyAdmin:shoppy_admin_add_category' %}">
+                         <em class="fas fa-file-alt">&nbsp;</em>
+                            Category
+                    </a>
+                </li>
+                <li class=""><a href="{%  url 'ShoppyAdmin:shoppy-admin-buyers' %}"><em class="fas fa-user">&nbsp;</em> Buyers</a></li>
+                <li class=""><a href="{% url 'ShoppyAdmin:shoppy-admin-sellers' %}"><em class="fas fa-users">&nbsp;</em> Sellers</a></li>
+			{% endif %}
+            {% if request.user|is_seller %}
+{#            <div class="divider" style="margin-bottom: 20px; border: 1px solid white; background-color: white;"></div>#}
+{#			<li class=""><a href="{% url 'ShoppyAdmin:shoppy-admin-view-regions' %}"><em class="fa fa-map-marked">&nbsp;</em> Delivery Regions</a></li>#}
+
+                <div class="divider" style="margin-bottom: 20px; border: 1px solid white; background-color: white;"></div>
+			<li class=""><a href="{% url 'ShoppyAdmin:shoppy-admin-reviews' %}"><em class="fas fa-file-signature">&nbsp;</em> Reviews</a></li>
+{#            <li class=""><a href="{% url 'ShoppyAdmin:shoppy-payments' %}"><em class="fas fa-money-bill-alt">&nbsp;</em> Payments</a></li>#}
+            {% endif %}
+{#            <li class="parent">#}
+{#                <a data-toggle="collapse" href="#reports">#}
+{#				     <em class="fas fa-file-pdf">&nbsp;</em>#}
+{#                        Reports#}
+{#                     <span data-toggle="collapse" href="#reports" class="icon pull-right">#}
+{#                         <em class="fa fa-plus"></em>#}
+{#                     </span>#}
+{#				</a>#}
+{#				<ul class="children collapse" id="reports">#}
+{#					<li><a class="" href="{% url 'ShoppyAdmin:view_all_reports' %}">#}
+{#						<span class="fa fa-arrow-right">&nbsp;</span> View Reports#}
+{#					</a></li>#}
+{#				</ul>#}
+{#			</li>#}
+
+			<li class=""><a href="{% url 'Shoppy:shoppy-logout' %}"><em class="fa fa-power-off">&nbsp;</em> Logout</a></li>
+		</ul>
+	</div><!--/.sidebar-->
+    <div style=" position: absolute; z-index: 9;" class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main" >
+        <div class="row " style="margin: 10px 0">
+                {% if messages %}
+                 <div class="" style="height: 42px; ">
+                    <div class="">
+                        <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <ul class="messages w-100">
+                                      {% for message in messages %}
+                                          <div class="alert {% if message.tags == 'error' %}alert-danger{% endif %}
+                                                   {% if message.tags == 'success' %}alert-success{% endif %}
+                                                   {% if message.tags == 'info' %}alert-info{% endif %}
+                                                   alert-dismissible fade-in">
+                                              <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                                              <span class="text-white {% if message.tags %} {{ message.tags }}{% endif %}" >
+                                                  <strong class="text-capitalize">
+                                                  {% if message.tags %} {{ message.tags }} {% endif %}!
+                                                  </strong> {{ message }}
+                                              </span>
+                                          </div>
+                                      {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+           {% endif %}
+            </div><!--/.row-->
+    </div>
+    {% block content %}
+
+
+
+    {% endblock %}
+
+
+	<script src="{% static 'js/jquery-1.11.1.min.js' %}"></script>
+	<script src="{% static 'js/bootstrap.min.js' %}"></script>
+	<script src="{% static 'js/bootstrap-datepicker.js' %}"></script>
+	<script src="{% static 'js/custom.js' %}"></script>
+    <script>
+       $(window).on("load", function () {
+
+            setTimeout(function(){
+               $(".loader_wrapper").removeClass("loadingslideright").addClass("loadingslideleft")
+            }, 2000);
+        })
+    </script>
+
+    {% block scripts %}
+
+    {% endblock %}
+</body>
+</html>

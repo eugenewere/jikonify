@@ -1,0 +1,128 @@
+{% extends 'shoppy/layout.html' %}
+
+{% block content %}
+    <div class="forms-background" >
+      <div class="content-section">
+          {% if form.errors %}
+            <div class="alert alert-danger alert-dismissable">
+              <h5>Please fix the following errors</h5>
+              <ul>
+                {% for key,value in form.errors.items %}
+                  <li>{{ key|escape }} : {{ value|escape }}</li>
+                {% endfor %}
+              </ul>
+              {% if form.non_field_errors %}
+                {{ form.non_field_errors }}
+              {% endif %}
+            </div>
+          {% endif %}
+
+        <h2 class="py-4">Buyer Registration</h2>
+      <h6 class="py-4 text-center">Let us create you an account</h6>
+            <form class="needs-validation"  action="{% url 'Shoppy:shoppy-buyer-reg' %}" method="POST">
+                {% csrf_token %}
+
+                  <div class="">
+{#                    <div class="col-md-12 mb-3 input-spinner-off">#}
+{#                         <label for="username">User name</label>#}
+{#                         <input id="username" type="text" name="username" class="form-control" placeholder="User name">#}
+{#                    </div>#}
+                    <div class="col-md-12 mb-3 input-spinner-off">
+                        <label for="validationCustom03">Phone number</label>
+                        <input maxlength="10" aria-valuemax="10" value="{% if form.phone_number.value %}{{ form.phone_number.value }}{% endif %}" name="username" type="number" class="form-control " id="validationCustom03" placeholder="Phone number" required>
+                    </div>
+
+                    <div class="col-md-12 mb-3">
+                      <label for="validationCustom04">Pin</label>
+                        <div class="position-relative">
+                            <input maxlength="4"  type="password" name="password1" class="form-control position-relative w-100 password" id="validationCustom04" placeholder="Pin" required>
+                            <div style="position: absolute;top: 9px;right: 11px;" class="password_checker">
+                                <i onclick="changeText();" class="fas fa-eye txt color animation "></i>
+                                <i style="display:none;" onclick="changePassword();" class="fas fa-eye-slash psd color animation "></i>
+                           </div>
+                        </div>
+                        <small id="passwordHelpBlock" class="form-text text-muted">
+                          Enter a PIN 4 digit that you will be using to login.
+                        </small>
+                        {% if form.password1.errors %}
+                            <div class="alert alert-danger">
+                              <strong class="text-white errorlist">{{ form.password1.errors }}</strong>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-12 mb-3">
+                      <label for="validationCustom05">Confirm Pin</label>
+                        <div class="position-relative">
+                            <input name="password2" type="password" maxlength="4" class="form-control position-relative w-100 password1" id="validationCustom05" placeholder="Confirm Pin" required>
+                            <div style="position: absolute;top: 9px;right: 11px;" class="password_checker">
+                                <i onclick="changeText1();" class="fas fa-eye txt1 color animation "></i>
+                                <i style="display:none;" onclick="changePassword1();" class="fas fa-eye-slash psd1 color animation "></i>
+                           </div>
+                        </div>
+
+                        <small id="passwordHelpBlock" class="form-text text-muted">
+                          Confirm pin.
+                        </small>
+
+                        {% if form.password2.errors %}
+                            <div class="alert alert-danger">
+                              <strong class="text-white errorlist">{{ form.password2.errors }}</strong>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                  </div>
+
+                  <button class="product-button" type="submit">Create Account</button>
+
+                </form>
+                <div class=" pt-3">
+                    <small class="text-muted medium-text">
+                        Already have an account? <a href="{% url 'Shoppy:shoppy-login' %}" class="ml-2">Log In</a>
+                    </small>
+                    <br>
+                    <small class="text-muted medium-text mt-2">
+                        Register as a seller? <a href="{% url 'Shoppy:shoppy-seller-reg' %}" class="ml-2">Here</a>
+                    </small>
+                </div>
+    </div>
+    </div>
+{% endblock content %}
+{% block scripts %}
+    <script>
+        var pswd = document.getElementsByClassName('password')[0];
+        var txt = document.getElementsByClassName('txt')[0];
+        var psd = document.getElementsByClassName('psd')[0];
+        function changeText() {
+
+            pswd.setAttribute('type','text');
+            psd.style.display="block";
+            txt.style.display = "none";
+            txt.style.transition = 1+"s";
+        }
+        function changePassword() {
+            pswd.setAttribute('type','password');
+            psd.style.display="none";
+            txt.style.display = "block";
+            txt.style.transition = 1+"s";
+        }
+        var pswd1 = document.getElementsByClassName('password1')[0];
+        var txt1 = document.getElementsByClassName('txt1')[0];
+        var psd1 = document.getElementsByClassName('psd1')[0];
+        function changeText1() {
+
+            pswd1.setAttribute('type','text');
+            psd1.style.display="block";
+            txt1.style.display = "none";
+            txt1.style.transition = 1+"s";
+        }
+        function changePassword1() {
+            pswd1.setAttribute('type','password');
+            psd1.style.display="none";
+            txt1.style.display = "block";
+            txt1.style.transition = 1+"s";
+        }
+
+    </script>
+{% endblock scripts %}

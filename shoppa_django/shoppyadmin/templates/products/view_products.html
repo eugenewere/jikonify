@@ -1,0 +1,406 @@
+{% extends 'aaa_layout.html' %}
+{% load static %}
+{% load humanize %}
+{% load call_method %}
+{% block links %}
+{#    <script src="https://cdn.ckeditor.com/ckeditor5/12.3.1/classic/ckeditor.js"></script>#}
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/css/bootstrap-select.min.css" rel="stylesheet" />
+    <script src="https://cdn.ckeditor.com/4.12.1/standard/ckeditor.js"></script>
+{% endblock links %}
+{% block content %}
+ <div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">
+		<div class="row">
+			<ol class="breadcrumb">
+				<li>
+					<a href="{% url 'ShoppyAdmin:shoppy-admin-home' %}">
+					<em class="fa fa-home"></em>
+				    </a>
+			    </li>
+				<li class="active">Products</li>
+			</ol>
+		</div><!--/.row-->
+       <div class="row">
+			<div class="col-lg-12">
+				<h1 class="page-header">View Products</h1>
+			</div>
+		</div><!--/.row-->
+
+        <div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading panel-warning-custom">
+                            All Product
+
+
+                            <span class="pull-right clickable panel-toggle panel-button-tab-left"><em class="fa fa-toggle-up"></em></span>
+                            {% if  request.user|is_seller %}
+                                <a href="#" class="btn-success btn pull-right" data-toggle="modal" data-target="#productadd">Add Products</a>
+                            {% endif %}
+                            <!-- Modal -->
+                          <div class="modal fade" id="productadd" role="dialog">
+                            <div class="modal-dialog modal-lg">
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                  <h4 class="modal-title">Add Products</h4>
+                                </div>
+                                <div class="modal-body">
+
+                                  <fieldset>
+                                      <form method="POST" action="{% url 'ShoppyAdmin:shoppy_admin_view_all_products' %}" enctype="multipart/form-data">
+                                          {% csrf_token %}
+                                          <div class="form-group has-feedback col-sm-12">
+                                              <label class="control-label" for="name">Product Name</label>
+                                              <input required type="text" name="name" class="form-control has-success" id="name" aria-describedby="name" placeholder="Product Name">
+                                          </div>
+                                          <div class="form-group has-feedback img-file col-sm-12">
+                                              <label class="control-label" for="username">Main Image</label>
+                                              <input required  type="file"  name="featured_url" class="form-control"  accept=".png, .jpeg, .jpg" aria-describedby="usernameStatus" placeholder="Main Image">
+                                          </div>
+                                          <div class="form-group has-feedback  col-sm-12 w-100">
+                                              <label class="control-label" for="sel1">Select Brand</label> <br>
+                                              <select required name="product_brand" id="sel1" class="selectpicker w-100" data-show-subtext="true" data-live-search="true">
+                                                {% for brand in brands %}
+                                                  <option id="sel1" data-subtext="{{ brand.name }}" value="{{ brand.id }}">{{ brand.name }}</option>
+                                                {% endfor %}
+                                              </select>
+                                          </div>
+                                            <div class="form-group has-feedback  col-sm-12 w-100">
+                                              <label for="sel21" class="control-label">Vat</label> <br>
+                                              <select aria-required="true" required id="sel21" name="vat_status" class="selectpicker w-100"  data-show-subtext="true" data-live-search="true">
+                                                  <option disabled selected >Choose vat status</option >
+                                                    <option value="VAT">Vatable </option>
+                                                    <option value="NO_VAT">Non-vatable </option>
+                                              </select>
+                                          </div>
+                                          <div class="form-group has-feedback img-file col-sm-12">
+                                              <label class="control-label" for="username">Other Image</label>
+                                              <input placeholder="other_images" type="file" accept=".png, .jpeg, .jpg" id="other_images" multiple name="other_images[]" class="form-control">
+                                          </div>
+                                          <div class="form-group has-feedback  col-sm-12 w-100">
+                                              <label for="sel2" class="control-label">Select Category</label> <br>
+                                              <select required name="category" class="selectpicker w-100" id="sel2" data-show-subtext="true" data-live-search="true">
+                                                {% for category in categories %}
+                                                    <option id="sel2" data-subtext="{{ category.name }}" value="{{ category.id }}">{{ category.name }} </option>
+                                                {% endfor %}
+                                              </select>
+                                          </div>
+{#                                        <input type="text" value="{{ sellerz.user_ptr_id }}" name="seller" hidden>#}
+
+                                        <div class="divider-custom"></div>
+                                          {% for variant in variants %}
+                                            <div class="dropdown col-sm-3 row" style="margin-right:23px;">
+                                              <label for="sel2" class="control-label text-capitalize">{{ variant.name }}</label> <br>
+                                              <button style=" width: 238px; text-align: left; color: black;" class="text-dark btn btn-outline-warning dropdown-toggle  text-capitalize" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                Select {{ variant.name }}
+                                              </button>
+                                              <div style="width: 235px" class="dropdown-menu myDropdown" id="myDropdown" aria-labelledby="dropdownMenuButton">
+                                                 <input class="text-dark dropdown-search myInput" type="text" placeholder="Search for here.." id="myInput" onkeyup="filterFunction()">
+                                                 {% for option in variant.options %}
+                                                    <label class="check-container text-capitalize text-dark">{{ option.name }}
+                                                      <input name="variant_options[]" value="{{ option.id }}" type="checkbox"> &nbsp;
+                                                      <span class="checkmark"></span>
+                                                    </label>
+                                                 {% endfor %}
+                                              </div>
+                                            </div>
+                                          {% endfor %}
+                                          <div class="form-group has-feedback col-sm-12 py-3">
+                                              <label class="control-label" for="name">Product Price</label>
+                                              <input required min="5" type="number" name="unit_cost" class="form-control has-success" id="name" aria-describedby="name" placeholder="Product Price">
+                                          </div>
+                                          <div class="form-group has-feedback col-sm-12 py-3">
+                                              <label class="control-label py-2" for="quantity">Product Inventory</label>
+                                              <div class="slider-container" style="margin-left: 9px;">
+                                                <button class="btn-num-product-down slider-contents slider-contents-control border-right"><i class="fas fa-minus"></i></button>
+                                                <input required name="quantity" id="quantity" value="1" class="slider-contents slider-contents-center num-product d-flex justify-content-center align-items-center slider_count" type="number"  >
+                                                <button class="btn-num-product-up slider-contents slider-contents-control border-left"><i class="fas fa-plus"></i></button>
+                                              </div>
+                                          </div>
+                                          <div class="form-group has-feedback col-sm-12">
+                                              <label class="control-label" for="username2">Short Description</label>
+                                              <input required type="text" class="form-control" name="short_description" id="name" aria-describedby="usernameStatus" placeholder="Short Description">
+                                          </div>
+                                          <div class="form-group has-feedback col-sm-12">
+                                              <label class="control-label" for="username2">Long Description</label>
+                                              <textarea id="editor1"  style="resize: none;" name="long_description" class="form-control " cols="30" rows="10"  ></textarea>
+                                          </div>
+                                          <div class="col-sm-12">
+                                              <button type="submit" class="btn btn-lg btn-success">Add</button>
+                                              <button type="reset" class="btn btn-lg btn-danger">Reset</button>
+                                          </div>
+
+                                      </form>
+                                  </fieldset>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="panel-body">
+                            <div class="canvas-wrapper">
+                                <div class="main-chart" id="line-chart" height="200" width="600">
+                                {% if not request.user|is_seller %}
+                                <div class="col-sm-12 col-md-12 mb-2" style="margin-bottom: 30px;">
+                                    <form action="{% url 'ShoppyAdmin:view_products' %}" method="post">
+                                        {% csrf_token %}
+                                        <div class="row d-flex " style="flex-direction: column;">
+                                            <h2>Filter</h2>
+                                            <div class="col-sm-3">
+                                                <div class="form-group">
+                                                  <label for="sel1">Select Seller:</label>
+                                                  <select name="seller" required class="selectpicker form-control" id="sel1" data-show-subtext="true" data-live-search="true">
+                                                      <option selected disabled > Choose a Seller </option>
+                                                    {% for seller in seller %}
+                                                        <option class="text-capitalize" value="{{ seller.id }}">{{ seller.first_name }} {{ seller.last_name }}</option>
+                                                    {% endfor %}
+                                                  </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <button class="btn btn-success">Submit</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                {% endif %}
+                                {% if request.user|is_seller %}
+                                    <table id="example" class="table table-striped table-bordered" style="width:100%;">
+                                        <thead>
+                                            <tr class="text-capitalize">
+                                                <th>Id</th>
+                                                <th>Picture</th>
+                                                <th>Name</th>
+                                                <th>Brand</th>
+                                                <th>Price(Kshs)</th>
+                                                <th>Status</th>
+                                                {% if not request.user|is_seller %}
+                                                <th>Seller</th>
+                                                {% endif %}
+                                                <th>Created At</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for product in products %}
+                                            <tr class="text-center ">
+                                                <td class="tb-data">{{ product.id }}</td>
+                                                <td class="tb-data tb-data" style="width: 110px; position: relative">
+                                                    <div class="product-image ">
+                                                       <img src="{{ product.featured_url.url }}" alt="{{ product.name }}">
+                                                    </div>
+
+                                                    {% if product.id|product_on_offer %}
+                                                        {% for offer in product.id|product_on_offer %}
+                                                            <span class="badge-custom-admin">
+                                                                Offer {{ offer.offer_percentage }}%
+                                                            </span>
+                                                        {% endfor %}
+                                                    {% endif %}
+                                                </td>
+                                                <td class="product-details" style="width: 299px; text-transform: uppercase;">{{ product.name }}</td>
+                                                <td class="tb-data">{{ product.product_brand }}</td>
+                                                <td class="tb-data ">
+                                                    {% if  product.price_after_offer and product.id|product_on_offer %}
+                                                        <div style="display: flex;flex-direction: column;">
+                                                            <span> {{ product.price_after_offer|floatformat:1|intcomma }}Kshs</span>
+                                                            <span class="striked-price">{{ product.unit_cost_inclusive_of_vat|floatformat:1|intcomma }} Kshs</span>
+                                                        </div>
+                                                    {% else %}
+                                                        <span> {{ product.unit_cost|floatformat:1|intcomma }}Kshs</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td class="tb-data">{{ product.status }}</td>
+                                                {% if not request.user|is_seller %}
+                                                    <td class="tb-data">{{ product.seller }}</td>
+                                                {% endif %}
+                                                <td class="tb-data">{{ product.created_at }}</td>
+                                                <td style=" width:302px" class="text-center tb-data">
+                                                    {% if product.status == 'FEATURED' %}
+                                                    <a class="btn-brown btn" href="{% url 'ShoppyAdmin:featured_products' product.id %}"><em class="fas fa-circle-o-notch"></em> {{ product.status }}</a>
+                                                    {% else %}
+                                                    <a class="btn-primary btn" href="{% url 'ShoppyAdmin:nomal_products' product.id %}"><em class="fas fa-trash-alt"></em> {{ product.status }}</a>
+                                                    {% endif %}
+
+                                                    <a href="#" data-toggle="modal" data-target="#ff{{ product.id }}" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Delete</a>
+                                                    <a href="{% url 'ShoppyAdmin:shoppy_admin_edit_product' product.id %}" class="btn btn-success"><i class="fas fa-pencil-alt"></i> Edit</a>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                {% else %}
+                                    <table id="example" class="table table-striped table-bordered" style="width:100%;">
+                                    <thead>
+                                        <tr class="text-capitalize">
+                                            <th>Id</th>
+                                            <th>Picture</th>
+                                            <th>Name</th>
+                                            <th>Brand</th>
+                                            <th>Price(Kshs)</th>
+                                            <th>Status</th>
+                                            <th>Seller</th>
+                                            <th>Created At</th>
+                                            <th>Status</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for product in adminProducts %}
+                                        <tr class="text-center ">
+                                            <td class="tb-data">{{ product.id }}</td>
+                                            <td class="tb-data tb-data" style="width: 110px; position: relative">
+                                                <div class="product-image ">
+                                                   <img src="{{ product.featured_url.url }}" alt="{{ product.name }}">
+                                                </div>
+
+                                                {% if product.id|product_on_offer %}
+                                                    {% for offer in product.id|product_on_offer %}
+                                                        <span class="badge-custom-admin">
+                                                            Offer {{ offer.discount }}%
+                                                        </span>
+                                                    {% endfor %}
+                                                {% endif %}
+                                            </td>
+                                            <td class="product-details" style="width: 299px; text-transform: uppercase;">{{ product.name }}</td>
+                                            <td class="tb-data">{{ product.product_brand }}</td>
+                                            <td class="tb-data ">
+                                                {% if  product.price_after_offer and product.id|product_on_offer %}
+                                                    <div style="display: flex;flex-direction: column;">
+                                                        <span> {{ product.price_after_offer|floatformat:1|intcomma }}Kshs</span>
+                                                        <span class="striked-price">{{ product.unit_cost|floatformat:1|intcomma }} Kshs</span>
+                                                    </div>
+                                                {% else %}
+                                                    <span> {{ product.unit_cost|floatformat:1|intcomma }}Kshs</span>
+                                                {% endif %}
+                                            </td>
+                                            <td class="tb-data">{{ product.status }}</td>
+                                            <td class="tb-data">{{ product.seller }}</td>
+                                            <td class="tb-data">{{ product.created_at }}</td>
+                                            <td class="tb-data d-flex align-content-center justify-content-center">
+                                                <div class="dropdown">
+
+                                                  <button class="btn  {% if product.status == "UNVERIFIED" %}btn-danger{% else %}btn-success{% endif %} dropdown-toggle" type="button" data-toggle="dropdown">{{product.status}}
+                                                  <span class="caret"></span></button>
+                                                  <ul class="dropdown-menu">
+                                                    <li><a class="" href="{% url 'ShoppyAdmin:unverify_product' product.id %}"> Unverified</a></li>
+{#                                                    <li><a class="btn-primary btn" href=""><em class="fas fa-trash-alt"></em>Blocked</a></li>#}
+                                                    <li><a class="" href="{% url 'ShoppyAdmin:verify_product' product.id %}"> Verified</a></li>
+                                                  </ul>
+                                                </div>
+                                            </td>
+                                            <td style=" width:302px" class="text-center tb-data">
+                                                {% if product.feat_product == 'FEATURED' %}
+                                                <a class="btn-brown btn" href="{% url 'ShoppyAdmin:featured_products' product.id %}"><em class="fas fa-circle-o-notch"></em> {{ product.feat_product }}</a>
+                                                {% else %}
+                                                <a class="btn-primary btn" href="{% url 'ShoppyAdmin:nomal_products' product.id %}"><em class="fas fa-trash-alt"></em> {{ product.feat_product }}</a>
+                                                {% endif %}
+
+                                                    <a href="#" data-toggle="modal" data-target="#dd{{ product.id }}" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Delete</a>
+                                                {% if request.user|is_seller %}
+                                                    <a href="{% url 'ShoppyAdmin:shoppy_admin_edit_product' product.id %}" class="btn btn-success"><i class="fas fa-pencil-alt"></i> Edit</a>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                                {% endif %}
+
+
+                                      <!-- Modal -->
+                                    {% for product in products %}
+                                      <div class="modal fade" id="ff{{ product.id }}" role="dialog">
+                                        <div class="modal-dialog modal-sm">
+                                          <div class="modal-content">
+                                            <div class="modal-header">
+                                              <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                              <h4 class="modal-title">Product Delete Confirmation</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                              <h4>Are you sure you want to delete! product <strong>{{ product.name }}</strong></h4>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <a class="btn-danger btn" href="{% url 'ShoppyAdmin:product_delete' product.id %}"><em class="fas fa-trash-alt"></em> Delete</a>
+                                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    {% endfor %}
+                                    {% for product in adminProducts %}
+                                      <div class="modal fade" id="dd{{ product.id }}" role="dialog">
+                                        <div class="modal-dialog modal-sm">
+                                          <div class="modal-content">
+                                            <div class="modal-header">
+                                              <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                              <h4 class="modal-title">Product Delete Confirmation</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                              <h4>Are you sure you want to delete! product <strong>{{ product.name }}</strong></h4>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <a class="btn-danger btn" href="{% url 'ShoppyAdmin:product_delete' product.id %}"><em class="fas fa-trash-alt"></em> Delete</a>
+                                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    {% endfor %}
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><!--/.row-->
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+    <script>
+       CKEDITOR.replace('editor1');
+    </script>
+    <script>
+        $(document).ready(function() {
+            $('#example').DataTable();
+        } );
+        $('.seller_filter').select();
+    </script>
+    <script>
+            function filterFunction() {
+              var input, filter, ul, li, a, i;
+              input = document.getElementsByClassName("myInput");
+              filter = input.value.toUpperCase();
+              div = document.getElementsByClassName("myDropdown");
+              a = div.getElementsByTagName("a");
+              a.preventDefault();
+              for (i = 0; i < a.length; i++) {
+                txtValue = a[i].textContent || a[i].innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                  a[i].style.display = "";
+                } else {
+                  a[i].style.display = "none";
+                }
+              }
+            }
+    </script>
+    <script>
+        $('.btn-num-product-down').on('click', function(e){
+        e.preventDefault();
+        var numProduct = Number($(this).next().val());
+        if(numProduct > 1) $(this).next().val(numProduct - 1);
+        });
+
+        $('.btn-num-product-up').on('click', function(e){
+            e.preventDefault();
+            var numProduct = Number($(this).prev().val());
+            $(this).prev().val(numProduct + 1);
+        });
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/bootstrap-select.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap.min.js"></script>
+{% endblock scripts %}

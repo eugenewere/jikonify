@@ -1,0 +1,242 @@
+
+{% extends 'aaa_layout.html' %}
+{% load static %}
+{% load call_method %}
+{% block links %}
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/css/bootstrap-select.min.css" rel="stylesheet" />
+   	<link href="{% static 'css/styles.css' %}" rel="stylesheet">
+
+{% endblock links %}
+{% block content %}
+<div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">
+		<div class="row">
+			<ol class="breadcrumb">
+				<li>
+					<a href="#">
+					<em class="fa fa-home"></em>
+				    </a>
+			    </li>
+				<li class="active">UserAccount</li>
+			</ol>
+		</div><!--/.row-->
+       <div class="row">
+			<div class="col-lg-12">
+				<h1 class="page-header">UserAccount</h1>
+			</div>
+		</div><!--/.row-->
+
+        <div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading panel-warning-custom">
+                            User Account
+
+                            <span class="pull-right clickable panel-toggle panel-button-tab-left"><em class="fa fa-toggle-up"></em></span></div>
+                        <div class="panel-body">
+                            <div class="canvas-wrapper">
+                                <div class="main-chart" id="line-chart" height="200" width="600">
+                                    <div class="row">
+                                        <h2 style="padding-left: 16px" class="text-capitalize">{% if request.user|is_seller %}{{ seller.first_name }} {{ seller.last_name }}{% else %}Account{% endif %} </h2>
+                                    </div>
+                                    {% if request.user|is_seller %}
+                                        <form action="{% url 'ShoppyAdmin:shoppy-user-account' %}" method="post">
+                                        {% csrf_token %}
+                                        <div class="row">
+                                            <div class="col-md-6 col-sm-12">
+                                                <div class="col-sm-12 page-header">
+                                                    <h4 class="page-header-text-custom">First Name</h4>
+                                                </div>
+                                                <h3 style="padding-left: 16px" class="prod_header_capitalize">{{seller.first_name}} <span href="#" class="btn btn-success fas fa-pencil-alt" data-toggle="collapse" data-target="#First"></span></h3>
+                                                <div id="First" class="collapse">
+                                                    <div class="form-group has-feedback">
+                                                      <label class="control-label" for="first_name">Firstname</label>
+                                                      <input type="text" name="first_name" value="{{ seller.first_name }}" class="form-control has-success" id="first_name" aria-describedby="first_name" placeholder="First Name">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 col-sm-12">
+                                                <div class="col-sm-12 page-header">
+                                                    <h4 class="page-header-text-custom">Last Name</h4>
+                                                </div>
+                                                <h3 style="padding-left: 16px" class=" prod_header_capitalize">{{ seller.last_name }} <span href="#" class="btn btn-success fas fa-pencil-alt" data-toggle="collapse" data-target="#Last"></span></h3>
+                                                <div id="Last" class="collapse">
+                                                    <div class="form-group has-feedback">
+                                                      <label class="control-label" for="last_name">Last Name</label>
+                                                      <input type="text" name="last_name" value="{{seller.last_name}}" class="form-control has-success" id="last_name" aria-describedby="last_name" placeholder="Last Name">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6 col-sm-12">
+                                                <div class="col-sm-12 page-header">
+                                                    <h4 class="page-header-text-custom">Phone Number</h4>
+                                                </div>
+                                                <h3 style="padding-left: 16px" class="pl-3 prod_header_capitalize">{{seller.phone_number}} <span href="#" class="btn btn-success fas fa-pencil-alt" data-toggle="collapse" data-target="#Phone"></span></h3>
+                                                <div id="Phone" class="collapse">
+                                                    <div class="form-group has-feedback">
+                                                      <label class="control-label" for="phone_number">Phone Number</label>
+                                                      <input type="number" name="phone_number" value="{{seller.phone_number}}" class="form-control has-success" id="phone_number" aria-describedby="phone_number" placeholder="Phone_Number">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 col-sm-12">
+                                                <div class="col-sm-12 page-header">
+                                                    <h4 class="page-header-text-custom">Email</h4>
+                                                </div>
+                                                <h3 style="padding-left: 16px" class="pl-3 prod_header_capitalize">{{ seller.username }} <span href="#" class="btn btn-success fas fa-pencil-alt" data-toggle="collapse" data-target="#Email"></span></h3>
+                                                <div id="Email" class="collapse">
+                                                    <div class="form-group has-feedback">
+                                                      <label class="control-label" for="username">Email</label>
+                                                      <input type="text" name="username" value="{{seller.username}}" class="form-control has-success" id="username" aria-describedby="username" placeholder="Email">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6 col-sm-12">
+                                                <div class="col-sm-12 page-header">
+                                                    <h4 class="page-header-text-custom">Store Name</h4>
+                                                </div>
+                                                <h3 style="padding-left: 16px" class="pl-3 prod_header_capitalize">{{ seller.store_name }} <span href="#" class="btn btn-success fas fa-pencil-alt" data-toggle="collapse" data-target="#Store"></span></h3>
+                                                <div id="Store" class="collapse">
+                                                    <div class="form-group has-feedback">
+                                                      <label class="control-label" for="store_name">Store Name</label>
+                                                      <input type="text" name="store_name" value="{{seller.store_name}}" class="form-control has-success" id="store_name" aria-describedby="store_name" placeholder="Store Name">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 col-sm-12">
+                                                <div class="col-sm-12 page-header">
+                                                    <h4 class="page-header-text-custom">Business Number</h4>
+                                                </div>
+                                                <h3 style="padding-left: 16px" class="pl-3 prod_header_capitalize">
+                                                    {{ seller.business_no }}
+                                                    <span href="#" class="btn btn-success fas fa-pencil-alt" data-toggle="collapse" data-target="#Businessno"></span>
+                                                </h3>
+                                                <div id="Businessno" class="collapse">
+                                                    <div class="form-group has-feedback">
+                                                      <label class="control-label" for="business_no">Business Number</label>
+                                                      <input type="text" name="business_no" value="{{seller.business_no}}" class="form-control has-success" id="business_no" aria-describedby="business_no" placeholder="Business Number">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6 col-sm-12">
+                                                <div class="col-sm-12 page-header">
+                                                    <h4 class="page-header-text-custom">County</h4>
+                                                </div>
+                                                <h3 style="padding-left: 16px" class="pl-3 prod_header_capitalize">{{ seller.country }} <span href="#" class="btn btn-success fas fa-pencil-alt" data-toggle="collapse" data-target="#County"></span></h3>
+                                                <div id="County" class="collapse">
+                                                    <div class="form-group has-feedback">
+                                                        <label class="control-label" for="country">County/label</label>
+                                                      <input type="text" name="country" value="{{seller.country}}" class="form-control has-success" id="country" aria-describedby="country" placeholder="County">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 col-sm-12">
+                                                <div class="col-sm-12 page-header">
+                                                    <h4 class="page-header-text-custom">Store Logo</h4>
+                                                </div>
+                                                <h3 style="padding-left: 16px" class="pl-3 prod_header_capitalize">
+                                                    <div class="col-sm-12 seller-logo" style="width: 417px; overflow: hidden; height: 116px;">
+                                                        <img src="{{ seller.store_logo.url }}" alt="{{ seller.store_name }}">
+                                                    </div>
+                                                    <span href="#" class="btn btn-success fas fa-pencil-alt" data-toggle="collapse" data-target="#Logo"></span>
+                                                </h3>
+                                                <div id="Logo" class="collapse">
+                                                    <div class="form-group has-feedback">
+                                                      <label class="control-label" for="store_logo">Store Logo </label>
+                                                      <input type="file" name="store_logo" value="{{seller.store_logo}}" accept=".jpg, .jpeg, .png" class="form-control has-success" id="store_logo" aria-describedby="store_logo" placeholder="Store Logo">
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+                                            <div class="divider"></div>
+
+                                        <div class="row">
+                                            <div class="col-sm-12 paddingy2 " style="display:flex; justify-content:end; margin-top:20px;">
+                                                <button style="margin-right: 10px; margin-left: auto;" class="btn btn-lg btn-success" type="submit">Save</button>
+                                                <button style="margin-right: 10px" class="btn btn-lg btn-danger" type="reset">Reset</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    {% else %}
+                                        <form action="{% url 'ShoppyAdmin:shoppy-admin-account' %}" method="post">
+                                        {% csrf_token %}
+                                        <div class="row">
+                                            <div class="col-md-6 col-sm-12">
+                                                <div class="col-sm-12 page-header">
+                                                    <h4 class="page-header-text-custom">First Name</h4>
+                                                </div>
+                                                <h3 style="padding-left: 16px" class="prod_header_capitalize">
+                                                    {{ request.user.first_name }}
+                                                    <span href="#" class="btn btn-success fas fa-pencil-alt" data-toggle="collapse" data-target="#First"></span>
+                                                </h3>
+                                                <div id="First" class="collapse">
+                                                    <div class="form-group has-feedback">
+                                                      <label class="control-label" for="first_name">Firstname</label>
+                                                      <input type="text" name="first_name" value="{{ request.user.first_name }}" class="form-control has-success" id="first_name" aria-describedby="first_name" placeholder="First Name">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 col-sm-12">
+                                                <div class="col-sm-12 page-header">
+                                                    <h4 class="page-header-text-custom">Last Name</h4>
+                                                </div>
+                                                <h3 style="padding-left: 16px" class=" prod_header_capitalize">{{ request.user.last_name }} <span href="#" class="btn btn-success fas fa-pencil-alt" data-toggle="collapse" data-target="#Last"></span></h3>
+                                                <div id="Last" class="collapse">
+                                                    <div class="form-group has-feedback">
+                                                      <label class="control-label" for="last_name">Last Name</label>
+                                                      <input type="text" name="last_name" value="{{request.user.last_name}}" class="form-control has-success" id="last_name" aria-describedby="last_name" placeholder="Last Name">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6 col-sm-12">
+                                                <div class="col-sm-12 page-header">
+                                                    <h4 class="page-header-text-custom">Username</h4>
+                                                </div>
+                                                <h3 style="padding-left: 16px" class="pl-3 prod_header_normal">{{ request.user.username }} <span href="#" class="btn btn-success fas fa-pencil-alt" data-toggle="collapse" data-target="#Email"></span></h3>
+                                                <div id="Email" class="collapse">
+                                                    <div class="form-group has-feedback">
+                                                      <label class="control-label" for="username">Username</label>
+                                                      <input  type="text" name="username" value="{{request.user.username}}" class="form-control has-success" id="username" aria-describedby="username" placeholder="Username">
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="divider"></div>
+
+                                        <div class="row">
+                                            <div class="col-sm-12 paddingy2 " style="display:flex; justify-content:end; margin-top:20px;">
+                                                <button style="margin-right: 10px; margin-left: auto;" class="btn btn-lg btn-success" type="submit">Save</button>
+                                                <button style="margin-right: 10px" class="btn btn-lg btn-danger" type="reset">Reset</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><!--/.row-->
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script>
+        $(document).ready(function() {
+            $('#example').DataTable();
+        } );
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/bootstrap-select.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap.min.js"></script>
+{% endblock scripts %}

@@ -1,0 +1,171 @@
+{% extends 'aaa_layout.html' %}
+{% load static %}
+{% block links %}
+     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/css/bootstrap-select.min.css" rel="stylesheet" />
+
+{% endblock links %}
+{% block content %}
+    <div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">
+		<div class="row ">
+			<ol class="breadcrumb">
+				<li>
+					<a href="#">
+					<em class="fa fa-home"></em>
+				    </a>
+			    </li>
+				<li class="active">Brand</li>
+			</ol>
+		</div><!--/.row-->
+        <div class="row">
+			<div class="col-lg-12">
+				<h1 class="page-header">Brands</h1>
+			</div>
+		</div><!--/.row-->
+        <div class="row">
+            <div class="col-md-12">
+				<div class="panel panel-default ">
+					<div class="panel-heading">
+						Brand
+
+						<span class="pull-right clickable panel-toggle panel-button-tab-left"><em class="fa fa-toggle-up"></em></span>
+                        <a href="#" data-toggle="modal" data-target="#add_brand" class="btn btn-success pull-right">Add Brand</a>
+                    </div>
+					<div class="panel-body" >
+                        <table id="example" class="table table-striped table-bordered" style="width:100%;">
+                            <thead >
+
+                                <tr class="text-capitalize">
+                                    <th>Id</th>
+                                    <th>Name</th>
+{#                                    <th>Category</th>#}
+                                    <th>Date Created</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                    {% for brand in brands %}
+                                        <tr>
+                                            <td class="tb-data">{{ forloop.counter }}</td>
+                                            <td class="tb-data">{{ brand.name }}</td>
+{#                                            <td>{{ brand.category.name }}</td>#}
+{#                                            {% for category in categories %}#}
+{#                                                {% if category.id == brand.id %}#}
+{#                                                   <td class="tb-data">{{ category.name}}</td>#}
+{#                                                {% endif %}#}
+{#                                            {% endfor %}#}
+                                            <td class="tb-data">{{ brand.created_at }}</td>
+                                            <td class="text-center tb-data">
+                                                <a href="#" data-toggle="modal" data-target="#delete{{ brand.id }}" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Delete</a>
+                                                <a href="#" data-toggle="modal" data-target="#{{ brand.id }}" class="btn btn-success"><i class="fas fa-pencil-alt"></i> Edit</a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                            </tbody>
+                        </table>
+					</div>
+				</div>
+            </div>
+        </div>
+
+
+        <!-- Modaladd_brand -->
+            <div class="modal fade" id="add_brand" role="dialog">
+            <div class="modal-dialog modal-md">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                  <h4 class="modal-title">Add Brand</h4>
+                </div>
+                <div class="modal-body">
+                 <fieldset>
+                     <form action="{% url 'ShoppyAdmin:shoppy_admin_add_brand' %}" method="POST">
+                     {% csrf_token %}
+                         <div class="form-group has-success has-feedback">
+                          <label class="control-label" for="brand">Brand Name</label>
+                          <input type="text" class="form-control" name="name" id="brand" aria-describedby="inputSuccess2Status" required>
+                          <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>
+                          <span id="inputSuccess2Status" class="sr-only">(success)</span>
+                        </div>
+
+                        <div class="paddingy2">
+                            <button type="submit" class="btn bg-orange">  Add</button>
+{#                            <button type="button" class="btn btn-warning" data-dismiss="modal"><i class="fas fa-close"></i> Close</button>#}
+                        </div>
+                     </form>
+                 </fieldset>
+                </div>
+              </div>
+            </div>
+          </div>
+            {% for brand in brands %}
+                <!--delete confirm Modal -->
+              <div class="modal fade" id="delete{{ brand.id }}" role="dialog">
+                <div class="modal-dialog modal-sm">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                      <h4 class="modal-title text-capitalize">Deleting {{ brand.name }}</h4>
+                    </div>
+                    <div class="modal-body">
+                      <p>Are you sure you want to delete {{ brand.name }}.</p>
+                    </div>
+                    <div class="modal-footer">
+{#                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>#}
+                        <a class="btn btn-danger" href="{% url 'ShoppyAdmin:delete_brand' brand.id %}"> Delete </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+        {% endfor %}
+          <!-- Small modal edit_modal -->
+          {% for brand in brands %}
+          <div class="modal fade" id="{{ brand.id }}" role="dialog">
+            <div class="modal-dialog modal-md">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                  <h4 style="text-transform: capitalize" class="modal-title">Edit Brand {{ brand.name }}</h4>
+                </div>
+                <div class="modal-body">
+                     <form action="{% url 'ShoppyAdmin:brand_edit' brand.id %}" method="POST">
+                     {% csrf_token %}
+
+                         <div class="form-group has-success has-feedback">
+                          <label class="control-label" for="brand">Brand Name</label>
+                          <input value="{{ brand.name }}" type="text" class="form-control" name="name" id="brand" aria-describedby="inputSuccess2Status" required>
+                        </div>
+
+                        <div class="paddingy2">
+                            <button type="submit" class="btn bg-orange"><i class="fas fa-file"></i> Save</button>
+{#                         <button type="button" class="btn btn-warning" data-dismiss="modal"><i class="fas fa-close"></i>Close</button>#}
+                        </div>
+                     </form>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+
+
+
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+   <script>
+        $(document).ready(function() {
+            $('#example').DataTable();
+        } );
+   </script>
+   <script>
+        $(function() {
+          $('.selectpicker').selectpicker();
+        });
+   </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/bootstrap-select.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap.min.js"></script>
+{% endblock scripts %}

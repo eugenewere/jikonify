@@ -1,0 +1,373 @@
+[33mcommit 51949e0bce34315902a3098ccc6bc1b8bfc79a27[m[33m ([m[1;36mHEAD -> [m[1;32mdevelop[m[33m, [m[1;31morigin/develop[m[33m)[m
+Author: eugenewere <eugene.were@yahoo.com>
+Date:   Tue Sep 10 20:40:13 2019 +0300
+
+    buyer being able to search for products
+
+[33mcommit 8504ba2753d992853d96d6528e21480f41becd78[m
+Author: Gachiri <brigeveriz7@gmail.com>
+Date:   Tue Sep 10 10:36:38 2019 +0300
+
+    Dumping Database Information
+
+[33mcommit d6a7a5204c3e48208ba6cf70d8fb59f7808eba06[m
+Merge: 015c7d6 3541ea5
+Author: Gachiri <brigeveriz7@gmail.com>
+Date:   Wed Sep 4 12:22:19 2019 +0300
+
+    merge
+
+[33mcommit 015c7d651ff74545cc60200c05bdae763d582a9e[m
+Merge: afb6f55 64cec67
+Author: Gachiri <brigeveriz7@gmail.com>
+Date:   Wed Sep 4 12:14:34 2019 +0300
+
+    Merge branch 'feature/APIs' into develop
+
+[33mcommit 64cec67ee76bdcfab55afe0bb3c911db20d55ef2[m
+Author: Gachiri <brigeveriz7@gmail.com>
+Date:   Wed Sep 4 12:11:24 2019 +0300
+
+    APIs
+
+[33mcommit 3541ea55b36bfe662c937461068c8d8018b6aebf[m[33m ([m[1;31morigin/master[m[33m)[m
+Author: Martin Cornel <mrtncornel@gmail.com>
+Date:   Mon Sep 2 14:57:52 2019 +0300
+
+    seed.py update.
+
+[33mcommit 79e48e34b22728fd1d23764933aa45dfaf93e6bc[m
+Merge: 6fa449b c64f6a5
+Author: Martin Cornel <mrtncornel@gmail.com>
+Date:   Mon Sep 2 14:53:03 2019 +0300
+
+    Merge branch 'develop' of https://bitbucket.org/muva/shoppa_django into develop
+
+[33mcommit 6fa449bb2228f41c7810191c0ea7cff0490e90fd[m
+Author: Martin Cornel <mrtncornel@gmail.com>
+Date:   Mon Sep 2 14:52:33 2019 +0300
+
+    Readme, .gitignore and seeder
+
+[33mcommit c64f6a5c9c6857202ea47d5850fc288aec4a8d62[m
+Merge: 6338a3a c572d76
+Author: eugenewere <eugene.were@yahoo.com>
+Date:   Sat Aug 31 16:57:11 2019 +0300
+
+    updates
+
+[33mcommit 6338a3a07f5e040aeb751f4bf3d13d913f5da393[m
+Author: eugenewere <eugene.were@yahoo.com>
+Date:   Sat Aug 31 16:53:35 2019 +0300
+
+    updates
+
+[33mcommit c572d76f07c1eeaead924a415b618bb2949673fe[m
+Author: Martin Cornel <mrtncornel@gmail.com>
+Date:   Fri Aug 30 20:27:55 2019 +0300
+
+    Readme scratch.
+
+[33mcommit 06083521dd26d468cbb59bd28f30279d2b2b3419[m
+Author: eugenewere <eugene.were@yahoo.com>
+Date:   Fri Aug 30 10:46:43 2019 +0300
+
+    reset password
+
+[33mcommit 203fa9c4cd804b73ae0563bdd3fbb2d17902264e[m[33m ([m[1;31morigin/feature/APIs[m[33m)[m
+Author: Gachiri <brigeveriz7@gmail.com>
+Date:   Fri Aug 30 00:09:03 2019 +0300
+
+    Modifying Checkout API
+
+[33mcommit 8af7498fc76f80e49d57d9e449e0481ce825e111[m
+Author: eugenewere <eugene.were@yahoo.com>
+Date:   Thu Aug 29 15:09:14 2019 +0300
+
+    random changes
+
+[33mcommit 8d63f4b93ec134b9137dfd4857a8618b157c0e17[m
+Author: eugenewere <eugene.were@yahoo.com>
+Date:   Wed Aug 28 16:22:16 2019 +0300
+
+    product-offers countdown time
+
+[33mcommit 2c652ad81bf970e05f479fc755588e305e2983db[m
+Author: Gachiri <brigeveriz7@gmail.com>
+Date:   Wed Aug 28 16:18:20 2019 +0300
+
+    Changes To API To Remove From Cart
+
+[33mcommit db7feaae631a3c4ce06503ce598c11af05a78345[m
+Author: Gachiri <brigeveriz7@gmail.com>
+Date:   Tue Aug 27 13:25:30 2019 +0300
+
+    Checkout And Cart Update After Checkout APIs
+
+[33mcommit e811b9b100c19123773fe72de525f9e5505ec29b[m
+Author: eugenewere <eugene.were@yahoo.com>
+Date:   Mon Aug 26 15:24:14 2019 +0300
+
+    reports and charts
+
+[33mcommit 554e4fe3552fbef7fb85268170b42c9a86dee351[m
+Author: Gachiri <brigeveriz7@gmail.com>
+Date:   Mon Aug 26 09:32:39 2019 +0300
+
+    Custom Serializers For Wishlist and Cart APIs
+
+[33mcommit 603f4f103027ccce15ef84298207c6c793b9eb20[m
+Author: Gachiri <brigeveriz7@gmail.com>
+Date:   Mon Aug 26 08:41:54 2019 +0300
+
+    Wishlist Manager APIs
+
+[33mcommit c829ff78375a988ef4dd4bb21d95de45d1770304[m
+Author: Gachiri <brigeveriz7@gmail.com>
+Date:   Fri Aug 23 12:12:22 2019 +0300
+
+    Modifying Responses From Cart Oriented Requests
+
+[33mcommit 5a7a76957ff694565c526684868ee8a302a64937[m
+Author: Gachiri <brigeveriz7@gmail.com>
+Date:   Thu Aug 22 18:14:18 2019 +0300
+
+    Cart Function APIs
+
+[33mcommit 9ac7511abf8a6cdc427b9694111f05c5bfad8e5e[m
+Author: eugenewere <eugene.were@yahoo.com>
+Date:   Thu Aug 22 13:57:40 2019 +0300
+
+    seller admin being able to add products on offer
+
+[33mcommit afb6f557ae2589140f7d148b92fc1e5a5d2bdc7a[m
+Merge: de009fc 07d7f23
+Author: Gachiri <brigeveriz7@gmail.com>
+Date:   Tue Aug 20 13:38:02 2019 +0300
+
+    M
+
+[33mcommit de009fcb315cb64d85650e153e5fc5e6fa01dc31[m
+Author: Gachiri <brigeveriz7@gmail.com>
+Date:   Tue Aug 20 13:36:58 2019 +0300
+
+    M
+
+[33mcommit 07d7f233ed48188fc1624263e4cd927bac519067[m
+Merge: 5af3b52 5c63cd7
+Author: eugenewere <eugene.were@yahoo.com>
+Date:   Tue Aug 20 13:26:23 2019 +0300
+
+    api update
+
+[33mcommit 5af3b5293b1a5bfe238783451963ea68066b4924[m
+Author: eugenewere <eugene.were@yahoo.com>
+Date:   Tue Aug 20 13:12:31 2019 +0300
+
+    api update
+
+[33mcommit 5c63cd7802c1928eaf09cbff44c4cdc29c5ecf64[m
+Author: Gachiri <brigeveriz7@gmail.com>
+Date:   Tue Aug 20 13:08:43 2019 +0300
+
+    APIs to pull categories and products from BackEnd
+
+[33mcommit c70f8614482935caf78acc70afb3a244e7f40f6b[m
+Author: eugenewere <eugene.were@yahoo.com>
+Date:   Mon Aug 19 16:40:44 2019 +0300
+
+    random changes
+
+[33mcommit 5d65a9cd1da23e4648bdb1b113b8b92f1c6388c4[m
+Author: eugenewere <eugene.were@yahoo.com>
+Date:   Mon Aug 19 15:40:09 2019 +0300
+
+    random changes
+
+[33mcommit 1f36c58e68a76365d77b0a9cbb4f1fddb1987e07[m
+Merge: c4cb44f 1428b4a
+Author: eugenewere <eugene.were@yahoo.com>
+Date:   Thu Aug 15 09:22:08 2019 +0300
+
+    buyer filling checkout
+
+[33mcommit c4cb44f2d057b3bab95466899c402ba9fb33ba7f[m
+Author: eugenewere <eugene.were@yahoo.com>
+Date:   Wed Aug 14 23:26:48 2019 +0300
+
+    buyer filling checkout
+
+[33mcommit c718fbb935e071bb73e792b46f876cd93b7deeee[m
+Author: eugenewere <eugene.were@yahoo.com>
+Date:   Wed Aug 14 17:22:08 2019 +0300
+
+    buyer to be able to see cart totals inclusive and exclusive VAT
+
+[33mcommit ec62535043d37815a2c484904328a2b72246472b[m
+Author: eugenewere <eugene.were@yahoo.com>
+Date:   Wed Aug 14 13:24:09 2019 +0300
+
+    buyer to be able to see cart totals inclusive and exclusive VAT
+
+[33mcommit 1428b4ab5a52333355b7a5f4608a063d8377ea50[m
+Merge: 4fceb9e 5877dcb
+Author: Gachiri <brigeveriz7@gmail.com>
+Date:   Tue Aug 13 11:29:44 2019 +0300
+
+    M
+
+[33mcommit 5877dcb219bee6657b3294c0e51635323512d6e9[m
+Author: eugenewere <eugene.were@yahoo.com>
+Date:   Tue Aug 13 11:15:38 2019 +0300
+
+    adding categories
+
+[33mcommit 4fceb9eb5b6c923ec4c9a0e21356b7516c2cbb2d[m
+Author: Gachiri <brigeveriz7@gmail.com>
+Date:   Tue Aug 13 11:10:49 2019 +0300
+
+    Android Authentication API
+
+[33mcommit 6fc43ec582a5b75c83dde9bac7948d067dfb45e4[m
+Author: Gachiri <brigeveriz7@gmail.com>
+Date:   Tue Aug 13 09:39:39 2019 +0300
+
+    M
+
+[33mcommit c31ae801fb3ef8a520aca66ae0b53a0e081be367[m
+Author: eugenewere <eugene.were@yahoo.com>
+Date:   Sun Aug 11 23:32:05 2019 +0300
+
+    adding gooods to cart
+
+[33mcommit 00f135749d2a3b9643f332c39b4dcd02608dba33[m
+Author: eugenewere <eugene.were@yahoo.com>
+Date:   Thu Aug 8 10:01:30 2019 +0300
+
+    correction on product upload to add inventory when adding
+
+[33mcommit 1476ccc6b518f6c05072852fd87edd93a4dbc369[m
+Author: eugenewere <eugene.were@yahoo.com>
+Date:   Wed Aug 7 22:26:05 2019 +0300
+
+    corrections on adding a product
+
+[33mcommit 17e5ccccd8b3e8617c7dfb30d712323004d2f616[m
+Author: eugenewere <eugene.were@yahoo.com>
+Date:   Tue Aug 6 09:24:11 2019 +0300
+
+    continue
+
+[33mcommit 18855cef2cb2eed4631dee236c1e4358d3c90352[m
+Author: eugenewere <eugene.were@yahoo.com>
+Date:   Tue Aug 6 01:00:02 2019 +0300
+
+    list of all products in buyer template and websocets files installed
+
+[33mcommit 1824d28bc2312b209de883efafafa82eca8cd7f4[m
+Author: eugenewere <eugene.were@yahoo.com>
+Date:   Fri Aug 2 13:33:26 2019 +0300
+
+    changes on previous commit
+
+[33mcommit 7c580bbc72e073f7f65d2dfb74b115bce52d7027[m
+Author: eugenewere <eugene.were@yahoo.com>
+Date:   Wed Jul 31 09:40:58 2019 +0300
+
+    a buyer is able to add products to wishlist
+
+[33mcommit 9d3e78c05e9ef48cbd439639467d0ab2d2a1e4db[m
+Author: eugenewere <eugene.were@yahoo.com>
+Date:   Tue Jul 30 10:47:29 2019 +0300
+
+    display featured products to buyers side
+
+[33mcommit f81db74f1946094278accb3cbe3c46e8d216b850[m
+Author: eugenewere <eugene.were@yahoo.com>
+Date:   Sun Jul 28 23:11:11 2019 +0300
+
+    designing a preloader
+
+[33mcommit 5126e173e6cfdc9e4c2d1e91f269071e02ce1454[m
+Author: eugenewere <eugene.were@yahoo.com>
+Date:   Thu Jul 25 23:51:19 2019 +0300
+
+    super admin being able to change status of a product from featured to normal
+
+[33mcommit eb38f6b38561f93f3253a2c264af02f3a0f48884[m
+Author: eugenewere <eugene.were@yahoo.com>
+Date:   Thu Jul 25 13:27:01 2019 +0300
+
+    adding featured products
+
+[33mcommit f996157ef28b95c92f379b5a2fbd23a22399c760[m
+Author: eugenewere <eugene.were@yahoo.com>
+Date:   Wed Jul 24 15:28:53 2019 +0300
+
+    changes on models:region and variant_options
+
+[33mcommit d87d831f85204767a4b3396328701eaecd50a1ed[m
+Author: eugenewere <eugene.were@yahoo.com>
+Date:   Wed Jul 24 10:39:53 2019 +0300
+
+    admins being able to edit variant
+
+[33mcommit 7744c995a01fafce8d76608dfb82fd778ced5e4d[m
+Author: eugenewere <eugene.were@yahoo.com>
+Date:   Wed Jul 24 10:27:06 2019 +0300
+
+    admins being able to delete variant
+
+[33mcommit 07d642be154ca51d26fc953153e8fdc5cf9c0239[m
+Author: eugenewere <eugene.were@yahoo.com>
+Date:   Wed Jul 24 09:20:41 2019 +0300
+
+    admins being able to add variant and variant options
+
+[33mcommit 4842f1e7c799e5d08b68e4265ef55bbb1532d816[m
+Author: eugenewere <eugene.were@yahoo.com>
+Date:   Tue Jul 23 14:03:16 2019 +0300
+
+    admin being able to edit regions and region cost
+
+[33mcommit dfee9653f98681857ba8e5aa040461f106948517[m
+Author: eugenewere <eugene.were@yahoo.com>
+Date:   Tue Jul 23 11:28:44 2019 +0300
+
+    adding brands,carousel and categories with edit,delete and update fuctionalities
+
+[33mcommit 2a91b8b855b3059b2c8933fb2f0f4fbd12c2fc3c[m
+Author: eugenewere <eugene.were@yahoo.com>
+Date:   Thu Jul 18 13:03:14 2019 +0300
+
+    add and delete brand and products
+
+[33mcommit 17642dd2b657b503e16437971c92e4757dcb4644[m
+Author: eugenewere <eugene.were@yahoo.com>
+Date:   Thu Jul 18 10:43:32 2019 +0300
+
+    ability of admin to add brand
+
+[33mcommit e203e33b3ff8a952bc3052e6e067dff382dad0e5[m
+Author: eugenewere <eugene.were@yahoo.com>
+Date:   Wed Jul 17 10:52:43 2019 +0300
+
+    creating admin add brand template
+
+[33mcommit a10c90d2f0a580d44a930a0b3e17e7c6b19531d1[m
+Author: eugenewere <eugene.were@yahoo.com>
+Date:   Tue Jul 16 20:51:15 2019 +0300
+
+    admin being able to post products
+
+[33mcommit c3a372ab43d73852eb17577c87b2cf98342e6c31[m
+Author: eugenewere <eugene.were@yahoo.com>
+Date:   Mon Jul 15 13:41:14 2019 +0300
+
+    updated admin portal
+
+[33mcommit 058a2dd0a42f255003e971e7a148c812c12bcbae[m[33m ([m[1;31morigin/feature/landing_page[m[33m, [m[1;32mmaster[m[33m, [m[1;32mlogin_page[m[33m, [m[1;32mfeature/landing_page[m[33m)[m
+Author: eugenewere <eugene.were@yahoo.com>
+Date:   Fri Jul 12 14:48:58 2019 +0300
+
+    project files added.

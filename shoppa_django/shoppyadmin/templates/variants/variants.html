@@ -1,0 +1,287 @@
+
+{% extends 'aaa_layout.html' %}
+{% load static %}
+{% block links %}
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/css/bootstrap-select.min.css" rel="stylesheet" />
+
+{% endblock links %}
+{% block content %}
+<div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">
+		<div class="row">
+			<ol class="breadcrumb">
+				<li>
+					<a href="#">
+					<em class="fa fa-home"></em>
+				    </a>
+			    </li>
+				<li class="active">Settings</li>
+                <li class=""><a href="#" class="color-black">Variants</a></li>
+			</ol>
+		</div><!--/.row-->
+       <div class="row">
+			<div class="col-lg-12">
+				<h1 class="page-header">Variants</h1>
+			</div>
+	   </div><!--/.row-->
+
+       <div class="row">
+                <div class="col-lg-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading panel-warning-custom">
+                            Add Variants
+                            <span class="pull-right clickable panel-toggle panel-button-tab-left"><em class="fa fa-toggle-up"></em></span></div>
+                        <div class="panel-body">
+
+                            <div class="canvas-wrapper">
+                                <div class="main-chart" id="line-chart" height="200" width="600">
+                                    <form action="{% url 'ShoppyAdmin:variants' %}" method="POST">
+                                        {% csrf_token %}
+                                        <input type="text" value="{{ seller.user_ptr_id }}" name="seller" hidden>
+                                      <div class="form-group">
+                                        <label for="variant_name">Variant Name</label>
+                                        <input name="name" type="text" class="form-control" id="variant_name" placeholder="Variant Name:eg Color, Weight">
+                                        <span id="helpBlock" class="help-block">Add a variant Before You Add Variant Options</span>
+                                      </div>
+                                        <button type="submit" class="btn btn-success"><i class="fa fa-plus"></i> Add</button>
+                                        <button type="reset" class="btn btn-danger"><i class="fa fa-undo"></i> Reset</button>
+                                    </form>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading panel-warning-custom">
+                            Add Variant Option
+                            <span class="pull-right clickable panel-toggle panel-button-tab-left"><em class="fa fa-toggle-up"></em></span></div>
+                            <div class="panel-body">
+                            <div class="canvas-wrapper">
+                                <div class="main-chart" id="line-chart" height="200" width="600">
+                                    <form action="{% url 'ShoppyAdmin:variants-options' %}" method="POST">
+                                        {% csrf_token %}
+                                        <div class="form-group has-feedback  col-sm-12">
+                                          <label for="variant" class="">Variant</label> <br>
+                                          <select required name="variant" class="selectpicker form-control" id="variant" data-show-subtext="true" data-live-search="true">
+                                              <option selected disabled>Choose variant eg Color, </option>
+                                            {% for variant in variants %}
+                                                 <option id="sel2" data-subtext="{{ variant.name }}" value="{{ variant.id }}">{{ variant.name }}</option>
+                                            {% endfor %}
+                                          </select>
+                                      </div>
+
+                                      <input type="text" value="{{ seller.user_ptr_id }}" name="seller" hidden>
+
+                                      <div class="form-group">
+                                        <label for="variant_name">Variant Option Name</label>
+                                        <input name="name" type="text" class="form-control" id="variant_name" placeholder="Variant Option Name">
+                                        <span id="helpBlock" class="help-block">Add a variant Before You Add Variant Options</span>
+                                      </div>
+
+                                        <button type="submit" class="btn btn-success"><i class="fa fa-plus"></i> Add</button>
+                                        <button type="reset" class="btn btn-danger"><i class="fa fa-undo"></i> Reset</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+       </div><!--/.row-->
+       <div class="row">
+                        <!-- Modal variant delete confirm -->
+                         {% for variant in variants %}
+                        <div class="modal fade" id="{{ variant.id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                          <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="myModalLabel">Variant Delete Confirmation</h4>
+                              </div>
+                              <div class="modal-body">
+                                Are You Sure You Want To Delete Variant <b>{{ variant.name }}</b>
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                <a href="{% url 'ShoppyAdmin:variant_delete' variant.id %}"  class="btn btn-danger"><i class="fa fa-trash"></i> Delete</a>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        {% endfor %}
+
+                        <!-- Modal  variant edit-->
+                        {% for variant in variants %}
+                        <div class="modal fade" id="vdel{{ variant.id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                          <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="myModalLabel">Variant Delete Confirmation</h4>
+                              </div>
+                              <div class="modal-body">
+                                <form action="{% url 'ShoppyAdmin:variant_edit' variant.id %}" method="POST">
+                                        {% csrf_token %}
+                                      <div class="form-group">
+                                        <label for="variant_name">Variant Option Name</label>
+                                        <input  value="{{ variant.name }}" name="name" type="text" class="form-control" id="variant_name" placeholder="Variant Option Name">
+                                      </div>
+                                        <button type="submit" class="btn btn-success"><i class="fa fa-file"></i> Save</button>
+                                        <button type="reset" class="btn btn-danger"><i class="fa fa-undo"></i> Reset</button>
+                                    </form>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        {% endfor %}
+
+           <div class="col-lg-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading panel-warning-custom">
+                            Variants
+                            <span class="pull-right clickable panel-toggle panel-button-tab-left"><em class="fa fa-toggle-up"></em></span></div>
+                        <div class="panel-body">
+                            <div class="canvas-wrapper">
+                                <div class="main-chart" id="line-chart" height="200" width="600">
+                                    <table id="example" class="example table table-striped table-bordered" style="width:100%;">
+                                        <thead>
+                                            <tr class="text-capitalize">
+                                                <th>#</th>
+                                                <th>Name</th>
+                                                <th>Created At</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for variant in variants %}
+                                                <tr class="text-center ">
+                                                    <td class="tb-data">{{ forloop.counter }}</td>
+                                                    <td class="tb-data">{{ variant.name }}</td>
+                                                    <td class="tb-data">{{ variant.created_at }}</td>
+                                                    <td class="tb-data">
+                                                        <a data-toggle="modal" data-target="#{{ variant.id }}" href="#" class="btn btn-danger"><i class="fa fa-trash"></i> Delete</a>
+                                                        <a data-toggle="modal" data-target="#vdel{{ variant.id }}" href="#" class="btn btn-success"><i class="fas fa-pencil-alt"></i> Edit</a>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+           <div class="col-lg-6">
+{#                        variant option delete confirmation#}
+                         {% for variant_option in variant_options %}
+                        <div class="modal fade" id="vo{{ variant_option.id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                          <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="myModalLabel">Variant Option Delete Confirmation</h4>
+                              </div>
+                              <div class="modal-body">
+                                Are You Sure You Want To Delete Variant Option <b>{{ variant_option.name }}</b>
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                <a href="{% url 'ShoppyAdmin:variants-options-delete' variant_option.id %}"  class="btn btn-danger"><i class="fa fa-trash"></i> Delete</a>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        {% endfor %}
+{#                      end#}
+
+{#                    edit variant options#}
+                             {% for variant_option in variant_options %}
+                        <div class="modal fade" id="e-vo{{ variant_option.id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                          <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="myModalLabel">Variant Option Edit</h4>
+                              </div>
+                              <div class="modal-body">
+                                 <form action="{% url 'ShoppyAdmin:variants-options-edit' variant_option.id %}" method="POST">
+                                    {% csrf_token %}
+                                  <div class="form-group has-feedback  col-sm-12" style="width: 100%">
+                                      <label for="variant" class="">Variant</label> <br>
+                                      <select  required name="variant" class="selectpicker" id="variant" data-show-subtext="true" data-live-search="true">
+                                        {% for variant in variants %}
+                                        <option id="sel2" data-subtext="{{ variant.name }}" {% if variant.id == variant_option.id  %} selected {% endif %} value="{{ variant.id }}">{{ variant.name }}</option>
+                                        {% endfor %}
+                                      </select>
+                                  </div>
+                                  <div class="form-group">
+                                    <label for="variant_name">Variant Option Name</label>
+                                    <input value="{{ variant_option.name }}" name="name" type="text" class="form-control" id="variant_name" placeholder="Variant Option Name">
+                                  </div>
+
+                                    <button type="submit" class="btn btn-success"><i class="fas fa-file"></i> Save</button>
+                                    <button type="reset" class="btn btn-danger"><i class="fa fa-undo"></i> Reset</button>
+                                </form>
+                              </div>
+                              <div class="modal-footer">
+                                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        {% endfor %}
+{#                        end#}
+                    <div class="panel panel-default">
+                        <div class="panel-heading panel-warning-custom">
+                            Variants Options
+                            <span class="pull-right clickable panel-toggle panel-button-tab-left"><em class="fa fa-toggle-up"></em></span></div>
+                        <div class="panel-body">
+                            <div class="canvas-wrapper">
+                                <div class="main-chart" id="line-chart" height="200" width="600">
+                                    <table id="example" class="example table table-striped table-bordered" style="width:100%;">
+                                        <thead>
+                                            <tr class="text-capitalize">
+                                                <th>#</th>
+                                                <th>Name</th>
+                                                <th>Created At</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for variant_option in variant_options %}
+                                                <tr class="text-center ">
+                                                    <td class="tb-data">{{ forloop.counter }}</td>
+                                                    <td class="tb-data">{{ variant_option.name }}({{ variant_option.variant.name }})</td>
+                                                    <td class="tb-data">{{ variant_option.created_at }}</td>
+                                                    <td class="tb-data">
+                                                        <a data-toggle="modal" data-target="#vo{{ variant_option.id }}" href="#" class="btn btn-danger"><i class="fa fa-trash"></i> Delete</a>
+                                                        <a data-toggle="modal" data-target="#e-vo{{ variant_option.id }} " href="" class="btn btn-success"><i class="fas fa-pencil-alt"></i> Edit</a>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+       </div><!--/.row-->
+
+
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script>
+        $(document).ready(function() {
+            $('.example').DataTable();
+        } );
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/bootstrap-select.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap.min.js"></script>
+{% endblock scripts %}

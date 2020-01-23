@@ -1,0 +1,280 @@
+
+{% load call_method %}
+{% load humanize %}
+{% load static %}
+     <!-- add to cart modal -->
+    {% for product in products %}
+        <!-- Modal -->
+        <div class="modal  fade" id="ky{{ product.id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+          <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+              <div class="modal-header bg-orange-shoppy text-white">
+                <h5 class="modal-title" id="exampleModalLongTitle">Add To {{ product.name }} Cart</h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true"><i class="fas fa-times-circle"></i></span>
+                </button>
+              </div>
+              <form action="{% url 'Shoppy:shoppy-add-cart' product.id %}" method="post">
+                  {% csrf_token %}
+                  <div class="modal-body">
+                    <div class="col-sm-12">
+                        <div class="row">
+                            <div class="col-md-4  add-to-cart-image p-0">
+                                 <img id="expandedcartimg" class="expandedimg" src="{{ product.featured_url.url }}" alt="{{ product.name }}">
+                            </div>
+                            <div class="col-md-6 pl-5">
+                                <div class="row ">
+                                    <h2 class="text-capitalize">{{ product.name }}</h2>
+                                </div>
+                                <div class="row py-2">
+                                    {% if  product.price_after_offer and product.id|product_on_offer %}
+                                        <div style="display: flex; flex-direction: column;">
+                                            <span> {{ product.price_after_offer|floatformat:1|intcomma }}Kshs</span>
+                                            <span class="striked-price">{{ product.unit_cost_inclusive_of_vat|floatformat:1|intcomma }} Kshs</span>
+                                        </div>
+                                    {% else %}
+                                        <span style=""> {{ product.unit_cost_inclusive_of_vat|floatformat:1|intcomma }}Kshs</span>
+                                    {% endif %}
+        {#                            <span class="size2 text-muted font-italic">{{ product.unit_cost_inclusive_of_vat }} Kshs</span>#}
+                                </div>
+                                <div class="row">
+                                    <span>{{ product.short_description }}</span>
+                                </div>
+        {#                                    <input type="text" hidden name="buyer">#}
+                                <div class="row py-3">
+                                    <div class="col-sm-12 row pt-3">
+        {#                                            {% if product.product_variant_options.count > 0 %}#}
+                                        {% if product.variants %}
+                                        {% for variant in  product.variants %}
+                                           <div class="flex  col-sm-12 col-md-6 ">
+                                                <div class="control-label py-2 text-capitalize">{{ variant.name}}</div>
+                                                <div class=" respon6-next w-100">
+                                                    <div class="rs1-select2 bor8 bg0">
+                                                        <select class="browser-primary custom-select" name="variant_options[]">
+                                                          <option disabled class="text-muted" selected>Open this select menu</option>
+
+                                                            {% for option in variant.product_variant_options %}
+                                                                <option class="text-capitalize" value="{{ option.id }}">{{ option.name }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                        <div class="dropDownSelect2"></div>
+                                                    </div>
+                                                </div>
+                                           </div>
+                                        {% endfor %}
+                                        {% else %}
+                                            <div class="flex  col-sm-12 col-md-6 ">
+                                                <div class="control-label py-2 text-capitalize">No Options for this product</div>
+                                                <div class=" respon6-next w-100">
+                                                    <div class="rs1-select2 bor8 bg0">
+                                                        <select disabled class="browser-primary custom-select" name="">
+                                                           <options value="No Variant Options For This Product"  >No Variant Options For This Product</options>
+                                                        </select>
+                                                        <div class="dropDownSelect2"></div>
+                                                    </div>
+                                                </div>
+                                           </div>
+                                        {% endif %}
+
+                                    </div>
+                                </div>
+                                {% if  product.price_after_offer and product.id|product_on_offer %}
+                                    <input name="unit_cost" type="number" hidden value="{{ product.price_after_offer }}">
+                                {% else %}
+                                    <input name="unit_cost" type="number" hidden value="{{ product.unit_cost_inclusive_of_vat }}">
+                                {% endif %}
+                                <div class="row py-3 pl-3 d-flex flex-column">
+                                    <div class="control-label py-2">Quantity</div>
+                                    <div class="slider-container ">
+                                        <button class="btn-num-product-down slider-contents slider-contents-control border-right"><i class="fas fa-minus"></i></button>
+                                        <input value="1" class="slider-contents slider-contents-center num-product d-flex justify-content-center align-items-center slider_count" type="number" name="quantity" >
+                                        <button class="btn-num-product-up slider-contents slider-contents-control border-left"><i class="fas fa-plus"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn bg-org">Add to Cart</button>
+                  </div>
+              </form>
+            </div>
+          </div>
+        </div>
+    {% endfor %}
+    {% if  products %}
+        {% for product in products %}
+            <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3 col-xl-2 m-2  p-0 position-relative " style="display: block; height: 317px;">
+                <a href="{% url 'Shoppy:shoppy_product_details' product.id %}">
+                <div class="make-3D-space rounded">
+                <div class="product-card">
+                    <div class="product-front">
+                        <div class="shadow"></div>
+                        <img style="object-fit:fill;" class="w-100 h-100" src="{{ product.featured_url.url }}" alt="" />
+                        <div class="image_overlay"></div>
+                        {% if product.id|is_product_in_cart:request.user %}
+                            <a href="" class="view_detailz" data-toggle="modal" data-target="#"><i class=" text-white fa fa-cart-plus"></i></a>
+                        {% else %}
+                            <a  href="" class="view_detailz" data-toggle="modal" data-target="#ky{{ product.id }}">
+                                <span>Add to cart</span><br>
+                                {% if  product.price_after_offer and product.id|product_on_offer %}
+                                    {% for offer in product.id|product_on_offer %}
+                                        <span class="" style="margin-top:5rem;">
+                                            <span title="{{ offer.end_time|date:"Y-m-d h:i A" }}" id="p_{{ product.id }}" class="eta"></span>
+                                        </span>
+                                    {% endfor %}
+                                {% endif %}
+                            </a>
+                        {% endif %}
+                        {% if product.id|product_on_offer %}
+                            {% for offer in product.id|product_on_offer %}
+                                <div class="badge-custom">
+                                    Save {{ offer.discount }}%
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+
+
+                        <div class="stats">
+                            <div class="stats-container">
+                                <div class="d-flex flex-column">
+                                    <span class=" m-0 p-0 row product_name d-flex justify-content-between m-0">
+                                        <a class="text-dark" href="{% url 'Shoppy:shoppy_product_details' product.id %}"><span class="text-capitalize font-weight-bold">{{ product.name|truncatechars:20  }}</span></a>
+
+                                        <span>({{ product.inventory_qty }})</span>
+                                    </span>
+                                    <span class=" row m-0 p-0">
+
+                                        {% if  product.price_after_offer and product.id|product_on_offer %}
+                                            <span class="product_price">{{ product.price_after_offer|floatformat:1|intcomma }} Kshs</span>
+                                            <p class="striked-price">{{ product.unit_cost_inclusive_of_vat|floatformat:1|intcomma }} Kshs</p>
+                                        {% else %}
+                                             <span class="product_price"> {{ product.price_after_offer|floatformat:1|intcomma }}Kshs</span>
+                                        {% endif %}
+                                    </span>
+                                  <div class="product-options">
+                                    <strong>Ratings</strong>
+                                    <span>
+                                        <div class="col-sm-12 card-ratings-wrapper">
+                                           <div class="mr-auto">
+                                               {% if product.id|average_ratings >= 5 %}
+                                                    <div class="rate">
+                                                    <input disabled checked type="radio"  value="5" />
+                                                        <label for="star5" title="text">5 stars</label>
+                                                    <input disabled  type="radio"  value="4" />
+                                                        <label for="star4" title="text">4 stars</label>
+                                                    <input disabled  type="radio"  value="3" />
+                                                        <label for="star3" title="text">3 stars</label>
+                                                    <input disabled  type="radio"  value="2" />
+                                                        <label for="star2" title="text">2 stars</label>
+                                                    <input disabled  type="radio"  value="1" />
+                                                        <label for="star1" title="text">1 star</label>
+                                                </div>
+
+                                               {% elif product.id|average_ratings >= 4 %}
+                                                   <div class="rate">
+                                                    <input disabled  type="radio" value="5" />
+                                                        <label for="star5" title="text">5 stars</label>
+                                                    <input disabled checked type="radio" value="4" />
+                                                        <label for="star4" title="text">4 stars</label>
+                                                    <input disabled  type="radio" value="3" />
+                                                        <label for="star3" title="text">3 stars</label>
+                                                    <input disabled  type="radio" value="2" />
+                                                        <label for="star2" title="text">2 stars</label>
+                                                    <input disabled  type="radio" value="1" />
+                                                        <label for="star1" title="text">1 star</label>
+                                                </div>
+
+                                               {% elif product.id|average_ratings >= 3 %}
+                                                   <div class="rate">
+                                                    <input disabled  type="radio" value="5" />
+                                                        <label for="star5" title="text">5 stars</label>
+                                                    <input disabled  type="radio" value="4" />
+                                                        <label for="star4" title="text">4 stars</label>
+                                                    <input disabled checked type="radio" value="3" />
+                                                        <label for="star3" title="text">3 stars</label>
+                                                    <input disabled  type="radio" value="2" />
+                                                        <label for="star2" title="text">2 stars</label>
+                                                    <input disabled  type="radio" value="1" />
+                                                        <label for="star1" title="text">1 star</label>
+                                                </div>
+
+                                               {% elif product.id|average_ratings >= 2 %}
+                                                   <div class="rate">
+                                                    <input disabled  type="radio" value="5" />
+                                                        <label for="star5" title="text">5 stars</label>
+                                                    <input disabled  type="radio" value="4" />
+                                                        <label for="star4" title="text">4 stars</label>
+                                                    <input disabled  type="radio" value="3" />
+                                                        <label for="star3" title="text">3 stars</label>
+                                                    <input disabled checked type="radio" value="2" />
+                                                        <label for="star2" title="text">2 stars</label>
+                                                    <input disabled  type="radio" value="1" />
+                                                        <label for="star1" title="text">1 star</label>
+                                                </div>
+
+                                               {% elif product.id|average_ratings >= 1 %}
+                                                   <div class="rate">
+                                                    <input  type="radio" disabled value="5" />
+                                                        <label for="star5" title="text">5 stars</label>
+                                                    <input  type="radio" disabled value="4" />
+                                                        <label for="star4" title="text">4 stars</label>
+                                                    <input  type="radio" disabled value="3" />
+                                                        <label for="star3" title="text">3 stars</label>
+                                                    <input  type="radio" disabled value="2" />
+                                                        <label for="star2" title="text">2 stars</label>
+                                                    <input checked type="radio" disabled value="1" />
+                                                        <label for="star1" title="text">1 star</label>
+                                                </div>
+                                               {% else %}
+                                                   <div class="rate">
+                                                    <input  type="radio" disabled value="5" />
+                                                        <label for="star5" title="text">5 stars</label>
+                                                    <input  type="radio" disabled value="4" />
+                                                        <label for="star4" title="text">4 stars</label>
+                                                    <input  type="radio" disabled value="3" />
+                                                        <label for="star3" title="text">3 stars</label>
+                                                    <input  type="radio" disabled value="2" />
+                                                        <label for="star2" title="text">2 stars</label>
+                                                    <input  type="radio" disabled value="1" />
+                                                        <label for="star1" title="text">1 star</label>
+                                                   </div>
+                                               {% endif %}
+                                           </div>
+                                        </div>
+                                    </span>
+                                    <div class="colors">
+                                        <div class="d-flex align-content-center">
+                                            {% if product.id|is_product_in_wishlist:request.user %}
+                                                <a style=" display: flex; justify-content: center;" href="{% url 'Shoppy:remove_from_wishlist' product.id request.path|make_safe  %}" title="Remove Item From Your Wishlist">
+                                                    <i style="color: red; font-size: 30px;" class=" fas fa-heart "></i>
+                                                </a>
+                                            {% else %}
+                                                <a style=" display: flex; justify-content: center;" href="{% url 'Shoppy:add_to_wishlist' product.id request.path|make_safe %}"  class="">
+                                                    <i style="color: #FEAA12; font-size: 30px;" class=" fas fa-heart"></i>
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </a>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="row mt-2 d-flex justify-content-center align-content-center align-items-center">
+             <div class="col" style="width: 200px; border: none;margin: 20px; overflow: hidden;">
+                 <h1>No Products</h1>
+                 <img class="img-fluid w-100 h-100" src="{% static 'img/no wishlist image/nowishlist.png' %}" alt="">
+             </div>
+        </div>
+    {% endif %}

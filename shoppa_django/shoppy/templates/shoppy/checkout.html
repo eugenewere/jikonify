@@ -1,0 +1,171 @@
+{% extends 'shoppy/layout.html' %}
+{% load static %}
+{% load call_method %}
+{% load humanize %}
+
+{% block content %}
+        <div id="sidebar-js" style="height:70%; z-index: 22; right: -200%; z-index: 2222 " class="sidebar-custom-container position-fixed  sticky-top  col-md-4 col-sm-12">
+            <div class="row px-4 bg-white" style="border-radius: 20px 0 0 20px;" >
+                <div class="sidebar-custom-sm " style="height:70%; z-index: 22; right: 0;">
+                    <div class="d-flex row col-md-12 col-sm-12 sticky-top bg-white" >
+                        <button onclick="closeMenu();" class="pull-left" style="background:none; outline: none; border: none;"><i class="fas fa-times"></i></button>
+                        <h4 class="pt-3 text-capitalize text-center color-orange-shoppy pb-2 mx-auto ">Ordered items ({{ carts.count }})</h4>
+                    </div>
+
+                    <div class="cartitems w-100 pt-3" >
+                        {% for cart in carts %}
+                            <div class="col-sm-12 col-md-12 row checkout-product px-sm-0  px-2 mb-2 ">
+                                <div class="col-sm-4 col-md-4 col-lg-4 p-0  imagescrollimg-custom">
+                                    <img src="{{ cart.product.featured_url.url }}" alt="">
+                                </div>
+                                <div class="col-sm-7 col-md-7 col-lg-7">
+                                    <h3 class="title-sm text-capitalize">{{ cart.product.name|truncatechars:26 }}</h3>
+                                    <span class="title-xm">{{ cart.product.unit_cost|floatformat:1|intcomma }} kshs</span>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        <div class="mt-5 divider-custom"></div>
+
+                        <div class="  totals col-sm-12 row d-flex flex-column justify-content-center mb-4  m-0">
+
+                            <span class="sub-totals-checkout py-2 d-flex">
+                                <span class="mr-auto text-dark"> Total Cost</span>
+                                Ksh {{buyer.cart_total|floatformat|intcomma}}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <form action="{% url 'Shoppy:shoppy-checkout' %}" method="POST">
+            {% csrf_token %}
+            <div class="col-sm-12 row px-5 d-flex justify-content-center">
+                 <!-- Editable table -->
+                    <div class="card cart-container">
+                      <h3 class="card-header text-left cart-header-text text-uppercase py-4">CheckOut</h3>
+                      <div class="card-body cart-table-body">
+                        <div id="table" class="table-editable">
+                            <div class=" row col-sm-12  d-flex justify-content-end">
+                                <span class=" mb-3 mr-2 d-flex">
+                                    <a href="{% url "Shoppy:shoppy-cart" %}" class="btn btn-outline-warning">Modify Cart</a>
+                                    <span id="showmenubutton" onclick="showMenu()" class="d-md-none d-sm-block d-xs-block ml-3 btn btn-secondary p-2"><i class="mr-2 fa  fa-shopping-cart"></i> View your cart</span>
+                                </span>
+
+                            </div>
+                            <div class=" col-sm-12" style="height: 900px">
+                                <div class="row d-md-flex">
+                                    <div class="col-md-7 p-0 m-0 col-sm-12">
+                                        <div class="bs-example">
+                                            <div style="max-width: 100%" class="accordion accordion-custom" id="accordionExample">
+                                                <div class="card">
+                                                    <div class="card-header accordion-card-heading" id="headingOne">
+                                                        <h2 class="mb-0">
+                                                            <button aria-expanded="true" type="button" class="btn btn-link accordion-header-text" data-toggle="collapse" data-target="#collapseOne"><em class="fas fa-address-book mr-2 "></em> Contact Details</button>
+                                                        </h2>
+                                                    </div>
+                                                    <div id="collapseOne" class="collapse rounded show" aria-labelledby="headingOne" data-parent="#accordionExample">
+                                                        <div class="card-body  ">
+                                                            <div class=" p-4">
+                                                                <div class="col-sm-12 row">
+                                                                    <p class="product-features-text">{{ product.long_description }}</p>
+                                                                </div>
+
+                                                                <div class="col-sm-12 row py-4">
+                                                                    <div class="row w-100">
+                                                                        <div class="col-sm-6">
+                                                                            <div class="form-group">
+                                                                                <label for="exampleInputEmail1">First Name</label>
+                                                                                <input required name="first_name" value="{{ request.user.first_name }}" type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" >
+                                                                                <small id="emailHelp" class="form-text text-muted text-capitalize">The First Name You Registerd with.</small>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-sm-6">
+                                                                            <div class="form-group">
+                                                                                <label for="exampleInputEmail3">Last Name</label>
+                                                                                <input required name="last_name" value="{{ request.user.last_name }}" type="text" class="form-control" id="exampleInputEmail3" aria-describedby="emailHelp3" >
+                                                                                <small id="emailHelp3" class="form-text text-muted text-capitalize">The Last Name You Registerd with.</small>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-sm-12">
+                                                                        <div class="form-group number-input-custom">
+                                                                            <label for="exampleInputEmail1">Phone Number</label>
+                                                                            <input required name="phone_number" value="{{  buyer.phone_number  }}" type="tel" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Phone Number">
+                                                                            <small id="emailHelp" class="form-text text-muted text-capitalize">Enter Your phone no you will like us to call You</small>
+                                                                        </div>
+                                                                    </div>
+                                                                    <input type="number" name="total" hidden value="{{buyer.cart_total|floatformat}}">
+                                                                    <div class="col-sm-12">
+                                                                        <div class="row">
+                                                                            <button class=" pointer product-button" >Make order</button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="main-sidebar-checkout d-sm-none d-xs-none d-md-block col-md-4 col-sm-12">
+                                        <div class="row px-4">
+                                            <h4 class="text-capitalize text-center color-orange-shoppy pb-2 mx-auto ">Ordered items ({{ carts.count }})</h4>
+                                            <div class="sidebar-custom ">
+                                                <div class="cartitems w-100">
+                                                    {% for cart in carts %}
+                                                        <div class="col-sm-12 row checkout-product px-2 mb-2">
+                                                            <div class="col-sm-5 p-0  imagescrollimg-custom">
+                                                                <img src="{{ cart.product.featured_url.url }}" alt="">
+                                                            </div>
+                                                            <div class="col-sm-6">
+                                                                <h3 class="title-sm text-capitalize">{{ cart.product.name|truncatechars:26 }}</h3>
+                                                                <span class="title-xm">{{ cart.product.unit_cost|floatformat:1|intcomma }} kshs</span>
+                                                            </div>
+                                                        </div>
+                                                    {% endfor %}
+                                                    <div class="mt-5 divider-custom"></div>
+
+                                                    <div class="  totals col-sm-12 row d-flex flex-column justify-content-center mb-4  m-0">
+                                                        <span class="sub-totals-checkout py-2 d-flex">
+                                                            <span class="mr-auto text-dark"> Payable Cost</span>
+                                                            Ksh {{buyer.cart_total|floatformat|intcomma}}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                      </div>
+                    </div>
+                <!-- Editable table -->
+            </div>
+        </form>
+
+{% endblock content %}
+{% block scripts %}
+    <script>
+        var sidebar_js = document.getElementById('sidebar-js');
+        var showmenubutton = document.getElementById('showmenubutton');
+        function showMenu() {
+            sidebar_js.style.right =0 +'%';
+            sidebar_js.style.transition = 1 +'s';
+            showmenubutton.style.display = 'none';
+            showmenubutton.style.transition = 1 +'s';
+        }
+        function closeMenu() {
+            if(sidebar_js.style.right === 0 + '%'){
+                sidebar_js.style.right = -200 + '%';
+                sidebar_js.style.transition = 1 +'s';
+                showmenubutton.style.display = 'block';
+                showmenubutton.style.transition = 1 +'s';
+            }
+        }
+    </script>
+{% endblock %}

@@ -1,0 +1,295 @@
+{% extends 'aaa_layout.html' %}
+{% load static %}
+{% block links %}
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/css/bootstrap-select.min.css" rel="stylesheet" />
+
+{% endblock links %}
+{% block content %}
+<div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">
+		<div class="row">
+			<ol class="breadcrumb">
+				<li>
+					<a href="#">
+					<em class="fa fa-home"></em>
+				    </a>
+			    </li>
+				<li class="active">Review</li>
+			</ol>
+		</div><!--/.row-->
+       <div class="row">
+			<div class="col-lg-12">
+                {% if proreview %}
+                    <h1 class="page-header">Reviews For {{ proreview.product.name }}</h1>
+                {% else %}
+                    Review
+                {% endif %}
+
+			</div>
+		</div><!--/.row-->
+
+       <div class="row">
+            <div class="col-lg-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading panel-warning-custom">
+                        Reviews
+                        <span class="pull-right clickable panel-toggle panel-button-tab-left"><em class="fa fa-toggle-up"></em></span>
+                    </div>
+                    <div class="panel-body">
+                        <div class="canvas-wrapper">
+                            <div class="main-chart" id="line-chart" height="200" width="600">
+                             {% if request.user|is_seller %}
+                               <table id="example" class=" table table-striped table-bordered" style="width:100%;">
+                                    <thead>
+                                        <tr class="text-capitalize">
+                                            <th>Id</th>
+                                            <th>Picture</th>
+                                            <th>Name</th>
+                                            <th>Buyer</th>
+                                            <th>Comment</th>
+                                            <th>Ratings</th>
+                                            <th>Created At</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for review in reviews %}
+                                            <tr class="text-center ">
+                                                <td style="width: 40px" class="tb-data">{{ forloop.counter }}</td>
+                                                <td class="tb-data tb-data" style="width: 110px;">
+                                                    <div class="product-image">
+                                                       <img src="{{ review.product.featured_url.url }}" alt="">
+                                                    </div>
+                                                </td>
+                                                <td class="tb-data" style="width: 214px">{{ review.product.name|truncatechars:30 }}</td>
+                                                <td class="tb-data" style="width: 114px">{{ review.buyer.first_name }} {{ review.buyer.last_name }}</td>
+                                                <td class="tb-data">{{ review.comments }}</td>
+                                                <td class="tb-data" style="width: 201px;">
+                                                    <div class="card-ratings-wrapper">
+                                                       {% if review.ratings == 5 %}
+                                                            <div class="rate">
+                                                            <input disabled checked type="radio" id="star5" value="5" />
+                                                                <label for="star5" title="text">5 stars</label>
+                                                            <input disabled  type="radio" id="star4" value="4" />
+                                                                <label for="star4" title="text">4 stars</label>
+                                                            <input disabled  type="radio" id="star3" value="3" />
+                                                                <label for="star3" title="text">3 stars</label>
+                                                            <input disabled  type="radio" id="star2" value="2" />
+                                                                <label for="star2" title="text">2 stars</label>
+                                                            <input disabled  type="radio" id="star1" value="1" />
+                                                                <label for="star1" title="text">1 star</label>
+                                                        </div>
+
+                                                       {% elif review.ratings == 4 %}
+                                                           <div class="rate">
+                                                            <input disabled  type="radio" id="star5" value="5" />
+                                                                <label for="star5" title="text">5 stars</label>
+                                                            <input disabled checked type="radio"  id="star4" value="4" />
+                                                                <label for="star4" title="text">4 stars</label>
+                                                            <input disabled  type="radio" id="star3" value="3" />
+                                                                <label for="star3" title="text">3 stars</label>
+                                                            <input disabled  type="radio" id="star2" value="2" />
+                                                                <label for="star2" title="text">2 stars</label>
+                                                            <input disabled  type="radio" id="star1" value="1" />
+                                                                <label for="star1" title="text">1 star</label>
+                                                        </div>
+
+                                                       {% elif review.ratings == 3 %}
+                                                           <div class="rate">
+                                                            <input disabled id="star5" type="radio" value="5" />
+                                                                <label for="star5" title="text">5 stars</label>
+                                                            <input disabled id="star4" type="radio" value="4" />
+                                                                <label for="star4" title="text">4 stars</label>
+                                                            <input disabled id="star3" checked type="radio" value="3" />
+                                                                <label for="star3" title="text">3 stars</label>
+                                                            <input disabled id="star2" type="radio" value="2" />
+                                                                <label for="star2" title="text">2 stars</label>
+                                                            <input disabled id="star1" type="radio" value="1" />
+                                                                <label for="star1" title="text">1 star</label>
+                                                        </div>
+
+                                                       {% elif review.ratings == 2 %}
+                                                           <div class="rate">
+                                                            <input disabled id="star5" type="radio" value="5" />
+                                                                <label for="star5" title="text">5 stars</label>
+                                                            <input disabled id="star4" type="radio" value="4" />
+                                                                <label for="star4" title="text">4 stars</label>
+                                                            <input disabled id="star3" type="radio" value="3" />
+                                                                <label for="star3" title="text">3 stars</label>
+                                                            <input disabled id="star2" checked type="radio" value="2" />
+                                                                <label for="star2" title="text">2 stars</label>
+                                                            <input disabled id="star1" type="radio" value="1" />
+                                                                <label for="star1" title="text">1 star</label>
+                                                        </div>
+
+                                                       {% elif review.ratings == 1 %}
+                                                           <div class="rate">
+                                                            <input id="star5"  type="radio" disabled value="5" />
+                                                                <label for="star5" title="text">5 stars</label>
+                                                            <input id="star4"  type="radio" disabled value="4" />
+                                                                <label for="star4" title="text">4 stars</label>
+                                                            <input id="star3"  type="radio" disabled value="3" />
+                                                                <label for="star3" title="text">3 stars</label>
+                                                            <input id="star2"  type="radio" disabled value="2" />
+                                                                <label for="star2" title="text">2 stars</label>
+                                                            <input id="star1" checked type="radio" disabled value="1" />
+                                                                <label for="star1" title="text">1 star</label>
+                                                            </div>
+                                                        {% else %}
+                                                            <div class="rate">
+                                                            <input  type="radio" id="star5" disabled value="5" />
+                                                                <label for="star5" title="text">5 stars</label>
+                                                            <input  type="radio" id="star4" disabled value="4" />
+                                                                <label for="star4" title="text">4 stars</label>
+                                                            <input  type="radio" id="star3" disabled value="3" />
+                                                                <label for="star3" title="text">3 stars</label>
+                                                            <input  type="radio" id="star2" disabled value="2" />
+                                                                <label for="star2" title="text">2 stars</label>
+                                                            <input  type="radio" id="star1" disabled value="1" />
+                                                                <label for="star1" title="text">1 star</label>
+                                                            </div>
+                                                       {% endif %}
+
+                                                   </div>
+                                                </td>
+                                                <td class="tb-data" style="width: 180px;">{{ review.created_at }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                               </table>
+                             {% else %}
+                                 <table id="example" class=" table table-striped table-bordered" style="width:100%;">
+                                    <thead>
+                                        <tr class="text-capitalize">
+                                            <th>Id</th>
+                                            <th>Picture</th>
+                                            <th>Name</th>
+                                            <th>Buyer</th>
+                                            <th>Comment</th>
+                                            <th>Ratings</th>
+                                            <th>Created At</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for review in admin_reviews %}
+                                            <tr class="text-center ">
+                                                <td style="width: 40px" class="tb-data">{{ forloop.counter }}</td>
+                                                <td class="tb-data tb-data" style="width: 110px;">
+                                                    <div class="product-image">
+                                                       <img src="{{ review.product.featured_url.url }}" alt="">
+                                                    </div>
+                                                </td>
+                                                <td class="tb-data" style="width: 214px">{{ review.product.name|truncatechars:30 }}</td>
+                                                <td class="tb-data" style="width: 114px">{{ review.buyer.first_name }} {{ review.buyer.last_name }}</td>
+                                                <td class="tb-data">{{ review.comments }}</td>
+                                                <td class="tb-data" style="width: 201px;">
+                                                    <div class="card-ratings-wrapper">
+                                                       {% if review.ratings == 5 %}
+                                                            <div class="rate">
+                                                            <input disabled checked type="radio" id="star5" value="5" />
+                                                                <label for="star5" title="text">5 stars</label>
+                                                            <input disabled  type="radio" id="star4" value="4" />
+                                                                <label for="star4" title="text">4 stars</label>
+                                                            <input disabled  type="radio" id="star3" value="3" />
+                                                                <label for="star3" title="text">3 stars</label>
+                                                            <input disabled  type="radio" id="star2" value="2" />
+                                                                <label for="star2" title="text">2 stars</label>
+                                                            <input disabled  type="radio" id="star1" value="1" />
+                                                                <label for="star1" title="text">1 star</label>
+                                                        </div>
+
+                                                       {% elif review.ratings == 4 %}
+                                                           <div class="rate">
+                                                            <input disabled  type="radio" id="star5" value="5" />
+                                                                <label for="star5" title="text">5 stars</label>
+                                                            <input disabled checked type="radio"  id="star4" value="4" />
+                                                                <label for="star4" title="text">4 stars</label>
+                                                            <input disabled  type="radio" id="star3" value="3" />
+                                                                <label for="star3" title="text">3 stars</label>
+                                                            <input disabled  type="radio" id="star2" value="2" />
+                                                                <label for="star2" title="text">2 stars</label>
+                                                            <input disabled  type="radio" id="star1" value="1" />
+                                                                <label for="star1" title="text">1 star</label>
+                                                        </div>
+
+                                                       {% elif review.ratings == 3 %}
+                                                           <div class="rate">
+                                                            <input disabled id="star5" type="radio" value="5" />
+                                                                <label for="star5" title="text">5 stars</label>
+                                                            <input disabled id="star4" type="radio" value="4" />
+                                                                <label for="star4" title="text">4 stars</label>
+                                                            <input disabled id="star3" checked type="radio" value="3" />
+                                                                <label for="star3" title="text">3 stars</label>
+                                                            <input disabled id="star2" type="radio" value="2" />
+                                                                <label for="star2" title="text">2 stars</label>
+                                                            <input disabled id="star1" type="radio" value="1" />
+                                                                <label for="star1" title="text">1 star</label>
+                                                        </div>
+
+                                                       {% elif review.ratings == 2 %}
+                                                           <div class="rate">
+                                                            <input disabled id="star5" type="radio" value="5" />
+                                                                <label for="star5" title="text">5 stars</label>
+                                                            <input disabled id="star4" type="radio" value="4" />
+                                                                <label for="star4" title="text">4 stars</label>
+                                                            <input disabled id="star3" type="radio" value="3" />
+                                                                <label for="star3" title="text">3 stars</label>
+                                                            <input disabled id="star2" checked type="radio" value="2" />
+                                                                <label for="star2" title="text">2 stars</label>
+                                                            <input disabled id="star1" type="radio" value="1" />
+                                                                <label for="star1" title="text">1 star</label>
+                                                        </div>
+
+                                                       {% elif review.ratings == 1 %}
+                                                           <div class="rate">
+                                                            <input id="star5"  type="radio" disabled value="5" />
+                                                                <label for="star5" title="text">5 stars</label>
+                                                            <input id="star4"  type="radio" disabled value="4" />
+                                                                <label for="star4" title="text">4 stars</label>
+                                                            <input id="star3"  type="radio" disabled value="3" />
+                                                                <label for="star3" title="text">3 stars</label>
+                                                            <input id="star2"  type="radio" disabled value="2" />
+                                                                <label for="star2" title="text">2 stars</label>
+                                                            <input id="star1" checked type="radio" disabled value="1" />
+                                                                <label for="star1" title="text">1 star</label>
+                                                            </div>
+                                                        {% else %}
+                                                            <div class="rate">
+                                                            <input  type="radio" id="star5" disabled value="5" />
+                                                                <label for="star5" title="text">5 stars</label>
+                                                            <input  type="radio" id="star4" disabled value="4" />
+                                                                <label for="star4" title="text">4 stars</label>
+                                                            <input  type="radio" id="star3" disabled value="3" />
+                                                                <label for="star3" title="text">3 stars</label>
+                                                            <input  type="radio" id="star2" disabled value="2" />
+                                                                <label for="star2" title="text">2 stars</label>
+                                                            <input  type="radio" id="star1" disabled value="1" />
+                                                                <label for="star1" title="text">1 star</label>
+                                                            </div>
+                                                       {% endif %}
+
+                                                   </div>
+                                                </td>
+                                                <td class="tb-data" style="width: 180px;">{{ review.created_at }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                               </table>
+                             {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+       </div><!--/.row-->
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script>
+        $(document).ready(function() {
+            $('#example').DataTable();
+        } );
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/bootstrap-select.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap.min.js"></script>
+{% endblock scripts %}

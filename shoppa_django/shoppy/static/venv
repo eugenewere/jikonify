@@ -1,0 +1,14 @@
+C:\djangoproject\shoppa_django\shoppa_django\Scripts\activate.bat
+
+===================================================================================
+
+python manage.py sendtestemail eugene@simple.com
+
+===================================================================================
+
+
+python -m pip install --upgrade pip' command.
+
+===============================================================================================================
+
+pip install --pre xhtml2pdf

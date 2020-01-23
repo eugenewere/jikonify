@@ -1,0 +1,134 @@
+
+{% extends 'aaa_layout.html' %}
+{% load static %}
+{% load call_method %}
+{% block links %}
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/css/bootstrap-select.min.css" rel="stylesheet" />
+
+{% endblock links %}
+{% block content %}
+<div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">
+		<div class="row">
+			<ol class="breadcrumb">
+				<li>
+					<a href="#">
+					<em class="fa fa-home"></em>
+				    </a>
+			    </li>
+				<li class="">Products</li>
+				<li class="active">Featured Products</li>
+			</ol>
+		</div><!--/.row-->
+       <div class="row">
+			<div class="col-lg-12">
+				<h1 class="page-header">Featured Products</h1>
+			</div>
+		</div><!--/.row-->
+
+        <div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading panel-warning-custom">
+                            Featured Products
+
+                            <span class="pull-right clickable panel-toggle panel-button-tab-left"><em class="fa fa-toggle-up"></em></span>
+                            {% if not request.user|is_seller %}
+                            <a class="btn btn-success pull-right" href="{% url 'ShoppyAdmin:view_products' %}"> Add more</a>
+                            {% endif %}
+                        </div>
+
+                        <div class="panel-body">
+                            <div class="canvas-wrapper">
+                                <div class="main-chart" id="line-chart" height="200" width="600">
+                                {% if request.user|is_seller %}
+                                    <table id="" class="example table table-striped table-bordered" style="width:100%;">
+                                        <thead>
+                                            <tr class="text-capitalize">
+                                                <th>Id</th>
+                                                <th style="width: 68px;">Picture</th>
+                                                <th>Name</th>
+                                                <th>Created At</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for product in products %}
+                                                <tr class="text-center ">
+                                                    <td class="tb-data">{{ forloop.counter }}</td>
+                                                    <td class="tb-data tb-data">
+                                                        <div class="product-image">
+                                                           <img src="{{ product.featured_url.url }}" alt="{{ product.name }}">
+                                                        </div>
+                                                    </td>
+                                                    <td class="tb-data">{{ product.name }}</td>
+                                                    <td class="tb-data">{{ product.created_at }}</td>
+                                                    <td class="tb-data">
+                                                     {% if not request.user|is_seller %}
+                                                        {% if product.feat_product == 'FEATURED' %}
+                                                        <a class="btn-primary btn" href="{% url 'ShoppyAdmin:featured_products' product.id %}"><em class="fas fa-trash-alt"></em> {{ product.feat_product }}</a>
+                                                        {% else %}
+                                                        <a class="btn-brown btn" href="{% url 'ShoppyAdmin:normal_products' product.id %}"><em class="fas fa-trash-alt"></em> {{ product.feat_product }}</a>
+                                                        {% endif %}
+                                                    {% endif %}
+                                                        <a href="{% url 'ShoppyAdmin:shoppy_admin_edit_product' product.id %}" class="btn btn-success"><i class="fas fa-pencil-alt"></i> Edit</a>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+
+                                        </tbody>
+                                    </table>
+                                {% else %}
+                                    <table id="" class="example table table-striped table-bordered" style="width:100%;">
+                                        <thead>
+                                            <tr class="text-capitalize">
+                                                <th>Id</th>
+                                                <th>Picture</th>
+                                                <th>Name</th>
+                                                <th>Created At</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for product in f_product %}
+                                                <tr class="text-center ">
+                                                    <td class="tb-data">{{ forloop.counter }}</td>
+                                                    <td class="tb-data tb-data">
+                                                        <div class="product-image">
+                                                           <img src="{{ product.featured_url.url }}" alt="{{ product.name }}">
+                                                        </div>
+                                                    </td>
+                                                    <td class="tb-data text-capitalize">{{ product.name }}</td>
+                                                    <td class="tb-data">{{ product.created_at }}</td>
+                                                    <td class="tb-data">
+                                                        {% if product.feat_product == 'FEATURED' %}
+                                                        <a class="btn-primary btn" href="{% url 'ShoppyAdmin:featured_products' product.id %}"><em class="fas fa-trash-alt"></em> {{ product.feat_product }}</a>
+                                                        {% else %}
+                                                        <a class="btn-brown btn" href="{% url 'ShoppyAdmin:normal_products' product.id %}"><em class="fas fa-trash-alt"></em> {{ product.feat_product }}</a>
+                                                        {% endif %}
+                                                        <a href="{% url 'ShoppyAdmin:shoppy_admin_edit_product' product.id %}" class="btn btn-success"><i class="fas fa-pencil-alt"></i> Edit</a>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+
+                                        </tbody>
+                                    </table>
+                                {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><!--/.row-->
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script>
+        $(document).ready(function() {
+            $('.example').DataTable();
+        } );
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/bootstrap-select.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap.min.js"></script>
+{% endblock scripts %}

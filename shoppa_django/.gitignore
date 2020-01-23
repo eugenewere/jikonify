@@ -1,0 +1,18 @@
+.idea/
+.mypy_cache/
+__pycache__/
+
+.DS_Store
+.DS_STORE
+
+# Database stuff
+*.sqlite3
+migrations/
+db.sqlite3
+
+# !media/templates
+# !/media/templates
+# media
+/eprocure/local_settings.py
+
+

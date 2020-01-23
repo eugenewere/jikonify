@@ -1,0 +1,260 @@
+{% extends 'aaa_layout.html' %}
+{% load static %}
+{% block links %}
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/css/bootstrap-select.min.css" rel="stylesheet" />
+
+{% endblock links %}
+{% block content %}
+     <div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">
+		<div class="row">
+			<ol class="breadcrumb">
+				<li>
+					<a href="#">
+					<em class="fa fa-home"></em>
+				    </a>
+			    </li>
+				<li class="active">Product / Carousel</li>
+			</ol>
+		</div><!--/.row-->
+        <div class="row">
+			<div class="col-lg-12">
+				<h1 class="page-header">Carousel</h1>
+			</div>
+		</div><!--/.row-->
+
+        <div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading panel-warning-custom">
+                            Add Carousel Image
+                            <span class="pull-right clickable panel-toggle panel-button-tab-left"><em class="fa fa-toggle-up"></em></span></div>
+                        <div class="panel-body">
+                            <div class="canvas-wrapper">
+                                <div class="main-chart col-sm-12" id="line-chart" height="200" width="600">
+                                    <form action="{% url 'ShoppyAdmin:view_carousel' %}" method="POST" enctype="multipart/form-data">
+                                        {% csrf_token %}
+                                        <div class="input-group col-sm-12 marginY" >
+                                           <div class="form-group">
+                                                <label class="custom-control" for="email">Description:</label>
+                                                <input required placeholder="Brief Description" name="description" type="text" class="form-control" id="email">
+                                               <div class="help-block"></div>
+                                           </div>
+                                        </div>
+                                        <div class="row d-flex " >
+                                            <div class="col-sm-12">
+                                                <div class="form-group">
+                                                  <label for="sel1">Select Seller:</label>
+                                                  <select  name="seller" required class="selectpicker form-control" id="sel1" data-show-subtext="true" data-live-search="true">
+                                                        <option selected disabled > Choose a Seller </option>
+                                                        {% for seller in seller %}
+                                                            <option class="text-capitalize" value="{{ seller.id }}">{{ seller.first_name }} {{ seller.last_name }}</option>
+                                                        {% endfor %}
+                                                  </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <div class="row d-flex " >
+                                            <div class="col-sm-12">
+                                                <div class="form-group">
+                                                  <label for="sel1">Product:</label>
+                                                  <select  name="product" required class="selectpicker form-control" id="sel1" data-show-subtext="true" data-live-search="true">
+                                                        <option selected disabled > Choose a product to associate with the advertisment </option>
+                                                        {% for product in products %}
+                                                            <option class="text-capitalize" value="{{ product.id }}">{{ product.name }} ({{ product.unit_cost }})-{{ product.seller.first_name }} {{ product.seller.last_name }}</option>
+                                                        {% endfor %}
+                                                  </select>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="input-group col-sm-12 marginY col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                                           <div class="form-group">
+                                                <label class="custom-control" for="image">Choose A File</label>
+{#                                                <input name="image"  type="file" class="form-control" id="image" required>#}
+                                               <div class="row " style="padding: 20px; ">
+                                                    <div class="form-group w-100" style=" display:flex; padding: 20px; flex-direction: column; position: relative;">
+                                                        <label for="exampleInputEmail1">Home Carousel</label>
+                                                        <input required id="vmimg" name="image" type="file" onchange="readURL(this);" style="position: absolute;width: 107px; top: 50%; transform: translate(-50%, -50%); left: 50%; z-index: 33;" />
+                                                        <img  style="border-radius: 20px; width: 100%; height: 381px; position: relative" class="blah" id="image" src="{% static 'images/noimages/images (1).jpg' %}" alt="your image" />
+                                                        <small id="emailHelp" style="font-size: 22px;" class="form-text text-muted">Image Preferably .jpeg, .png, .jpeg and a maximum height of 600pixels</small>
+                                                    </div>
+                                                </div>
+                                           </div>
+                                        </div>
+
+                                        <button type="submit" class="btn btn-success marginY"><i class="fas fa-plus-circle"></i> Add</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><!--/.row-->
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading panel-warning-custom">
+                        Carousell Images ({% if carousels %} {{ carousels.count }} {% endif %})
+
+                        <span class="pull-right clickable panel-toggle panel-button-tab-left"><em class="fa fa-toggle-up"></em></span></div>
+                    <div class="panel-body">
+                        <div class="canvas-wrapper">
+                            <div class="main-chart col-sm-12" id="line-chart" height="200" width="600">
+                                <table id="example" class="example table table-striped table-bordered" style="width:100%;">
+                                    <thead>
+                                        <tr class="text-capitalize">
+                                            <th>Id</th>
+                                            <th>Carousel</th>
+                                            <th>Description</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for carousel in carousels %}
+                                            <tr class="text-center ">
+                                                <td class="tb-data" width="50">{{ carousel.id }}</td>
+                                                <td class="tb-data carousel-table">
+                                                    <div class="carousel-wrapper">
+                                                        <a href="{{ carousel.image.url }}"><img src="../../..{{ carousel.image.url }}" alt=""></a>
+
+                                                    </div>
+                                                </td>
+                                                <td class="tb-data-desc">
+                                                    <h4  style="text-transform:uppercase">{{ carousel.description }}</h4>
+                                                    <span class="pull-right carousel-date">{{ carousel.created_at }}</span>
+                                                </td>
+                                                <td class="tb-data" width="150">
+                                                    <a href="" class="btn btn-danger" data-toggle="modal" data-target="#{{ carousel.id }}"><i class="fas fa-trash"></i> Delete</a>
+                                                    <a href="" class="btn btn-success" data-toggle="modal" data-target="#eee{{ carousel.id }}"><i class="fas fa-trash"></i> Edit</a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                
+                                    </tbody>
+                                </table>
+
+                            {% for carousel in carousels %}
+                                <div id="{{ carousel.id }}" class="modal fade" tabindex="-1" role="dialog">
+                                  <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                      <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title">Carousel Delete</h4>
+                                      </div>
+                                      <div class="modal-body">
+                                        <h3><b>Are you sure you want to delete {{ carousel.name }} ! &hellip;</b></h3>
+                                      </div>
+                                      <div class="modal-footer">
+{#                                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>#}
+                                        <a href="{% url 'ShoppyAdmin:carousel-delete' carousel.id %}" class="btn btn-danger"><i class="fas fa-trash"></i> Delete</a>
+                                      </div>
+                                    </div><!-- /.modal-content -->
+                                  </div><!-- /.modal-dialog -->
+                                </div><!-- /.modal -->
+                            {% endfor %}
+                            {% for carousel in carousels %}
+                                <div id="eee{{ carousel.id }}" class="modal fade" tabindex="-1" role="dialog">
+                                  <div class="modal-dialog modal-lg" role="document">
+                                    <div class="modal-content">
+                                      <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title">Image Edit</h4>
+                                      </div>
+                                    <form action="{% url 'ShoppyAdmin:carousel-edit' carousel.id %}" method="POST" enctype="multipart/form-data">
+                                      <div class="modal-body">
+
+                                        {% csrf_token %}
+                                        <div class="input-group col-sm-12 marginY" >
+                                           <div class="form-group">
+                                                <label class="custom-control" for="email">Description:</label>
+                                                <input value="{{ carousel.description }}" required placeholder="Brief Description" name="description" type="text" class="form-control" id="email">
+                                               <div class="help-block"></div>
+                                           </div>
+                                        </div>
+                                        <div class="row d-flex " >
+                                            <div class="col-sm-12">
+                                                <div class="form-group">
+                                                  <label for="sel1">Select Seller:</label>
+                                                  <select  name="seller" required class="selectpicker form-control" id="sel1" data-show-subtext="true" data-live-search="true">
+                                                        <option  disabled > Choose a Seller </option>
+                                                        {% for seller in seller %}
+                                                            <option {% if carousel.seller.id == seller.id %}selected{% endif %}  class="text-capitalize" value="{{ seller.id }}">{{ seller.first_name }} {{ seller.last_name }}</option>
+                                                        {% endfor %}
+                                                  </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row d-flex " >
+                                            <div class="col-sm-12">
+                                                <div class="form-group">
+                                                  <label for="sel1">Product:</label>
+                                                  <select  name="product" required class="selectpicker form-control" id="sel1" data-show-subtext="true" data-live-search="true">
+                                                        <option  disabled > Choose a product to associate with the advertisment </option>
+                                                        {% for product in products %}
+                                                            <option {% if carousel.product.id == product.id %}selected{% endif %}  class="text-capitalize" value="{{ product.id }}">{{ product.name }} ({{ product.unit_cost }})-{{ product.seller.first_name }} {{ product.seller.last_name }}</option>
+                                                        {% endfor %}
+                                                  </select>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="input-group marginY col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                                           <div class="form-group">
+                                                <label class="custom-control" for="image">Choose A File</label>
+{#                                                <input name="image"  type="file" class="form-control" id="image" required>#}
+                                               <div class="row " style="padding: 20px; ">
+                                                    <div class="form-group w-100" style=" display:flex; padding: 20px; flex-direction: column; position: relative;">
+                                                        <label for="exampleInputEmail1">Home Carousel</label>
+                                                        <input value="{{ carousel.image }}" id="vmimg" name="image" type="file" onchange="readURL(this);" style="position: absolute;width: 107px; top: 50%; transform: translate(-50%, -50%); left: 50%; z-index: 33;" />
+                                                        <img  style="border-radius: 20px; width: 100%; height: 381px; position: relative" class="blah" id="image"
+                                                              src="{% if carousel.image %}{{ carousel.image.url }}{% else %}{% static 'images/noimages/images (1).jpg' %}{% endif %}" alt="your image" />
+                                                        <small id="emailHelp" style="font-size: 22px;" class="form-text text-muted">Image Preferably .jpeg, .png, .jpeg and a maximum height of 600pixels</small>
+                                                    </div>
+                                                </div>
+                                           </div>
+                                        </div>
+
+
+                                      </div>
+                                      <div class="modal-footer">
+                                          <button type="submit" class="btn btn-success marginY"><i class="fas fa-plus-circle"></i> Add</button>
+
+                                      </div>
+                                    </form>
+                                    </div><!-- /.modal-content -->
+                                  </div><!-- /.modal-dialog -->
+                                </div><!-- /.modal -->
+                            {% endfor %}
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!--/.row-->
+    </div>
+
+{% endblock %}
+{% block scripts %}
+    <script>
+        $(document).ready(function() {
+            $('#example').DataTable();
+        } );
+    </script>
+     <script>
+        function readURL(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    $('.blah')
+                        .attr('src', e.target.result);
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/bootstrap-select.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap.min.js"></script>
+{% endblock scripts %}

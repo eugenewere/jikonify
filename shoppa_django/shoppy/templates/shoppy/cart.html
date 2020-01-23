@@ -1,0 +1,169 @@
+{% extends 'shoppy/layout.html' %}
+{% load static %}
+{% load call_method %}
+{% load humanize %}
+{% block links %}
+    <link rel="stylesheet" href="{% static 'css/cart_style.css' %}">
+{% endblock links %}
+{% block content %}
+
+    <div class="col-sm-12 row px-5 d-flex justify-content-center" >
+        {% if carts %}
+        <!-- Editable table -->
+            <div class="card cart-container w-100"  >
+                 <div class="cart_section">
+                    <div class="w-100">
+                        <div class="row">
+                            <div class="col-lg-10 offset-lg-1">
+                                <div class="cart_container ">
+                                    <div class="card-header text-left cart-header-text text-uppercase py-4">Shopping Cart ({{ carts.count }})</div>
+                                    <span class=" float-right mb-3 mr-2"><a href="{% url "Shoppy:shoppy-home" %}" class="btn btn-outline-warning">Continue Shopping</a></span>
+
+                                    <div class="cart_items bg-white " style="overflow-y: auto; overflow-scrolling: auto;">
+
+                                        <ul class="cart_list">
+                                            {% for cart in carts %}
+                                                <li class="cart_item clearfix" style="border-bottom: 1px solid #737373;">
+                                                    <div class="cart_item_image m-0 position-relative">
+                                                        <a href="{% url 'Shoppy:shoppy_product_details' cart.product.id %}"></a>
+                                                        <img class="w-100 h-100 rounded" src="{{ cart.product.featured_url.url }}" alt="">
+                                                        {% if cart.product.id|product_on_offer %}
+                                                            {% for offer in cart.product.id|product_on_offer %}
+                                                                <span style="position: absolute; left: 33px;transform: translateX(-55px);" class="badge badge-danger badge-pill text-white">Save {{ offer.offer_percentage }}%</span>
+                                                            {% endfor %}
+                                                        {% endif %}
+                                                    </div>
+                                                    <div class="cart_item_info d-flex flex-md-row flex-column justify-content-between">
+                                                        <div class="cart_item_name cart_info_col">
+                                                            <div class="cart_item_title">Name</div>
+                                                            <div class="cart_item_text mt-sm-0 mb-sm-3" >
+                                                                <a class="text-dark" href="{% url 'Shoppy:shoppy_product_details' cart.product.id %}">
+                                                                    {{ cart.product.name|title|truncatechars:17 }}
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                        <div class="cart_item_color cart_info_col ml-sm-2">
+                                                            <div class="cart_item_title">Variants</div>
+                                                            <div class="cart_item_text mt-sm-0 mb-sm-3">
+                                                                <div class="dropdown">
+                                                                    <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown"><i class="fa fa-paint-roller"></i>
+                                                                    <span class="caret"></span></button>
+                                                                    <ul class="dropdown-menu" style="left:-34px;">
+                                                                    {% for variant in request|cart_variants:cart.id %}
+                                                                        <li class="dropdown-submenu">
+                                                                            <a class="text-capitalize p-3 text-dark" tabindex="-1" href="#">{{variant}}</a>
+
+                                                                        </li>
+            {#                                                            {% for cvo in variant.id|cart_v_options:cart.id%}#}
+            {#                                                              <span><i class="fa fa-arrow-right"></i><a tabindex="-1" href="#">{{cvo}}</a></span>#}
+            {#                                                             {% endfor %}#}
+                                                                    {% endfor %}
+                                                                    </ul>
+                                                                  </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="cart_item_quantity cart_info_col ml-sm-2">
+                                                            <div class="cart_item_title">Quantity</div>
+                                                            <div class="cart_item_text mt-sm-0 mb-sm-3">{{ cart.quantity }}</div>
+                                                        </div>
+                                                        <div class="cart_item_quantity cart_info_col ml-sm-2">
+                                                            <div class="cart_item_title">Cart action</div>
+                                                            <div class="cart_item_text mt-sm-0 mb-sm-3">
+                                                                 <span class="">
+                                                                    <a href="{% url 'Shoppy:add_to_wishlist' cart.product.id request.path|make_safe %}" class="delete-button"><i class="far fa-heart"></i></a>
+                                                                 </span>
+                                                                 <span class="">
+                                                                    <a href="{% url "Shoppy:shoppy_delete_cart_product" cart.id %}" class="delete-button"><i class="fas fa-trash"></i></a>
+                                                                 </span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="cart_item_price cart_info_col ">
+                                                            <div class="cart_item_title">Price</div>
+                                                            <div class="cart_item_text mt-md-0 mt-lg-0 mt-xl-0 mt-sm-0" style="">
+                                                                {% if  cart.product.price_after_offer and cart.product.id|product_on_offer %}
+                                                                    <div style="display: flex;flex-direction: column;">
+                                                                        <span class="w-100 mt-sm-0 mb-sm-3"> {{ cart.product.price_after_offer|floatformat|intcomma }} Kshs</span>
+                                                                        <span class="striked-price text-muted w-100" style="display: inline-grid">{{ cart.product.unit_cost_inclusive_of_vat|floatformat|intcomma }} Kshs</span>
+                                                                    </div>
+                                                                {% else %}
+                                                                        <span class="w-100 mt-sm-0 mb-sm-3" style="margin-bottom:10px"> {{ cart.product.unit_cost_inclusive_of_vat|floatformat|intcomma }} Kshs</span>
+                                                                        <div>
+                                                                            {% if cart.product.vat_status == 'VAT' %}
+                                                                                <p class="badge badge-danger badge-pill mr-0" style="transform: translateY(-12px);">VAT +</p>
+
+                                                                                16% * ({{cart.product.unit_cost}})
+                                                                            {% endif %}
+                                                                        </div>
+                                                                {% endif %}
+                                                            </div>
+                                                        </div>
+                                                        <div class="cart_item_total cart_info_col">
+                                                            <div class="cart_item_title">Total</div>
+                                                            <div class="cart_item_text mt-sm-0 mb-sm-3">
+
+                                                                {{ cart.total|floatformat|intcomma }} Kshs
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+
+                                    <!-- Order Total -->
+                                    <div class="order_total">
+                                        <div class="order_total_content text-md-right">
+                                            <div class="order_total_title">Grand Total:</div>
+                                            <div class="order_total_amount">{{buyer.cart_total|floatformat|intcomma}} Ksh</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="cart_buttons">
+
+            {#							<button type="button" class="button cart_button_clear">Add to Cart</button>#}
+
+                                        <a href="{% url 'Shoppy:shoppy-view_checkout' %}"  class="button cart_button_checkout bg-org">CheckOut</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <!-- Editable table -->
+        {% else %}
+            <div class="card cart-container w-100">
+              <h3 class="card-header text-left cart-header-text text-uppercase py-4">Cart (0)</h3>
+              <div class="card-body cart-table-body">
+                <div id="table" class="table-editable">
+                  <span class=" float-right mb-3 mr-2"><a href="{% url "Shoppy:shoppy-home" %}" class="btn btn-outline-warning">Continue Shopping</a>
+                  </span>
+                    <div class="row mt-2 d-flex justify-content-center align-content-center align-items-center">
+                         <div class="col-sm-6" style="width: 200px; border: none;margin: 20px; overflow: hidden;">
+                             <h1 class="text-center py-5">No Cart For You Today</h1>
+                             <img class="img-fluid w-100 h-100" src="{% static 'img/no wishlist image/nowishlist.png' %}" alt="">
+                         </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+
+        {% endif %}
+    </div>
+
+{% block scripts %}
+
+    <script>
+        $(document).ready(function(){
+          $('.dropdown-submenu a.test').on("click", function(e){
+            $(this).next('ul').toggle();
+            e.stopPropagation();
+            e.preventDefault();
+          });
+        });
+    </script>
+{% endblock %}
+
+
+{% endblock content %}

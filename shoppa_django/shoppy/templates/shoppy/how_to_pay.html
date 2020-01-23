@@ -1,0 +1,86 @@
+{% extends 'shoppy/layout.html' %}
+{% load static %}
+{% load call_method %}
+{% load humanize %}
+{% block links %}
+    <link rel="stylesheet" href="{% static 'css/shop.css' %}">
+    <link rel="stylesheet" href="{% static 'css/product_card.css' %}">
+{% endblock links %}
+{% block content %}
+    <section>
+        <div class="container">
+            <h3 class="card-header container text-left cart-header-text text-uppercase py-4">Order</h3>
+        </div>
+    </section>
+    <section>
+        <div class="container">
+            <div class="col-sm-12 col-md-12 col-lg-12 py-5">
+                <div class="row">
+
+                    <div class="col-md-12 col-sm-12 col-xs-12 col-lg-12 row ">
+                        <div class="col-sm-12 col-md-12 ">
+                            <div class="row">
+                                <div class="payment_details pd1 p-5 row col-md-12 col-sm-12 col-xs-12 col-lg-12 col-xl-12">
+                                    <span class="col-sm-12 col-md-4 col-lg-4 col-xl-4 d-flex flex-column align-items-center">
+                                        <h3 style="font-size: 30px; font-weight: bolder">Total Orders: </h3><br>
+                                        <span class="color-org">{{order_total.count}}</span>
+                                    </span>
+                                    <span class="col-sm-12 col-md-4 col-lg-4 col-xl-4 mt-3 d-flex flex-column align-items-center">
+                                        <h3 style="font-size: 30px; font-weight: bolder">Payment: </h3><br>
+                                        <span class="color-org">{{checkout.total|floatformat|intcomma}} Ksh</span>
+                                    </span>
+                                    <span class="col-sm-12 col-md-4 col-lg-4 col-xl-4 mt-3 d-flex flex-column align-items-center">
+                                        <h3 style="font-size: 30px; font-weight: bolder">Order Number: </h3><br>
+                                        <span class="color-org" style="font-family: Arial;">{{checkout.reference_code}} </span>
+                                    </span>
+
+                                </div>
+                                <div class="payment_details pd2 col-md-12 col-sm-12 col-xs-12 col-lg-12 col-xl-12 py-4">
+                                    <div class="row d-flex justify-content-between">
+                                        <div class="col-sm-12 col-md-12 col-lg-5 col-xl-5">
+                                            <div class="mpesa_image row">
+                                                <img src="{% static 'img/MPESA-Logo2.png' %}" alt="">
+                                            </div>
+                                            <h4 class="text-capitalize mt-3">Pay using Mpesa</h4>
+                                            <ol >
+                                                <li style="font-size: 18px;" class="text-capitalize py-2 text-muted">open sim toolkit on your phone</li>
+                                                <li style="font-size: 18px;" class="text-capitalize py-2 text-muted">Go To Mpesa menu</li>
+                                                <li style="font-size: 18px;" class="text-capitalize py-2 text-muted">Select paybill</li>
+                                                <li style="font-size: 18px;" class="text-capitalize py-2 text-muted">enter the paybill number on the input field</li>
+                                                <li style="font-size: 18px;" class="text-capitalize py-2 text-muted">enter the order
+                                                     number (<a href="#">{{ checkout.reference_code }}</a>) as the the account name </li>
+                                            </ol>
+                                        </div>
+                                        <div class="d-flex flex-lg-column flex-xl-column flex-sm-row flex-md-row justify-content-center align-items-center">
+                                            <span style="border: 1px solid #6c6c6c; width: 1px; height: 100%;"></span>
+                                                <span class="p-2" style="font-size: 20px;">OR</span>
+                                            <span style="border: 1px solid #6c6c6c; width: 1px; height: 100%;"></span>
+                                        </div>
+                                        <div class="col-sm-12 col-md-12 col-lg-5 col-xl-5 ">
+                                            <div class="mpesa_image row">
+{#                                                <img src="{% static 'img/MPESA-Logo2.png' %}" alt="">#}
+                                            </div>
+                                            <h4 class="text-capitalize">pay using cash</h4>
+                                            <p class="text-muted" style="font-size: 18px;">You can pay in cash when you get the product(s) from the pic up station or on delivery.
+                                                on payment, you will recieve your products(s) and a receipt.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row w-100">
+                                    <a class="product-button ml-auto" href="{% url 'Shoppy:shoppy-home' %}">Continue Shopping</a>
+                                </div>
+                            </div>
+                        </div>
+
+                  </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+{% endblock %}
+{% block scripts %}
+    <script type="text/javascript" src="{% static 'js/productcard.js' %}"></script>
+{% endblock scripts %}

@@ -1,0 +1,161 @@
+
+{% extends 'aaa_layout.html' %}
+{% load static %}
+{% block links %}
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/css/bootstrap-select.min.css" rel="stylesheet" />
+
+{% endblock links %}
+{% block content %}
+<div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">
+		<div class="row">
+			<ol class="breadcrumb">
+				<li>
+					<a href="#">
+					<em class="fa fa-home"></em>
+				    </a>
+			    </li>
+                <li  class="text-dark"><a class="text-dark" style="color: black;" href="{%  url "ShoppyAdmin:shoppy_admin_add_category" %}">Categories</a></li>
+				<li  class="active text-dark"><a class="text-dark" style="color: black;" href="">Sub Categories</a></li>
+			</ol>
+		</div><!--/.row-->
+       <div class="row">
+			<div class="col-lg-12">
+				<h1 class="page-header">Sub Categories</h1>
+			</div>
+		</div><!--/.row-->
+
+
+{#          editproducts  #}
+         {% for sub_category in sub_categories %}
+                <!--edit confirm Modal -->
+              <div class="modal fade" id="editcategory{{ sub_category.id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Edit Category {{ sub_category.name }}</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                       <fieldset>
+                             <form action="{% url 'ShoppyAdmin:shoppy_edit_category' sub_category.id %}" method="POST">
+                             {% csrf_token %}
+                                 <div class="form-group has-success has-feedback">
+                                  <label class="control-label" for="brand">Category Name</label>
+                                  <input value="{{ sub_category.name }}" type="text" class="form-control" name="name" id="brand" aria-describedby="inputSuccess2Status" required>
+                                  <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>
+                                  <span id="inputSuccess2Status" class="sr-only">(success)</span>
+                                </div>
+                                <div class="form-group has-feedback  col-sm-12">
+                                  <label for="sel1">Category</label> <br>
+                                  <select name="parent_id" class="selectpicker" data-show-subtext="true" data-live-search="true">
+{#
+                                    {% for category in categories %}
+                                     <option data-subtext="{{ category.name }}" {% if sub_category.parent_id_id == category.id  %} selected {% endif %} value="{{ category.id }}">{{ category.name }}</option>
+                                    {% endfor %}
+                                  </select>
+                                </div>
+                                <div class="paddingy2">
+                                    <button type="submit" class="btn btn-success"> <i class="fas fa-plus"></i> Save</button>
+                                    <button type="button" class="btn btn-warning" data-dismiss="modal"><i class="fas fa-close"></i> Close</button>
+                                </div>
+                             </form>
+                       </fieldset>
+                      </div>
+{#                      <div class="modal-footer">#}
+{#                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>#}
+{#                        <button type="button" class="btn btn-primary">Save changes</button>#}
+{#                      </div>#}
+                    </div>
+                  </div>
+                </div>
+
+         {% endfor %}
+{#          editproducts#}
+
+       <div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading panel-warning-custom">
+                            Sub Category
+
+                            <span class="pull-right clickable panel-toggle panel-button-tab-left"><em class="fa fa-toggle-up"></em></span></div>
+                        <div class="panel-body">
+                            <div class="canvas-wrapper">
+                                <div class="main-chart" id="line-chart" height="200" width="600">
+                                {% if categories %}
+                                    <table id="" class="example table table-striped table-bordered" style="width:100%;">
+                                        <thead>
+                                            <tr class="text-capitalize">
+                                                <th>Id</th>
+                                                <th>Name</th>
+                                                <th>Created At</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for category in sub_categories %}
+                                                <tr class="text-center ">
+                                                    <td class="tb-data">{{ category.id }}</td>
+                                                    <td class="tb-data">{{ category.name }} ({{ brand_count }})</td>
+                                                    <td class="tb-data">{{ category.created_at }}</td>
+                                                    <td class="tb-data">
+                                                        <a href="" data-toggle="modal" data-target="#delete{{ category.id }}" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Delete</a>
+                                                        <a href="" data-toggle="modal" data-target="#editcategory{{ category.id }}" class="btn btn-success"><i class="fas fa-pencil-alt"></i> Edit</a>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+
+                                        </tbody>
+                                    </table>
+                                {% else %}
+                                    <div class="col-sm-12 d-flex justify-content-center">
+                                        <div class=" noitemcontainer col-sm-3 overflow-hidden  ">
+                                            <div class="d-flex justify-content-center" style="width: 200px; height: 200px; margin: 0 auto;">
+                                                <img src="{% static "images/noimages/noneitem.png" %}" alt="">
+                                            </div>
+                                            <h2 class="text-muted text-center">No Sub Category Found</h2>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                </div>
+                                    {% for category in categories %}
+                                        <!--delete confirm Modal -->
+                                          <div class="modal fade" id="delete{{ category.id }}" role="dialog">
+                                            <div class="modal-dialog modal-sm">
+                                              <div class="modal-content">
+                                                <div class="modal-header">
+                                                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                  <h4 class="modal-title text-capitalize">Deleting {{ category.name }}</h4>
+                                                </div>
+                                                <div class="modal-body">
+                                                  <p>Are you sure you want to delete {{ category.name }}.</p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                                    <a class="btn btn-danger" href="{% url "ShoppyAdmin:shoppy_delete_category" category.id %}"> Delete </a>
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                    {% endfor %}
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><!--/.row-->
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script>
+        $(document).ready(function() {
+            $('#example').DataTable();
+        } );
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/bootstrap-select.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap.min.js"></script>
+{% endblock scripts %}

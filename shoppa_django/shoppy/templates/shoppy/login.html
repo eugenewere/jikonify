@@ -1,0 +1,115 @@
+{% extends 'shoppy/layout.html' %}
+
+{% block content %}
+<div class="forms-background" >
+      <div class="content-section">
+          {% if errors %}
+            <ul class="p-0">
+            {% for error in errors %}
+                <div class="alert alert-danger" role="alert">
+                  {{ error }}
+                </div>
+            {% endfor %}
+            </ul>
+          {% endif %}
+
+          {% if messages %}
+            <ul class="messages">
+              {% for message in messages %}
+                  <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}" role="alert">
+                      {{ message }}
+                  </div>
+              {% endfor %}
+            </ul>
+          {% endif %}
+
+          {% if form.errors %}
+            {% for field in form %}
+                {% for error in field.errors %}
+                    <div class="alert alert-danger">
+                      <strong class="text-white">{{ error|escape }}</strong>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+            {% for error in form.non_field_errors %}
+                <div class="alert alert-danger text-white">
+                  <strong>{{ error|escape }}</strong>
+                </div>
+            {% endfor %}
+          {% endif %}
+
+            <h2 class="py-4">Log in</h2>
+            <form action="{% url 'Shoppy:shoppy-login' %}" method="post">
+                {% csrf_token %}
+                    <div class="col-md-12 mb-3">
+                      <label for="validationCustomUsername">Phonenumber or Email</label>
+                      <div class="input-group">
+                        <div class="input-group-prepend bg-warning">
+                          <span class="input-group-text bg-warning" id="inputGroupPrepend">@</span>
+                        </div>
+                        <input name="username" type="text" class="form-control" id="validationCustomUsername" placeholder="PhoneNumber or Username" aria-describedby="inputGroupPrepend" required><br>
+
+                        <div class="invalid-feedback">
+                          Please enter your Email.
+                        </div>
+                        <div class="valid-feedback">
+                          Looks fantastic.
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="col-md-12 mb-3">
+                          <label for="validationCustom04">Pin</label>
+                          <div class="position-relative">
+                                <input maxlength="4" type="password" name="password" class="form-control position-relative w-100 password1" id="validationCustom04" placeholder="Pin" required>
+                               <div style="position: absolute;top: 9px;right: 11px;" class="password_checker">
+                                    <i onclick="changeText1();" class="fas fa-eye txt1 color animation "></i>
+                                    <i style="display:none;" onclick="changePassword1();" class="fas fa-eye-slash psd1 color animation "></i>
+                               </div>
+                          </div>
+                          <div class="invalid-feedback">
+                            Please provide a valid state.
+                          </div>
+                          <div class="valid-feedback">
+                            Better looking.
+                          </div>
+                    </div>
+
+
+                  <button class="product-button" type="submit">Log in</button>
+            </form>
+            <div class=" pt-3">
+                <small class="text-muted medium-text">
+                    Need an account? <a href="{% url 'Shoppy:shoppy-buyer-reg' %}" class="ml-2">Sign up</a>
+                </small>
+            </div>
+            <div class=" pt-3">
+                <small class="text-muted medium-text">
+                    Forgot Pin? <a href="{% url 'Shoppy:password_resett' %}" class="ml-2">Reset</a>
+                </small>
+            </div>
+
+      </div>
+</div>
+
+{% endblock content %}
+{% block scripts %}
+    <script>
+     var pswd1 = document.getElementsByClassName('password1')[0];
+        var txt1 = document.getElementsByClassName('txt1')[0];
+        var psd1 = document.getElementsByClassName('psd1')[0];
+        function changeText1() {
+
+            pswd1.setAttribute('type','text');
+            psd1.style.display="block";
+            txt1.style.display = "none";
+            txt1.style.transition = 1+"s";
+        }
+        function changePassword1() {
+            pswd1.setAttribute('type','password');
+            psd1.style.display="none";
+            txt1.style.display = "block";
+            txt1.style.transition = 1+"s";
+        }
+    </script>
+{% endblock scripts %}

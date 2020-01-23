@@ -1,0 +1,206 @@
+{% extends 'aaa_layout.html' %}
+{% load static %}
+{% block links %}
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/css/bootstrap-select.min.css" rel="stylesheet" />
+
+{% endblock links %}
+{% block content %}
+     <div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">
+		<div class="row">
+			<ol class="breadcrumb">
+				<li>
+					<a href="#">
+					<em class="fa fa-home"></em>
+				    </a>
+			    </li>
+				<li class="active">Category</li>
+			</ol>
+		</div><!--/.row-->
+       <div class="row">
+			<div class="col-lg-12">
+				<h1 class="page-header">Category</h1>
+			</div>
+		</div><!--/.row-->
+
+            <!-- Add Category Modal -->
+                <div class="modal fade" id="addCategory" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Add Category</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                       <fieldset>
+                             <form action="{% url 'ShoppyAdmin:shoppy_adding_category' %}" method="POST">
+                             {% csrf_token %}
+                                 <div class="form-group has-success has-feedback">
+                                  <label class="control-label" for="brand">Category Name</label>
+                                  <input autofocus autocapitalize="on" type="text" class="form-control" name="name" id="brand" aria-describedby="inputSuccess2Status" required>
+                                  <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>
+                                  <span id="inputSuccess2Status" class="sr-only">(success)</span>
+                                </div>
+                                <div class="form-group has-feedback  col-sm-12">
+                                  <label for="sel1">Category</label> <br>
+                                  <select name="parent_id" class="selectpicker" data-show-subtext="true" data-live-search="true">
+                                    <option selected value="">Choose A Category</option>
+                                    {% for category in categories %}
+                                     <option data-subtext="{{ category.name }}" value="{{ category.id }}">{{ category.name }}</option>
+                                    {% endfor %}
+                                  </select>
+                                </div>
+                                <div class="paddingy2">
+                                    <button type="submit" class="btn btn-success"> <i class="fas fa-plus"></i> Add</button>
+                                    <button type="button" class="btn btn-warning" data-dismiss="modal"><i class="fas fa-close"></i> Close</button>
+                                </div>
+                             </form>
+                       </fieldset>
+                      </div>
+{#                      <div class="modal-footer">#}
+{#                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>#}
+{#                        <button type="button" class="btn btn-primary">Save changes</button>#}
+{#                      </div>#}
+                    </div>
+                  </div>
+                </div>
+        <div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading panel-warning-custom">
+                            Main Categories
+
+                            <span class="pull-right clickable panel-toggle panel-button-tab-left"><em class="fa fa-toggle-up"></em></span>
+                            <a href="#" data-toggle="modal" data-target="#addCategory" class="btn btn-success pull-right">Add Category</a>
+                        </div>
+
+
+                        <div class="panel-body">
+                            <div class="canvas-wrapper">
+                                <div class="main-chart" id="line-chart" height="200" width="600">
+                                    <table id="example" class="table table-striped table-bordered" style="width:100%;">
+                                    <thead>
+                                        <tr class="text-capitalize">
+                                            <th>Id</th>
+                                            <th>Name</th>
+                                            <th>Created At</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for category in categories %}
+                                            <tr class="text-center ">
+                                                <td class="tb-data">{{ category.id }}</td>
+                                                <td class="tb-data text-capitalize">{{ category.name }} ({{ category.childern_count }})</td>
+                                                <td class="tb-data">{{ category.created_at }}</td>
+                                                <td class="tb-data">
+                                                    {% if category.has_children %}
+                                                    <a href="{% url "ShoppyAdmin:shoppy_view_sub_category" category.id %}" class="btn btn-info"><i class="fas fa-eye"></i> View</a>
+                                                    {% endif %}
+                                                    <a href="" data-toggle="modal" data-target="#delete{{ category.id }}" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Delete</a>
+                                                    <a href="" data-toggle="modal" data-target="#editcategory{{ category.id }}" class="btn btn-success"><i class="fas fa-pencil-alt"></i> Edit</a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+
+                                    </tbody>
+                                </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+        {% for category in categories %}
+                <!--delete confirm Modal -->
+              <div class="modal fade" id="delete{{ category.id }}" role="dialog">
+                <div class="modal-dialog modal-sm">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                      <h4 class="modal-title text-capitalize">Deleting {{ category.name }}</h4>
+                    </div>
+                    <div class="modal-body">
+                      <p>Are you sure you want to delete {{ category.name }}.</p>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <a class="btn btn-danger" href="{% url "ShoppyAdmin:shoppy_delete_category" category.id %}"> Delete </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+        {% endfor %}
+        {% for category in categories %}
+                <!--edit confirm Modal -->
+              <div class="modal fade" id="editcategory{{ category.id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Edit Category {{ category.name }}</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                       <fieldset>
+                             <form action="{% url 'ShoppyAdmin:shoppy_edit_category' category.id %}" method="POST">
+                             {% csrf_token %}
+                                 <div class="form-group has-success has-feedback">
+                                  <label class="control-label" for="brand">Category Name</label>
+                                  <input value="{{ category.name }}" type="text" class="form-control" name="name" id="brand" aria-describedby="inputSuccess2Status" required>
+                                  <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>
+                                  <span id="inputSuccess2Status" class="sr-only">(success)</span>
+                                </div>
+                                <div class="form-group has-feedback  col-sm-12">
+                                  <label for="sel1">Category</label> <br>
+                                  <select name="parent_id" class="selectpicker" data-show-subtext="true" data-live-search="true">
+                                        {% if category.id == category.parent_id_id %}
+                                           <option selected value="">{{ category.name }}</option>
+                                            {% else %}
+                                           <option selected value="">No Parent</option>
+                                        {% endif %}
+                                    {% for category in categories %}
+                                     <option data-subtext="{{ category.name }}"
+                                             value="{{ category.id }}">
+                                                {{ category.name }}
+                                     </option>
+                                    {% endfor %}
+                                  </select>
+                                </div>
+                                <div class="paddingy2">
+                                    <button type="submit" class="btn btn-success"> <i class="fas fa-plus"></i> Save</button>
+                                    <button type="button" class="btn btn-warning" data-dismiss="modal"><i class="fas fa-close"></i> Close</button>
+                                </div>
+                             </form>
+                       </fieldset>
+                      </div>
+{#                      <div class="modal-footer">#}
+{#                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>#}
+{#                        <button type="button" class="btn btn-primary">Save changes</button>#}
+{#                      </div>#}
+                    </div>
+                  </div>
+                </div>
+
+        {% endfor %}
+
+      </div><!--/.row-->
+    </div>
+{% endblock content %}
+{% block scripts %}
+
+    <script>
+        $(document).ready(function() {
+            $('#example').DataTable();
+        } );
+    </script>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/bootstrap-select.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap.min.js"></script>
+
+{% endblock scripts %}

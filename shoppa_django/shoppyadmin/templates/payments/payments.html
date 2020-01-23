@@ -1,0 +1,210 @@
+{% extends 'aaa_layout.html' %}
+{% load static %}
+{% load humanize %}
+{% load call_method %}
+{% block links %}
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/css/bootstrap-select.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.10/css/select2.css">
+    <style>
+    .select2-container{
+        width: 100% !important;
+    }
+    </style>
+{% endblock links %}
+{% block content %}
+<div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">
+		<div class="row">
+			<ol class="breadcrumb">
+				<li>
+					<a href="#">
+					<em class="fa fa-home"></em>
+				    </a>
+			    </li>
+				<li class="active">Payments</li>
+			</ol>
+		</div><!--/.row-->
+       <div class="row">
+			<div class="col-lg-12">
+				<h1 class="page-header">Payments</h1>
+			</div>
+		</div><!--/.row-->
+
+       <div class="row">
+            <div class="col-lg-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading panel-warning-custom">
+                        Payments
+                        <span class="pull-right clickable panel-toggle panel-button-tab-left"><em class="fa fa-toggle-up"></em></span>
+                        <a href="" data-toggle="modal" data-target="#add_payment" class="btn-success btn pull-right">Record Order Payment</a>
+                    </div>
+                    <div class="panel-body">
+                        <div class="canvas-wrapper">
+                            <div class="main-chart" id="line-chart" height="200" width="600">
+                                <table id="example" class="table table-striped table-bordered" style="width:100%;">
+                            <thead>
+                                <tr class="text-capitalize">
+                                    <th>Id</th>
+                                    <th>Buyer </th>
+                                    <th>Phone Number</th>
+                                    <th>Checkout Refrence</th>
+                                    <th>Amount Paid</th>
+                                    <th>Required Amount</th>
+                                    <th>Balance</th>
+                                    <th>Shipping cost</th>
+
+                                    <th>Reciept No</th>
+                                    <th>Date Recorded</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                    {% for pay in payments %}
+                                        <tr>
+                                            <td class="tb-data">{{ forloop.counter }}</td>
+
+                                            <td class="tb-data text-capitalize">
+                                                {% if pay.checkout.status == "PENDING" %}
+                                                    <span style="color:#FEAA12;">{{ pay.checkout.buyer.first_name }} {{ pay.checkout.buyer.last_name }}</span>
+                                                {% else %}
+                                                    {{ pay.checkout.buyer.first_name }} {{ pay.checkout.buyer.last_name }}
+                                                {% endif %}
+                                            </td>
+
+
+                                            <td class="tb-data text-capitalize">
+                                                {{ pay.checkout.buyer.phone_number }}
+                                            </td>
+
+                                            <td>{{ pay.checkout.reference_code }} </td>
+                                            <td>{{ pay.amount|floatformat|intcomma }} Ksh</td>
+                                            <td>{{ pay.checkout.total|floatformat|intcomma }} Ksh</td>
+                                            <td>{{ pay.balance|floatformat|intcomma}} Ksh</td>
+                                            <td>{{ pay.checkout.shipping_cost|floatformat|intcomma }} Ksh</td>
+
+                                            <td>{{ pay.payment_refrence }} </td>
+                                            <td class="tb-data">{{ pay.created_at|naturaltime }}</td>
+                                            <td class="text-center tb-data">
+                                                <a href="{% url 'ShoppyAdmin:shoppy-buyer_orders' pay.checkout.reference_code %}"  class="btn btn-info"><i class="fas fa-pencil-alt"></i> View</a>
+                                                <a href="#" data-toggle="modal" data-target="#pay{{ pay.id }}" class="btn btn-success"><i class="fas fa-pencil-alt"></i> Edit</a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                            </tbody>
+                        </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+       </div><!--/.row-->
+    </div>
+{#    editpayment#}
+    {% for pay in payments %}
+     <div class="modal fade" id="pay{{ pay.id }}" role="dialog">
+            <div class="modal-dialog modal-lg">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                  <h4 class="modal-title"> Record New Order Payment</h4>
+                </div>
+                <div class="modal-body">
+                 <fieldset>
+                     <form action="{% url 'ShoppyAdmin:shoppy_updated_payments' pay.id %}" method="POST">
+                     {% csrf_token %}
+                         <div class="form-group ">
+                             <h2>{% for chc in checkouts %}{{chc.reference_code}}-> {{ chc.total|floatformat|intcomma }} Kshs{% endfor %}</h2>
+{#                          <label class="control-label" for="checkout">Checkout Order Number</label><br>#}
+{#                          <select required name="ref_code" autofocus id="checkout" class=" form-control-lg w-100">#}
+{#                              <option selected disabled>Choose A Order Number</option>#}
+{#                              {% for chc in checkouts %}#}
+{#                                 <option {% if pay.checkout.reference_code == chc.reference_code%} selected {% endif %} value="{{chc.reference_code}}">{{chc.reference_code}}-> {{ chc.total|floatformat|intcomma }} Kshs</option>#}
+{#                              {% endfor %}#}
+{#                          </select>#}
+                        </div>
+                        <div class="form-group has-feedback  col-sm-12">
+                          <label for="sel1">Amount Paid {{ pay.amount|floatformat:0 }} ksh</label> <br>
+                            <input required {% comment %}value="{{ pay.amount|floatformat:0 }}"{% endcomment %}  id="sel1" type="number" name="amount" class="form-control form">
+                        </div>
+                        <div class="form-group has-feedback  col-sm-12">
+                          <label for="sel1">Shipping Cost {{ pay.checkout.shipping_cost |floatformat:0}} Ksh</label> <br>
+                            <input id="sel1" value="{{ pay.checkout.shipping_cost |floatformat:0}}" type="number" name="shipping_cost" class="form-control form">
+                        </div>
+
+                         <div class="form-group has-feedback  col-sm-12">
+                          <label for="sel1">Reciept Number</label> <br>
+                            <input value="{{ pay.payment_refrence }}" required id="sel1" type="text" name="payment_reference" class="form-control form">
+                        </div>
+
+                        <div class="paddingy2">
+                            <button type="submit" class="btn btn-success product-button"> <i class="fas fa-plus"></i> Save</button>
+{#                            <button type="button" class="btn btn-warning" data-dismiss="modal"><i class="fas fa-close"></i> Close</button>#}
+                        </div>
+                     </form>
+                 </fieldset>
+                </div>
+              </div>
+            </div>
+          </div>
+    {% endfor %}
+{#    editpayment#}
+
+{#    addpayment#}
+     <div class="modal fade" id="add_payment" role="dialog">
+            <div class="modal-dialog modal-lg">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                  <h4 class="modal-title">Record Order Payment</h4>
+                </div>
+                <div class="modal-body">
+                 <fieldset>
+                     <form action="{% url 'ShoppyAdmin:shoppy-payments' %}" method="POST">
+                     {% csrf_token %}
+                         <div class="form-group ">
+                          <label class="control-label" for="checkout">Checkout Order Number</label><br>
+                          <select required name="ref_code" autofocus id="checkout" class="form-control w-100">
+                              <option selected disabled>Choose A Order Number</option>
+                              {% for chc in checkouts %}
+                                 <option value="{{chc.reference_code}}">{{chc.reference_code}}-> {{ chc.total|floatformat|intcomma }} Kshs</option>
+                              {% endfor %}
+                          </select>
+                        </div>
+                        <div class="form-group has-feedback  col-sm-12">
+                          <label for="sel1">Ammount</label> <br>
+                            <input required id="sel1" type="number" name="amount" class="form-control form">
+                        </div>
+                        <div class="form-group has-feedback  col-sm-12">
+                          <label for="sel1">Shipping Cost</label> <br>
+                            <input  id="sel1" value="0" type="number" name="shipping_cost" class="form-control form">
+                        </div>
+
+                         <div class="form-group has-feedback  col-sm-12">
+                          <label for="sel1">Reciept Number</label> <br>
+                            <input required id="sel1" type="text" name="payment_reference" class="form-control form">
+                        </div>
+
+                        <div class="paddingy2">
+                            <button type="submit" class="btn btn-success product-button"> <i class="fas fa-plus"></i> Add</button>
+{#                            <button type="button" class="btn btn-warning" data-dismiss="modal"><i class="fas fa-close"></i> Close</button>#}
+                        </div>
+                     </form>
+                 </fieldset>
+                </div>
+              </div>
+            </div>
+          </div>
+{#    addpayment#}
+{% endblock %}
+{% block scripts %}
+    <script src="{% static 'js/select2.min.js' %}"></script>
+    <script>
+        $(document).ready(function() {
+            $('#example').DataTable();
+        } );
+        $("#checkout").select2();
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/bootstrap-select.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap.min.js"></script>
+{% endblock scripts %}

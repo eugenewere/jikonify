@@ -1,0 +1,136 @@
+{% extends 'aaa_layout.html' %}
+{% load static %}
+{% load call_method %}
+{% load humanize %}
+{% block links %}
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/css/bootstrap-select.min.css" rel="stylesheet" />
+
+{% endblock links %}
+{% block content %}
+<div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">
+		<div class="row">
+			<ol class="breadcrumb">
+				<li>
+					<a href="#">
+					<em class="fa fa-home"></em>
+				    </a>
+			    </li>
+				<li class="active"><a class="text-dark" style="color: black;" href="{% url 'ShoppyAdmin:shoppy-admin-home' %}">Dashboard</a></li>
+				<li class="active">Buyer Orders</li>
+			</ol>
+		</div><!--/.row-->
+       <div class="row">
+			<div class="col-lg-12">
+				<h1 class="page-header">Buyer Orders</h1>
+			</div>
+		</div><!--/.row-->
+
+       <div class="row">
+            <div class="col-lg-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading panel-warning-custom">
+                        <span style="text-transform: capitalize; font-size: 22px;">{{ buyer.first_name }} {{ buyer.last_name }}</span>
+                        <span class="pull-right clickable panel-toggle panel-button-tab-left"><em class="fa fa-toggle-up"></em></span>
+
+                    </div>
+                    <div class="panel-body">
+                        <div class="canvas-wrapper">
+                            <div class="main-chart" id="line-chart" height="200" width="600">
+                                {% if request.user|is_seller %}
+                                <table id="example" class="example table table-striped table-bordered" style="width:100%;">
+                                    <thead>
+                                        <tr class="text-capitalize">
+                                            <th>Id</th>
+                                            <th>Image</th>
+                                            <th>Product Name</th>
+                                            <th>Order Reference-No</th>
+                                            <th>Variants</th>
+                                            <th>Quantity</th>
+                                            <th>Cost</th>
+                                            <th>Created At</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for order in orders %}
+                                            <tr class="text-center ">
+                                                <td class="tb-data">{{ forloop.counter }}</td>
+                                                <td class="tb-data tb-data">
+                                                    <div class="product-image">
+                                                        <img src="{{ order.product.featured_url.url }}" alt="">
+                                                    </div>
+                                                </td>
+                                                <td class="tb-data">{{ order.product.name }}</td>
+                                                <td class="tb-data">{{ order.checkout.reference_code }}</td>
+                                                <td class="tb-data">
+                                                    {% for variant in order.id|order_variants %}
+                                                        {{ variant }}
+                                                    {% endfor %}
+                                                </td>
+                                                <td>{{ order.quantity }}</td>
+                                                <td>
+                                                    {{ order.id|order_total|floatformat|intcomma }} Ksh
+                                                </td>
+                                                <td class="tb-data">{{ order.created_at }}</td>
+
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                                {% else %}
+                                    <table id="example" class="example table table-striped table-bordered" style="width:100%;">
+                                        <thead>
+                                            <tr class="text-capitalize">
+                                                <th>Id</th>
+                                                <th>Image</th>
+                                                <th>Product Name</th>
+                                                <th>Variants</th>
+                                                <th>Quantity</th>
+                                                <th>Cost</th>
+                                                <th>Created At</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for order in admin_orders %}
+                                                <tr class="text-center ">
+                                                    <td class="tb-data">{{ forloop.counter }}</td>
+                                                    <td class="tb-data tb-data">
+                                                        <div class="product-image">
+                                                            <img src="{{ order.product.featured_url.url }}" alt="">
+                                                        </div>
+                                                    </td>
+                                                    <td class="tb-data">{{ order.product.name }}</td>
+                                                    <td class="tb-data">
+                                                        {% for variant in order.id|order_variants %}
+                                                            {{ variant }}
+                                                        {% endfor %}
+                                                    </td>
+                                                    <td>{{ order.quantity }}</td>
+                                                    <td>
+                                                        {{ order.id|order_total|floatformat|intcomma }} Ksh
+                                                    </td>
+                                                    <td class="tb-data">{{ order.created_at }}</td>
+
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+       </div><!--/.row-->
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script>
+        $(document).ready(function() {
+            $('#example').DataTable();
+        } );
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/bootstrap-select.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap.min.js"></script>
+{% endblock scripts %}

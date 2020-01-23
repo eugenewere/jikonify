@@ -1,0 +1,217 @@
+{% extends 'aaa_layout.html' %}
+{% load static %}
+{% load call_method %}
+{% load humanize %}
+{% block links %}
+     <script src="https://cdn.ckeditor.com/4.12.1/standard/ckeditor.js"></script>
+
+{% endblock links %}
+{% block content %}
+<div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">
+		<div class="row">
+			<ol class="breadcrumb">
+				<li>
+					<a href="#">
+					<em class="fa fa-home"></em>
+				    </a>
+			    </li>
+				<li class="active">Product/Edit</li>
+			</ol>
+		</div><!--/.row-->
+       <div class="row">
+			<div class="col-lg-12">
+				<h1 class="page-header">Product</h1>
+			</div>
+		</div><!--/.row-->
+
+        <div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading panel-warning-custom">
+                            Edit
+
+                            <span class="pull-right clickable panel-toggle panel-button-tab-left"><em class="fa fa-toggle-up"></em></span>
+
+                        </div>
+                        <div class="panel-body">
+                            <div class="canvas-wrapper">
+                                <div class="main-chart" id="line-chart" height="200" width="600">
+                                    <div class="col-md-12 col-sm-12 ">
+                                        <form action="{% url 'ShoppyAdmin:shoppy_admin_edit_product' product.id %}" method="post" enctype="multipart/form-data">
+                                            {% csrf_token %}
+                                            <div class="row">
+                                                <div class="col-sm-12 page-header">
+                                                    <h4 class="page-header-text-custom">Product Picture And Description</h4>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-3 col-sm-3 product_main_image_wrapper">
+                                                        <div class="product_image">
+                                                            <a href="{{ product.featured_url.url }}"><img src="{{ product.featured_url.url }}" alt="{{ product.name }}"></a>
+                                                        </div>
+                                                        <a href="#" class="btn btn-danger"><i class="fas fa-xl fa-trash"></i></a>
+                                                        <span data-toggle="collapse" data-target="#m_img"  class="btn btn-success fas fa-xl fa-pencil-alt nd"></span>
+                                                        <div id="m_img" class="collapse ">
+                                                            <div class="form-group has-feedback">
+                                                              <label class="control-label" for="name">Main Image</label>
+                                                              <input type="file" value="{{ product.featured_url }}" name="featured_url" class="form-control has-success" id="name" aria-describedby="name" placeholder="Image">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-9 col-sm-9">
+                                                        <div class="row">
+                                                            <div class="col-sm-12 page-header">
+                                                                <h4 class="page-header-text-custom">Product Name</h4>
+                                                            </div>
+                                                            <h3 class="prod_header">{{ product.name }} <span href="#" class="btn btn-success fas fa-pencil-alt" data-toggle="collapse" data-target="#title"></span></h3>
+                                                            <div id="title" class="collapse">
+                                                                <div class="form-group has-feedback">
+                                                                  <label class="control-label" for="name">Product Name</label>
+                                                                  <input type="text" name="name" value="{{ product.name }}" class="form-control has-success" id="name" aria-describedby="name" placeholder="Product Name">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-sm-12 page-header">
+                                                                <h4 class="page-header-text-custom">Product Price <span href="#" data-toggle="collapse" data-target="#price" class="btn btn-success fas fa-pencil-alt"></span> </h4>
+                                                            <div id="price" class="collapse">
+                                                                <div class="form-group has-feedback">
+                                                                  <label class="control-label" for="name">Product Price</label>
+                                                                  <input min="5" type="number" name="unit_cost" value="{{ product.unit_cost_inclusive_of_vat }}" class="form-control has-success" id="name" aria-describedby="name" placeholder="Product Price">
+                                                                </div>
+                                                            </div>
+                                                            </div>
+                                                            {% if  product.price_after_offer and product.id|product_on_offer %}
+                                                                <div style=" float: left">
+                                                                    <b class="page-item page-item-custom product">{{ product.price_after_offer|floatformat:1|intcomma }} Kshs</b>
+                                                                    <b class="striked-price">{{ product.unit_cost_inclusive_of_vat|floatformat:1|intcomma }} Kshs</b>
+{#                                                                    <span class=""> Kshs</span>#}
+                                                                </div>
+                                                            {% else %}
+                                                                <b  class="page-item page-item-custom product"> {{ product.unit_cost_inclusive_of_vat|floatformat:1|intcomma }}Kshs</b>
+                                                            {% endif %}
+
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-12 page-header">
+                                                    <h4 class="page-header-text-custom">Short Description <span href="#" data-toggle="collapse" data-target="#s_discription" class="btn btn-success fas fa-pencil-alt"></span></h4>
+                                                    <div id="s_discription" class="collapse">
+                                                        <div class="form-group has-feedback">
+                                                              <label class="control-label" for="s_discription">Short Description</label>
+                                                              <textarea style="resize: none;"  name="short_description" id="s_discription" class="form-control " cols="30" rows="10" >{{ product.short_description  }}</textarea>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-12">
+                                                    <p class="page-item page-item-custom">{{ product.short_description }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-12 page-header">
+                                                    <h4 class="page-header-text-custom">Long Description <span href="#" data-toggle="collapse" data-target="#l_discription"  class="btn btn-success fas fa-pencil-alt"></span></h4>
+                                                    <div id="l_discription" class="collapse">
+                                                        <div class="form-group has-feedback">
+                                                          <label class="control-label" for="username">Long Description</label>
+                                                            {% autoescape off %}
+                                                              <textarea id="editor2" style="resize: none;" name="long_description" class="form-control " cols="30" rows="20">{{ product.long_description|safe|escape  }}</textarea>
+                                                            {% endautoescape %}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-12">
+                                                    {% autoescape off %}
+                                                    <p class="page-item page-item-custom">{{ product.long_description|safe }}</p>
+                                                    {% endautoescape %}
+                                                </div>
+                                            </div>
+                                            <div class="divider"></div>
+{#                                            <div class="row py-3">#}
+{#                                                <div class="col-sm-12 row pt-3">#}
+{#                                                    {% if product.variants %}#}
+{#                                                        {% for variant in  product.variants %}#}
+{#                                                           <div class="flex  col-sm-12 col-md-6 ">#}
+{#                                                                <div class="control-label py-2 text-capitalize">{{ variant.name}}</div>#}
+{#                                                                <div class=" respon6-next w-100">#}
+{#                                                                    <div class="rs1-select2 bor8 bg0">#}
+{#                                                                        <select class="browser-primary custom-select" name="variant_options[]">#}
+{#                                                                          <option class="text-muted" selected>Open this select menu</option>#}
+{##}
+{#                                                                            {% for option in variant.options %}#}
+{#                                                                                {%  if variant.name|lower == 'color'  %}#}
+{#                                                                                     <span style="background-color:{{ option.name|lower }};" class="color-wrapper"></span> <i class="fa-file"></i> <option class="text-capitalize" value="{{ option.id }}"> {{ option.name }}</option>#}
+{#                                                                                {% else %}#}
+{#                                                                                     <option class="text-capitalize" value="{{ option.id }}">{{ option.name }}</option>#}
+{#                                                                                {% endif %}#}
+{#                                                                            {% endfor %}#}
+{#                                                                        </select>#}
+{#                                                                        <div class="dropDownSelect2"></div>#}
+{#                                                                    </div>#}
+{#                                                                </div>#}
+{#                                                           </div>#}
+{#                                                        {% endfor %}#}
+{#                                                    {% else %}#}
+{#                                                    <div class="flex  col-sm-12 col-md-6 ">#}
+{#                                                        <div class="control-label py-2 text-capitalize">No Options for this product</div>#}
+{#                                                        <div class=" respon6-next w-100">#}
+{#                                                            <div class="rs1-select2 bor8 bg0">#}
+{#                                                                <select disabled class="browser-primary custom-select" name="">#}
+{#                                                                   <options value="No Variant Options For This Product"  >No Variant Options For This Product</options>#}
+{#                                                                </select>#}
+{#                                                                <div class="dropDownSelect2"></div>#}
+{#                                                            </div>#}
+{#                                                        </div>#}
+{#                                                   </div>#}
+{#                                                    {% endif %}#}
+{##}
+{#                                                </div>#}
+{#                                            </div>#}
+
+                                            <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="row">
+                                                    <div class="col-sm-12 page-header">
+                                                        <h4 class="page-header-text-custom">Other Product Images <span href="#" data-toggle="collapse" data-target="#o_images"  class="btn btn-success fas fa-pencil-alt"></span></h4>
+                                                        <div id="o_images" class="collapse">
+                                                            <div class="form-group has-feedback">
+                                                              <label class="control-label" for="name">Other Image</label>
+                                                              <input value="{{ image.image }}" type="file" name="other_images[]" multiple class="form-control has-success" id="name" aria-describedby="name" placeholder="Image">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row ">
+                                                    {% for image in images %}
+                                                        <div class="col-md-4 col-sm-2 col-xm-1 product_img_wrapper_col">
+                                                            <div class="product_img_wrapper">
+                                                                <a href="/media/{{ image.image }}"><img src="/media/{{ image.image }}" alt=""></a>
+                                                            </div>
+                                                            <a href="{% url 'ShoppyAdmin:delete_product_image' image.id %}" class="btn btn-danger"><i class="fas fa-xl fa-trash"></i></a>
+                                                        </div>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                            </div>
+                                            <div class="panel-footer">
+                                                <div class="row">
+                                                  <button type="submit" class="btn btn-lg btn-success"><i class="fa fa-file"></i> Save</button>
+                                                  <button type="reset" class="btn btn-lg btn-danger"><i class="fa fa-redo"></i> Reset</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><!--/.row-->
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script>
+       CKEDITOR.replace('editor2');
+    </script>
+{% endblock scripts %}
