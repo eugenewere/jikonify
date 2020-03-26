@@ -70,7 +70,11 @@ class RegionList(generics.ListAPIView):
 class ProductDetails(generics.ListAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    
+
+class RegionDetails(generics.ListAPIView):
+    queryset = Region.objects.all()
+    serializer_class = RegionSerializer
+
     # def get_queryset(self):
     #     category = self.kwargs['category']
     #     if category is not None:
@@ -162,7 +166,7 @@ def addtocart(request, product_id):
     # print(request.META['HTTP_AUTHORIZATION'])
     r_token = request.META['HTTP_AUTHORIZATION']
     new_token = r_token.split(' ', 1)[1]
-    print(new_token)
+
     product = Product.objects.filter(id=product_id).first()
     token = Token.objects.filter(key=new_token).first()
     buyer = Buyer.objects.filter(user_ptr_id=token.user.id).first()
@@ -545,26 +549,30 @@ def getfeaturedproducts(request):
 @api_view(["POST"])
 @permission_classes((IsAuthenticated,))
 def checkout(request):
+    print(request.data)
     r_token = request.META['HTTP_AUTHORIZATION']
     new_token = r_token.split(' ', 1)[1]
     token = Token.objects.filter(key=new_token).first()
     buyer = Buyer.objects.filter(user_ptr_id=token.user.id).first()
-    # new_region_id = Region.objects.filter(id = region_id).first()
-    # if not region_id:
-    #     return Response(
-    #         data={
-    #             "Message": "You have to pick a region"
-    #         },
-    #         status=status.HTTP_400_BAD_REQUEST
-    #     )
 
-    total = request.data.get("quantity")      
+    total = request.data.get("quantity")
+    payment = request.data.get("payment")
+    region_id = request.data.get("region_id")
+    delivery_address = request.data.get("delivery_address")
+
+    region = Region.objects.filter(id=region_id).first()
+    newtotal = (float(total) + region.region_cost)
+
     new_checkoutorder = Checkout.objects.create(
         buyer = buyer,
         phonenumber = buyer.phone_number,
-        total = total,
+        total = newtotal,
         reference_code = "M"+ get_random_string(length=4, allowed_chars='123456789ABCDEFGHIJKLMNPQRSTUVWXYZ'),
-        status = "PENDING"
+        status = "PENDING",
+        paymentchoice=payment,
+        region=region,
+        address=delivery_address,
+
     )
     cart_items = Order_Product.objects.filter(buyer=buyer, checkout__isnull=True).update(
         checkout = new_checkoutorder.id
@@ -590,10 +598,11 @@ def checkout(request):
         sms = africastalking.SMS
         # Use the service synchronously
         response = sms.send("<#> Your Orders are: " + str(
-            ", ".join(repr(e) for e in orders_products)) + '. We will call you to confirm the order',
+            ", ".join(repr(e) for e in orders_products)) + ". We will call you to confirm the order. You are required to pay "+ str(checkoutt.total) + "Ksh. To confirm your order or pay via mpesa, please use the order number " + checkoutt.reference_code ,
                             ["+" + new_phone_number], )
 
-    except:
+    except Exception as e:
+        print(e)
         print('NO INTERNET')
         context = {
             'results': 'error',
@@ -601,11 +610,12 @@ def checkout(request):
 
         }
 
-    data = CheckoutSerializer([new_checkoutorder], many=True)    
+    data = CheckoutSerializer([new_checkoutorder], many=True)
     context = {
         'data': data.data
     }
-    return Response(data.data,status=status.HTTP_201_CREATED)
+    # return Response("")
+    return Response(data.data, status=status.HTTP_201_CREATED)
 
 
 @csrf_exempt
@@ -953,4 +963,49 @@ def updateUserName(request):
                 'last_name': users.last_name
             }
 
-    return Response(context, status=status.HTTP_200_OK)                                
+    return Response(context, status=status.HTTP_200_OK)
+
+@csrf_exempt
+@api_view(["DELETE"])
+@permission_classes((IsAuthenticated,))
+def cancelOrder(request, checkout_id):
+    print(checkout_id)
+    checkout = Checkout.objects.filter(id=checkout_id).first()
+    orderProducts =  Order_Product.objects.filter(id=checkout.id)
+    for orderProduct in orderProducts:
+        orderProduct.delete()
+    checkout.delete()
+    all_checkouts=[]
+    r_token = request.META['HTTP_AUTHORIZATION']
+    new_token = r_token.split(' ', 1)[1]
+    token = Token.objects.filter(key=new_token).first()
+    buyer = Buyer.objects.filter(user_ptr_id=token.user.id).first()
+    if not buyer:
+        return Response(
+            data={
+                "Message": "You are not logged in"
+            },
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    checkouts =  Checkout.objects.filter(buyer=buyer)
+    for checkout in checkouts:
+        all_checkouts.append(checkout)
+    data = CheckoutSerializer(all_checkouts, many=True)
+
+
+    context={
+        'data': data.data
+
+    }
+    return Response(context, status=status.HTTP_200_OK)
+
+
+@csrf_exempt
+@api_view(["GET"])
+@permission_classes((AllowAny,))
+def delivery_region(request):
+    regions = Region.objects.all()
+    data = RegionSerializer(regions, many=True)
+    return Response(data.data,status=status.HTTP_200_OK)
+
+

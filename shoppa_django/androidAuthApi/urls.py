@@ -46,6 +46,8 @@ urlpatterns = [
     path('reviewStatus/<int:product_id>/',views.getReviewStatus),
     path('getQueryResults/',views.getSearchResults),
     path('updateUserNames/',views.updateUserName),
+    path('cancelOrder/<int:checkout_id>/',views.cancelOrder),
+    path('delivery_region/',views.delivery_region),
 
 
 

@@ -371,6 +371,8 @@ class Checkout(models.Model):
     phonenumber = models.CharField(max_length=20, null=False)
     total = models.FloatField(default=0, )
     reference_code = models.CharField(max_length=10, null=False)
+    region = models.ForeignKey(Region, on_delete=models.CASCADE, null=True , blank=True)
+    address = models.CharField(max_length=200, null=True , blank=True)
     amount_paid = models.FloatField(default=0, )
     shipping_cost = models.FloatField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -382,6 +384,11 @@ class Checkout(models.Model):
     )
     status = models.CharField(choices=CHECKOUT_STATUS, max_length=100, default='PENDING')
 
+    PAYMENTSTATUS=(
+        ('CASH','Cash'),
+        ('MPESA', 'Mpesa'),
+    )
+    paymentchoice = models.CharField(choices=PAYMENTSTATUS, default="CASH", max_length=200, null=False, blank=False)
     class Meta:
         verbose_name = 'Checkout'
         verbose_name_plural = 'Checkouts'

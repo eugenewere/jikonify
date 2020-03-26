@@ -1,0 +1,78 @@
+{% extends 'vegefoods/layout.html' %}
+{% load static %}
+{% load call_method %}
+{% load humanize %}
+{% block links %}
+
+{% endblock %}
+
+{% block content %}
+
+
+     <div class="home-slider owl-carousel" style="height: 252px; !important;">
+        {% for c in carousels %}
+            <div class="" style="background-image: url({{ c.image.url }});">
+              <div class="container">
+                <div class="row no-gutters slider-text align-items-center justify-content-center">
+                  <div class="col-md-9 ftco-animate text-center" style="height: 252px; !important;">
+                    <p class="breadcrumbs text-white"><span class="mr-2">
+                        <a href="{% url 'Shoppy:shoppy-home' %}">Home</a></span>
+                        <span class="mr-2">
+                            <a href="#">Product</a>
+                        </span> <span>{{product.name|title}}</span>
+                    </p>
+                    <h1 class="mb-0 bread text-white">My Wishlist</h1>
+                      <span class="text-white">{{product.short_description|title}}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <section class="ftco-section ftco-cart">
+			<div class="container">
+				<div class="row">
+    			<div class="col-md-12 ftco-animate">
+    				<div class="cart-list">
+	    				<table class="table">
+						    <thead class="thead-primary">
+						      <tr class="text-center">
+						        <th>#</th>
+						        <th>Product Image</th>
+						        <th>&nbsp;</th>
+						        <th>Product Name</th>
+                                  <th>&nbsp;</th>
+						        <th>Price</th>
+
+						      </tr>
+						    </thead>
+						    <tbody>
+                             {% for wish in wishlist %}
+						      <tr class="text-center">
+						        <td class="product-remove"><a href="{% url 'Shoppy:remove_from_wishlist' wish.id request.path|make_safe  %}"><span class="ion-ios-close"></span></a></td>
+						        
+						        <td class="image-prod"><div class="img" style="background-image:url({{ wish.product.featured_url.url }});"></div></td>
+						        <td>&nbsp;</td>
+						        <td class="product-name">
+						        	<h3>{{wish.product.name}}</h3>
+						        	<p>{{ wish.product.name|title }}.</p>
+						        </td>
+						        <td>&nbsp;</td>
+						        <td class="price">{{wish.product.price_after_offer}} KSHs</td>
+						        
+
+						      </tr><!-- END TR-->
+                             {% endfor %}
+
+						    </tbody>
+						  </table>
+					  </div>
+    			</div>
+    		</div>
+			</div>
+		</section>
+
+{% endblock content %}
+{% block scripts %}
+{% endblock %}

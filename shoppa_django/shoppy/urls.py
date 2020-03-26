@@ -15,10 +15,11 @@ urlpatterns =[
    path('seller_register/', views.seller_register, name='shoppy-seller-reg'),
    path('login/', views.user_login, name='shoppy-login'),
    path('logout/', views.logout_view, name='shoppy-logout'),
-   path('products_list/<int:category_id>/', views.productsList, name='product_list'),
+   path('products_list/', views.productsList, name='product_list'),
    path('user_account/' , views.user_account, name='shoppy-user_account' ),
    path('checkout/' , views.checkout, name='shoppy-view_checkout' ),
-   path('search/' , views.search, name="searchbar" ),
+   path('search/' , views.search, name="searchbar"),
+   path('wishlist/' , views.wishlist, name="wishlist"),
 
    path('howtopay/', views.how_to_pay, name='how_to_pay'),
 

@@ -48,11 +48,12 @@
                                     <th>Buyer </th>
                                     <th>Phone Number</th>
                                     <th>Checkout Refrence</th>
+                                    <th>Region</th>
+                                    <th>Address</th>
                                     <th>Amount Paid</th>
                                     <th>Required Amount</th>
                                     <th>Balance</th>
                                     <th>Shipping cost</th>
-
                                     <th>Reciept No</th>
                                     <th>Date Recorded</th>
                                     <th>Action</th>
@@ -77,6 +78,8 @@
                                             </td>
 
                                             <td>{{ pay.checkout.reference_code }} </td>
+                                            <td>{{ pay.checkout.region.name }}</td>
+                                            <td>{{ pay.checkout.address }}</td>
                                             <td>{{ pay.amount|floatformat|intcomma }} Ksh</td>
                                             <td>{{ pay.checkout.total|floatformat|intcomma }} Ksh</td>
                                             <td>{{ pay.balance|floatformat|intcomma}} Ksh</td>

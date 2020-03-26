@@ -39,16 +39,17 @@ class InventorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Inventory
         fields = ('quantity',)                    
-
+class Reviewprod(serializers.ModelSerializer):
+    class Meta:
+        model = Review
+        fields = ('ratings',)
 class ProductSerializer(serializers.ModelSerializer):
     offers = OfferSerializer(many=True)
     products = ImageSerializer(many=True)
     product = InventorySerializer(many= True)
-
     class Meta:
         #changed
         model = Product
-
         fields = ('id','name','unit_cost','product_brand','short_description','long_description','featured_url','vat_status','offers','category','products','product')
 
 
@@ -155,4 +156,11 @@ class CartVariantSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OrderProductVariantOption
-        fields = '__all__'    
+        fields = '__all__'
+
+class RegionSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Region
+        fields = '__all__'
+

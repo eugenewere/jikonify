@@ -203,11 +203,11 @@
                                       <a class="py-2 font-weight-bold dropdown-item my-2" href="{% url 'Shoppy:shoppy-cart' %}">My Cart
                                           <span class="text-black">
                                               (
-                                           {%  if request.user|cart_count  %}
-                                               {{ request.user|cart_count}}
-                                           {% else %}
-                                               0
-                                           {% endif %}
+{#                                           {%  if request.user|cart_count  %}#}
+{#                                               {{ request.user|cart_count}}#}
+{#                                           {% else %}#}
+{#                                               0#}
+{#                                           {% endif %}#}
                                                )
                                           </span>
                                       </a>

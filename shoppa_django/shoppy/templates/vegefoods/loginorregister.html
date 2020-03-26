@@ -1,0 +1,226 @@
+{% extends 'vegefoods/layout.html' %}
+{% load static %}
+{% load call_method %}
+{% load humanize %}
+{% block links %}
+
+{% endblock %}
+
+{% block content %}
+    <div class="home-slider owl-carousel" style="height: 222px; !important;">
+        {% for c in carousels %}
+            <div class="" style="background-image: url({{ c.image.url }});">
+              <div class="container">
+                <div class="row no-gutters slider-text align-items-center justify-content-center">
+                  <div class="col-md-9 ftco-animate text-center" style="height: 222px; !important;">
+                    <p class="breadcrumbs text-white"><span class="mr-2">
+                        <a href="{% url 'Shoppy:shoppy-home' %}">Home</a></span>
+                        <span class="mr-2">
+                            <a href="#">Product</a>
+                        </span> <span>{{product.name|title}}</span>
+                    </p>
+                    <h1 class="mb-0 bread text-white">Product Single</h1>
+                      <span class="text-white">{{product.short_description|title}}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="container" style="padding: 100px 0 250px 0;">
+         <div class="form-collection" style="margin: 0 auto;">
+            <div class="card elevation-3 limit-width log-in-card below turned">
+            <form action="{% url 'Shoppy:shoppy-login' %}" method="POST" autocomplete="off">
+            {% csrf_token %}
+              <div class="card-body">
+                  {% if errors %}
+            <ul class="p-0">
+            {% for error in errors %}
+                <div class="alert alert-danger" role="alert">
+                  {{ error }}
+                </div>
+            {% endfor %}
+            </ul>
+          {% endif %}
+
+                  {% if messages %}
+                    <ul class="messages">
+                      {% for message in messages %}
+                          <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}" role="alert">
+                              {{ message }}
+                          </div>
+                      {% endfor %}
+                    </ul>
+                  {% endif %}
+
+                  {% if form.errors %}
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <div class="alert alert-danger">
+                              <strong class="text-white">{{ error|escape }}</strong>
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                        <div class="alert alert-danger text-white">
+                          <strong>{{ error|escape }}</strong>
+                        </div>
+                    {% endfor %}
+                  {% endif %}
+                    <h3 class="text-capitalize text-center">Login</h3>
+
+                    <div class="col-md-12 mb-3">
+                      <label for="validationCustomUsername">Phonenumber or Email</label>
+                      <div class="input-group">
+
+                        <input value="" autocomplete="off" name="username" type="text"  class="form-control" id="validationCustomUsername" placeholder="PhoneNumber or Username" aria-describedby="inputGroupPrepend" required><br>
+
+                        <div class="invalid-feedback">
+                          Please enter your Email.
+                        </div>
+                        <div class="valid-feedback">
+                          Looks fantastic.
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-12 mb-3">
+                      <label for="validationCustom04">Pin</label>
+                      <div class="position-relative">
+                            <input value="" autocomplete="off" maxlength="4" type="password" name="password" class="form-control position-relative w-100 password1" id="validationCustom04" placeholder="Pin" required>
+                           <div style="position: absolute;top: 9px;right: 11px;" class="password_checker">
+                                <i onclick="changeText1();" class="fas fa-eye txt1 color animation "></i>
+                                <i style="display:none;" onclick="changePassword1();" class="fas fa-eye-slash psd1 color animation "></i>
+                           </div>
+                      </div>
+                      <div class="invalid-feedback">
+                        Please provide a valid state.
+                      </div>
+                      <div class="valid-feedback">
+                            Better looking.
+                          </div>
+                    </div>
+                    <div class="col-md-12 mb-3">
+                        <button type="submit" class="signup-btn btn btn-success">Submit</button>
+                    </div>
+
+              </div>
+              <div class="card-footer">
+                <button type="button" class="login-btn">Log in</button>
+              </div>
+            </form>
+            </div>
+
+            <div class="card elevation-2 limit-width sign-up-card above">
+                <form action="{% url 'Shoppy:shoppy-buyer-reg' %}" method="POST" autocomplete="off">
+                {% csrf_token %}
+                  <div class="card-body">
+                    <div class="">
+                        <h3 class="text-capitalize text-center">Register</h3>
+    {#                    <div class="col-md-12 mb-3 input-spinner-off">#}
+    {#                         <label for="username">User name</label>#}
+    {#                         <input id="username" type="text" name="username" class="form-control" placeholder="User name">#}
+    {#                    </div>#}
+                        <div class="col-md-12 mb-3 input-spinner-off">
+                            <label for="validationCustom03">Phone number</label>
+                            <input maxlength="10" aria-valuemax="10" value="{% if form.phone_number.value %}{{ form.phone_number.value }}{% endif %}" name="username" type="number" class="form-control " id="validationCustom03" placeholder="Phone number" required>
+                        </div>
+
+                        <div class="col-md-12 mb-3">
+                          <label for="validationCustom04">Pin</label>
+                            <div class="position-relative">
+                                <input maxlength="4"  type="password" name="password1" class="form-control position-relative w-100 password" id="validationCustom04" placeholder="Pin" required>
+                                <div style="position: absolute;top: 9px;right: 11px;" class="password_checker">
+                                    <i onclick="changeText();" class="fas fa-eye txt color animation "></i>
+                                    <i style="display:none;" onclick="changePassword();" class="fas fa-eye-slash psd color animation "></i>
+                               </div>
+                            </div>
+                            <small id="passwordHelpBlock" class="form-text text-muted">
+                              Enter a PIN 4 digit that you will be using to login.
+                            </small>
+                            {% if form.password1.errors %}
+                                <div class="alert alert-danger">
+                                  <strong class="text-white errorlist">{{ form.password1.errors }}</strong>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-12 mb-3">
+                          <label for="validationCustom05">Confirm Pin</label>
+                            <div class="position-relative">
+                                <input name="password2" type="password" maxlength="4" class="form-control position-relative w-100 password1" id="validationCustom05" placeholder="Confirm Pin" required>
+                                <div style="position: absolute;top: 9px;right: 11px;" class="password_checker">
+                                    <i onclick="changeText1();" class="ion-ios-eye txt1 color animation "></i>
+                                    <i style="display:none;" onclick="changePassword1();" class="ion-ios-eye-off psd1 color animation "></i>
+                               </div>
+                            </div>
+
+                            <small id="passwordHelpBlock" class="form-text text-muted">
+                              Confirm pin.
+                            </small>
+
+                            {% if form.password2.errors %}
+                                <div class="alert alert-danger">
+                                  <strong class="text-white errorlist">{{ form.password2.errors }}</strong>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <button type="submit" class="signup-btn btn btn-success">Submit</button>
+                        </div>
+                    </div>
+                     <div class=" pt-3">
+                        <small class="text-muted medium-text">
+                            Already have an account? <a href="{% url 'Shoppy:shoppy-login' %}" class="ml-2">Log In</a>
+                        </small>
+                        <br>
+                        <small class="text-muted medium-text mt-2">
+                            Register as a seller? <a href="{% url 'Shoppy:shoppy-seller-reg' %}" class="ml-2">Here</a>
+                        </small>
+                    </div>
+                  </div>
+                  <div class="card-footer">
+                    <button type="button" class="signup-btn">Sign Up</button>
+                  </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+{% block scripts %}
+<script>
+        var pswd = document.getElementsByClassName('password')[0];
+        var txt = document.getElementsByClassName('txt')[0];
+        var psd = document.getElementsByClassName('psd')[0];
+        function changeText() {
+
+            pswd.setAttribute('type','text');
+            psd.style.display="block";
+            txt.style.display = "none";
+            txt.style.transition = 1+"s";
+        }
+        function changePassword() {
+            pswd.setAttribute('type','password');
+            psd.style.display="none";
+            txt.style.display = "block";
+            txt.style.transition = 1+"s";
+        }
+        var pswd1 = document.getElementsByClassName('password1')[0];
+        var txt1 = document.getElementsByClassName('txt1')[0];
+        var psd1 = document.getElementsByClassName('psd1')[0];
+        function changeText1() {
+
+            pswd1.setAttribute('type','text');
+            psd1.style.display="block";
+            txt1.style.display = "none";
+            txt1.style.transition = 1+"s";
+        }
+        function changePassword1() {
+            pswd1.setAttribute('type','password');
+            psd1.style.display="none";
+            txt1.style.display = "block";
+            txt1.style.transition = 1+"s";
+        }
+
+    </script>
+{% endblock %}

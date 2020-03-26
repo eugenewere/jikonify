@@ -1,0 +1,105 @@
+{% extends 'vegefoods/layout.html' %}
+{% load static %}
+{% load call_method %}
+{% load humanize %}
+{% block links %}
+
+{% endblock %}
+
+{% block content %}
+
+
+
+     <div class="home-slider owl-carousel" style="height: 252px; !important;">
+        {% for c in carousels %}
+            <div class="" style="background-image: url({{ c.image.url }});">
+              <div class="container">
+                <div class="row no-gutters slider-text align-items-center justify-content-center">
+                  <div class="col-md-9 ftco-animate text-center" style="height: 252px; !important;">
+                    <p class="breadcrumbs text-white"><span class="mr-2">
+                        <a href="{% url 'Shoppy:shoppy-home' %}">Home</a></span>
+                        <span class="mr-2">
+                            <a href="#">Buyers Orders</a>
+                        </span> <span>{{product.name|title}}</span>
+                    </p>
+                    <h1 class="mb-0 bread text-white">Buyers Orders</h1>
+                      <span class="text-white">{{product.short_description|title}}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <section class="ftco-section ftco-cart">
+        <div class="container">
+            <div class="row">
+            <div class="col-md-12 ftco-animate">
+                <div class="cart-list">
+                    <table class="table">
+                        <thead class="thead-primary">
+                          <tr class="text-center">
+                            <th>&nbsp;</th>
+                            <th>&nbsp;</th>
+                            <th>Product name</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Total</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                        {% for cart in carts %}
+                          <tr class="text-center">
+                            <td class="product-remove"><a href="#"><span class="ion-ios-close"></span></a></td>
+
+                            <td class="image-prod"><div class="img" style="background-image:url({{ cart.product.featured_url.url }});"></div></td>
+
+                            <td class="product-name">
+                                <h3>{{cart.product.name}}</h3>
+						        	<p>{{ cart.product.name|title }}.</p>
+                            </td>
+
+                            <td class="price">{{cart.product.price_after_offer}} KSHs</td>
+
+                            <td class="quantity">
+                                <div class="input-group mb-3">
+                                <input type="text" name="quantity" value="{{ cart.quantity }}" readonly="readonly" class="quantity form-control input-number" v>
+                            </div>
+                          </td>
+
+                            <td class="total">{{ cart.total }}</td>
+                          </tr><!-- END TR-->
+                        {%  endfor %}
+
+
+                        </tbody>
+                      </table>
+                  </div>
+            </div>
+        </div>
+        <div class="row justify-content-end">
+
+            <div class="col-lg-4 mt-5 cart-wrap ftco-animate">
+                <div class="cart-total mb-3">
+                    <h3>Cart Totals</h3>
+                    <p class="d-flex">
+                        <span>Subtotal</span>
+                        <span>{{buyer.cart_total|floatformat|intcomma}} Ksh</span>
+                    </p>
+
+
+                    <hr>
+                    <p class="d-flex total-price">
+                        <span>Total</span>
+                        <span>{{buyer.cart_total|floatformat|intcomma}} Ksh</span>
+                    </p>
+                </div>
+                <p><a href="{% url 'Shoppy:shoppy-view_checkout' %}" class="btn btn-primary py-3 px-4">Proceed to Checkout</a></p>
+            </div>
+        </div>
+        </div>
+    </section>
+
+{% endblock content %}
+{% block scripts %}
+{% endblock %}

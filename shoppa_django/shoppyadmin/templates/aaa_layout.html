@@ -120,6 +120,7 @@
 						<span class="fa fa-arrow-right">&nbsp;</span> Featured Products
 					</a></li>
 {#                    {% endif %}#}
+                    <li><a href=""></a></li>
 
                     <li><a class="" href="{% url 'ShoppyAdmin:view_product_offer' %}">
 						<span class="fa fa-arrow-right">&nbsp;</span> Product Offer
@@ -161,7 +162,7 @@
 			{% endif %}
             {% if request.user|is_seller %}
 {#            <div class="divider" style="margin-bottom: 20px; border: 1px solid white; background-color: white;"></div>#}
-{#			<li class=""><a href="{% url 'ShoppyAdmin:shoppy-admin-view-regions' %}"><em class="fa fa-map-marked">&nbsp;</em> Delivery Regions</a></li>#}
+			<li class=""><a href="{% url 'ShoppyAdmin:shoppy-admin-view-regions' %}"><em class="fa fa-map-marked">&nbsp;</em> Delivery Regions</a></li>
 
                 <div class="divider" style="margin-bottom: 20px; border: 1px solid white; background-color: white;"></div>
 			<li class=""><a href="{% url 'ShoppyAdmin:shoppy-admin-reviews' %}"><em class="fas fa-file-signature">&nbsp;</em> Reviews</a></li>

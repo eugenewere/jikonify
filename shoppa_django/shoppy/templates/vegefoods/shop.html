@@ -1,0 +1,146 @@
+{% extends 'vegefoods/layout.html' %}
+{% load static %}
+{% load call_method %}
+{% load humanize %}
+{% block links %}
+
+{% endblock %}
+
+{% block content %}
+    <!-- END nav -->
+
+     <div class="home-slider owl-carousel" style="height: 252px; !important;">
+        {% for c in carousels %}
+            <div class="" style="background-image: url({{ c.image.url }});">
+              <div class="container">
+                <div class="row no-gutters slider-text align-items-center justify-content-center">
+                  <div class="col-md-9 ftco-animate text-center" style="height: 252px; !important;">
+                    <p class="breadcrumbs text-white"><span class="mr-2">
+                        <a href="{% url 'Shoppy:shoppy-home' %}">Home</a></span>
+                        <span class="mr-2">
+                            <a href="#">All Products</a>
+                        </span> <span>{{product.name|title}}</span>
+                    </p>
+                    <h1 class="mb-0 bread text-white">My Products</h1>
+                      <span class="text-white">{{product.short_description|title}}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+        {% endfor %}
+    </div>
+
+
+    <section class="ftco-section">
+    	<div class="container">
+    		<div class="row">
+              <div class="col-2">
+                <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+
+{#                  <a class="nav-link active" id="v-pills-home-tab" data-toggle="pill" href="#v-pills-home" role="tab" aria-controls="v-pills-home" aria-selected="true">All</a>#}
+                  {% for category in categories %}
+                    <a class="nav-link" id="v-pills-profile-tab{{ category.id }}" data-toggle="pill" href="#v-pills-profile{{ category.id }}" role="tab" aria-controls="v-pills-profile" aria-selected="false">{{ category.name|title }}</a>
+                  {% endfor %}
+
+                </div>
+              </div>
+              <div class="col-10">
+                <div class="tab-content" id="v-pills-tabContent">
+                  {% for category in categories %}
+                        <div class="tab-pane {% if forloop.first %} show active {% endif %} fade " id="v-pills-profile{{ category.id }}" role="tabpanel" aria-labelledby="v-pills-profile-tab{{ category.id }}">
+                           <div class="row">
+                            {% for product in category.id|categoriesproducts %}
+                               <div class=" col-md-6 col-lg-3 ftco-animate">
+                                <div class="product">
+                                    <a href="javascript: void(0)" class="img-prod">
+                                        <img style="    height: 221px; width: 100%;" class="img-fluid" src="{{product.featured_url.url}}" alt="{{ product.name }}">
+
+                                        {% if product.id|product_on_offer %}
+                                            {% for offer in product.id|product_on_offer %}
+                                                <span class="status">Save {{ offer.offer_percentage }}%</span>
+                                            {% endfor %}
+                                        {% endif %}
+                                        <div class="overlay"></div>
+                                    </a>
+                                    <div class="text py-3 pb-4 px-3 text-center">
+                                        <h3><a href="#">{{ product.name|title|truncatechars:10 }}</a></h3>
+                                        <div class="d-flex">
+                                            <div class="pricing">
+                                                <p class="price">
+                                                     {% if  product.price_after_offer and product.id|product_on_offer %}
+                                                        <span class="mr-2 price-dc">
+                                                            {{ product.unit_cost_inclusive_of_vat|floatformat:1|intcomma }} Kshs
+                                                        </span>
+                                                        <span class="price-sale">
+                                                            {{ product.price_after_offer|floatformat:1|intcomma }} Kshs
+                                                        </span>
+                                                     {% else %}
+                                                         <span class="price-sale">
+                                                            {{ product.price_after_offer|floatformat:1|intcomma }}Kshs
+                                                        </span>
+                                                     {% endif %}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="bottom-area d-flex px-3">
+                                            <div class="m-auto d-flex">
+                                                <a href="#" data-toggle="modal" data-target="#fpfe{{ product.id }}" class="add-to-cart d-flex justify-content-center align-items-center text-center">
+                                                    <span><i class="ion-ios-menu"></i></span>
+                                                </a>
+                                                <a href="#"  data-toggle="modal" data-target="#fp{{ product.id }}" class="buy-now d-flex justify-content-center align-items-center mx-1">
+                                                    <span><i class="ion-ios-cart"></i></span>
+                                                </a>
+                                                <a href="{% url 'Shoppy:shoppy_product_details' product.id %}" class="buy-now d-flex justify-content-center align-items-center mx-1">
+                                                    <span><i class="ion-ios-eye"></i></span>
+                                                </a>
+
+                                                {% if product.id|is_product_in_wishlist:request.user %}
+                                                    <a href="{% url 'Shoppy:remove_from_wishlist' product.id request.path|make_safe  %}" class="heart d-flex justify-content-center align-items-center ">
+                                                        <span><i style="color: red;" class="ion-ios-heart"></i></span>
+                                                    </a>
+                                                {% else %}
+                                                    <a href="{% url 'Shoppy:add_to_wishlist' product.id request.path|make_safe %}" class="heart d-flex justify-content-center align-items-center ">
+                                                        <span><i  class="ion-ios-heart"></i></span>
+                                                    </a>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                           </div>
+                        </div>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+
+
+
+
+
+
+
+    		<div class="row mt-5">
+              <div class="col text-center">
+                <div class="block-27">
+                  <ul>
+                    <li><a href="#">&lt;</a></li>
+                    <li class="active"><span>1</span></li>
+                    <li><a href="#">2</a></li>
+                    <li><a href="#">3</a></li>
+                    <li><a href="#">4</a></li>
+                    <li><a href="#">5</a></li>
+                    <li><a href="#">&gt;</a></li>
+                  </ul>
+                </div>
+              </div>
+        </div>
+    	</div>
+    </section>
+
+		{% endblock content %}
+{% block scripts %}
+
+{% endblock %}

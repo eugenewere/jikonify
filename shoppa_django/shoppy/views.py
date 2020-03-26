@@ -13,6 +13,7 @@ from django.utils.crypto import get_random_string
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 import africastalking
+from django_project import settings
 from django.views.decorators.csrf import csrf_exempt
 from requests import Response
 from rest_framework.decorators import api_view, permission_classes
@@ -90,7 +91,7 @@ def home(request):
         # 'categories':categories,
         # 'orderproducts': orderproducts
     }
-    return render(request, 'shoppy/home.html', context)
+    return render(request, 'vegefoods/index.html', context)
 
 
 
@@ -141,6 +142,7 @@ def unWish_All_Products(request):
     return redirect('Shoppy:shoppy-user_account')
 
 # cart
+login_required()
 def cart(request):
     carts = Order_Product.objects.filter(buyer_id=request.user.id, checkout__isnull=True, product__wishlist__isnull=True)
     order_varianto = OrderProductVariantOption.objects.all()
@@ -153,9 +155,10 @@ def cart(request):
         'title': 'Shoppy-Cart',
         'ordervarianto': order_varianto,
         'buyer':buyer,
+        'carousels':Carousel.objects.all(),
 
     }
-    return render(request, 'shoppy/cart.html', context)
+    return render(request, 'vegefoods/cart.html', context)
 
 @login_required()
 def addCart(request, product_id):
@@ -229,26 +232,88 @@ def productDetails(request, product_id):
         'similar_products':similar_products,
         'product_carts': product_carts,
         'reviews': reviews,
+        'carousel':Carousel.objects.all()
 
     }
 
-    return render(request, 'shoppy/product_details.html',context)
+    return render(request, 'vegefoods/product-single.html',context)
 
-def productsList(request, category_id):
-    # products = Product.objects.filter(status='VERIFIED')
-    max_cost=Product.objects.order_by('-unit_cost')[0]
-    category= Category.objects.filter(id=category_id).first()
-    products= Product.objects.filter(status='VERIFIED', category_id=category.id).order_by('-unit_cost')
+def productsList(request, ):
+    if request.method == "POST":
+        category = request.POST.get('category')
+        brand = request.POST.get('brand')
+        unit_cost_from = request.POST.get('unit_cost_from')
+        unit_cost_to = request.POST.get('unit_cost_to')
 
-    context={
-        'products':products,
-        'categories':Category.objects.all(),
-        'brands':Brand.objects.all(),
-        'max_cost':max_cost,
+        filter_category = Category.objects.filter(id=category).first()
+        filer_brand = Brand.objects.filter(id=brand).first()
+        print(unit_cost_from, unit_cost_to, category, brand)
+        if category is not None and brand is not None and unit_cost_from is not None and unit_cost_to is not None:
+            products = Product.objects.filter(
+                Q(category=filter_category) | Q(product_brand=filer_brand) | Q(status='VERIFIED') | Q(
+                    unit_cost__range=[int(unit_cost_from), int(unit_cost_to)]))
+            print('one')
+            # print(products)
 
-    }
+        elif category is not None and brand is not None:
+            products = Product.objects.filter(Q(category=filter_category), Q(product_brand=filer_brand),
+                                              Q(status='VERIFIED'),
+                                              Q(unit_cost__range=[int(unit_cost_from), int(unit_cost_to)]))
+            print('three')
+            # print(products)
+        elif brand is not None and unit_cost_from is not None and unit_cost_to is not None:
+            products = Product.objects.filter(Q(product_brand=filer_brand), Q(status='VERIFIED'),
+                                              Q(unit_cost__range=[int(unit_cost_from), int(unit_cost_to)]))
+            print('four')
+            # print(products)
+        elif category is not None and unit_cost_from is not None and unit_cost_to is not None:
+            products = Product.objects.filter(Q(category=filter_category), Q(status='VERIFIED'),
+                                              Q(unit_cost__range=[int(unit_cost_from), int(unit_cost_to)]))
+            print('five')
+            # print(products)
+        elif category is not None:
+            products = Product.objects.filter(Q(category=filter_category), Q(status='VERIFIED'),
+                                              Q(unit_cost__range=[int(unit_cost_from), int(unit_cost_to)]))
+            print('six')
+            # print(products)
+        elif brand is not None:
+            products = Product.objects.filter(Q(product_brand=filer_brand), Q(status='VERIFIED'),
+                                              Q(unit_cost__range=[int(unit_cost_from), int(unit_cost_to)]))
+            print('seven')
+            # print(products)
+        elif unit_cost_to is not None and unit_cost_from is not None:
+            products = Product.objects.filter(Q(status='VERIFIED'),
+                                              Q(unit_cost__range=[int(unit_cost_from), int(unit_cost_to)]))
+            print('two')
+            # print(products)
 
-    return render(request, 'shoppy/view_products/all_products.html', context)
+        max_cost = Product.objects.order_by('-unit_cost').values('unit_cost').first()['unit_cost']
+        # print(products)
+        context = {
+            'products': products,
+            'categories': Category.objects.filter(parent_id__isnull=True).order_by('name'),
+            'brands': Brand.objects.all(),
+            'max_cost': int(max_cost),
+            'min_cost': 0,
+
+        }
+        # return TemplateResponse(request, "shoppy/view_products/filtered_products.html", context)
+        # return render_to_response('shoppy/view_products/filtered_products.html',context)
+        return render(request, 'shoppy/view_products/all_category_products.html', context)
+
+    else:
+        products = Product.objects.filter(status='VERIFIED').order_by('-unit_cost')
+        context = {
+            'products': products,
+            'categories': Category.objects.all(),
+            'brands': Brand.objects.all(),
+            'max_cost': int(Product.objects.order_by('-unit_cost').values('unit_cost').first()['unit_cost']),
+            'min_cost': 0,
+            'carousels':Carousel.objects.all(),
+
+        }
+
+    return render(request, 'vegefoods/shop.html', context)
 
 
 
@@ -279,7 +344,21 @@ def productsList(request, category_id):
 #         'product':product,
 #     }
 #     return render(request, 'shoppy/user_account.html', context)
+login_required()
+def wishlist(request):
+    user = request.user
+    buyer = Buyer.objects.filter(user_ptr_id=user.id).first()
 
+
+    wishlist = Wishlist.objects.filter(buyer_id=request.user.id)
+    context = {
+        # 'user': logged_in_user,
+        'wishlist': wishlist,
+        'carousels':Carousel.objects.all(),
+        'orders': Order_Product.objects.filter(buyer=buyer, checkout__isnull=False, checkout__status='PAID'),
+        'buyer': Buyer.objects.filter(user_ptr_id=user.id).first(),
+    }
+    return render(request, 'vegefoods/wishlist.html', context)
 @login_required()
 def user_account(request):
     user = request.user
@@ -337,13 +416,17 @@ def buyer_register(request):
         else:
             form1 = BuyerSignUpForm(request.POST)
             sweetify.error(request, 'Error', text='Ensure you fill all fields correctly', persistent='Retry', timer=3000)
-            return render(request,"shoppy/buyer-registration.html", {'form':form1})
+            return render(request,"vegefoods/loginorregister.html", {
+                'form':form1,
+                'carousels': Carousel.objects.all()
+            })
     else:
         form2 = BuyerSignUpForm()
     context={
         'form': form2,
+        'carousels':Carousel.objects.all()
     }
-    return  render(request,"shoppy/buyer-registration.html",context)
+    return  render(request,"vegefoods/loginorregister.html",context)
     # return redirect('Shoppy:shoppy-buyer-reg',context)
 
 
@@ -385,15 +468,15 @@ def user_login(request):
                     if user.is_active:
                         if Buyer.objects.filter(user_ptr_id=user.id).exists():
                             login(request, user)
-                            sweetify.success(request, 'Success', text='Welcome to Mashkys', persistent='Continue')
+                            sweetify.success(request, 'Success', text='Welcome to Jikonify', persistent='Continue')
                             return redirect('Shoppy:shoppy-home')
                     else:
                         sweetify.error(request, 'Error', text='Your account has been Deactivated!',
                                        persistent='Retry')
-                        return render(request, 'shoppy/login.html')
+                        return render(request, 'vegefoods/loginorregister.html')
                 else:
                     sweetify.error(request, 'Error', text='Invalid login credentials', persistent='Retry')
-                    return render(request, 'shoppy/login.html')
+                    return render(request, 'vegefoods/loginorregister.html')
             if Seller.objects.filter(Q(email__exact=username) | Q(username__exact=username)).first():
                 user = authenticate(username=sellerusername(username), password=password)
                 if user is not None:
@@ -401,20 +484,20 @@ def user_login(request):
                         if Seller.objects.filter(user_ptr_id=user.id).exists():
                             if Seller.objects.filter(user_ptr_id=user.id, status="VERIFIED").exists():
                                 login(request, user)
-                                sweetify.success(request, 'Success', text='Welcome to Mashkys', persistent='Retry')
+                                sweetify.success(request, 'Success', text='Welcome to Jikonify', persistent='Retry')
                                 return redirect('ShoppyAdmin:shoppy-admin-home')
                             else:
                                 sweetify.error(request, 'Error',
                                                text='It Seems That Your Account Has Been Deactivated: Contact The Admin For More Info',
                                                persistent='Retry')
-                                return render(request, 'shoppy/login.html')
+                                return render(request, 'vegefoods/loginorregister.html')
                     else:
                         sweetify.error(request, 'Error', text='Your account has been Deactivated!',
                                        persistent='Retry')
-                        return render(request, 'shoppy/login.html')
+                        return render(request, 'vegefoods/loginorregister.html')
                 else:
                     sweetify.error(request, 'Error', text='Invalid login credentials', persistent='Retry')
-                    return render(request, 'shoppy/login.html')
+                    return render(request, 'vegefoods/loginorregister.html')
             if User.objects.filter(Q(username__exact=username)|Q(email__exact=username) and Q(is_superuser=True)).first():
                 user = authenticate(username=adminusername(username), password=password,)
                 if user is not None:
@@ -424,16 +507,18 @@ def user_login(request):
                         return redirect('ShoppyAdmin:shoppy-admin-home')
                     else:
                         sweetify.error(request, 'Error', text='Please Retry', persistent='Retry')
-                        return render(request, 'shoppy/login.html')
+                        return render(request, 'vegefoods/loginorregister.html')
                 else:
                     sweetify.error(request, 'Error', text='Invalid login credentials', persistent='Retry')
-                    return render(request, 'shoppy/login.html')
+                    return render(request, 'vegefoods/loginorregister.html')
 
         else:
 
             sweetify.error(request, 'Error', text='Invalid user credentials', persistent='Continue')
-
-    return render(request,"shoppy/login.html")
+    context={
+        'carousels': Carousel.objects.all()
+    }
+    return render(request,"vegefoods/loginorregister.html", context)
 
 
 
@@ -486,9 +571,10 @@ def checkout(request):
     context={
         'buyer':buyer,
         'regions': regions,
-        'carts':carts
+        'carts':carts,
+        'carousels':Carousel.objects.all()
     }
-    return render(request, 'shoppy/checkout.html', context)
+    return render(request, 'vegefoods/checkout.html', context)
 
 def confirmCheckout(request):
     buyer = Buyer.objects.filter(user_ptr_id=request.user.id).first()
@@ -536,8 +622,8 @@ def confirmCheckout(request):
 
                 sms = africastalking.SMS
                 # Use the service synchronously
-                response = sms.send("<#> Your Orders are: " + str(", ".join( repr(e) for e in orders_products ) ) +'. We will call you to confirm the order', ["+" + new_phone_number], )
-                print(response)
+                # response = sms.send("<#> Your Orders are: " + str(", ".join( repr(e) for e in orders_products ) ) +'. We will call you to confirm the order', ["+" + new_phone_number], )
+                # print(response)
                 context = {
                     'results': 'success',
                     'response': "We have text you pin for setting your password, if an account exists with the phonenumber you entered You should receive an SMS shortly. If you don't receive an email, please make sure you've entered the phonenumber you registered with "
@@ -551,7 +637,9 @@ def confirmCheckout(request):
                     'response': "No Internet "
 
                 }
+
         sweetify.success(request, title='Success' 'Order Taken You Will Be Notified If Its Ready', button='Continue', timer=5000)
+        return redirect("Shoppy:how_to_pay")
     else:
         sweetify.error(request, title='Error' 'Error taking your order', button='Retry', timer=5000)
 
@@ -589,8 +677,9 @@ def how_to_pay(request):
     context={
         'order_total':order_total,
         'checkout':checkout_id,
+        'carousels':Carousel.objects.all()
     }
-    return render(request,'shoppy/how_to_pay.html',context)
+    return render(request,'vegefoods/howtopay.html',context)
 
 
 def product_filter(request):
@@ -664,7 +753,7 @@ def getShortcode(request):
             }
             # sweetify.success(request, title='Success' 'Check your phone for a code we have sent to your and key it into the number pad below. ', button='ok')
         except:
-            print('NO INTERNET')
+            # print('NO INTERNET')
             context = {
                 'results': 'error',
                 'response': "No Internet "

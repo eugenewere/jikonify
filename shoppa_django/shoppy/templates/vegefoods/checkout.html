@@ -1,0 +1,145 @@
+{% extends 'vegefoods/layout.html' %}
+{% load static %}
+{% load call_method %}
+{% load humanize %}
+{% block links %}
+
+{% endblock %}
+
+{% block content %}
+
+
+         <div class="home-slider owl-carousel" style="height: 252px; !important;">
+        {% for c in carousels %}
+            <div class="" style="background-image: url({{ c.image.url }});">
+              <div class="container">
+                <div class="row no-gutters slider-text align-items-center justify-content-center">
+                  <div class="col-md-9 ftco-animate text-center" style="height: 252px; !important;">
+                    <p class="breadcrumbs text-white"><span class="mr-2">
+                        <a href="{% url 'Shoppy:shoppy-home' %}">Home</a></span>
+                        <span class="mr-2">
+                            <a href="#">Checkout</a>
+                        </span> <span>{{product.name|title}}</span>
+                    </p>
+                    <h1 class="mb-0 bread text-white">My Checkout</h1>
+                      <span class="text-white">{{product.short_description|title}}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+        {% endfor %}
+    </div>
+    <form action="{% url 'Shoppy:shoppy-checkout' %}" method="post" class="billing-form">
+    {% csrf_token %}
+    <section class="ftco-section">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-xl-7 ftco-animate">
+                <h3 class="mb-4 billing-heading">Billing Details ({{ carts.count }})</h3>
+	          	<div class="row align-items-end">
+	          		<div class="col-md-6">
+                        <div class="form-group">
+                            <label for="firstname">Firt Name</label>
+                            <input required name="first_name" value="{{ request.user.first_name }}" type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" >
+
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="lastname">Last Name</label>
+                            <input required name="last_name" value="{{ request.user.last_name }}" type="text" class="form-control" id="exampleInputEmail3" aria-describedby="emailHelp3" >
+                        </div>
+                      </div>
+                      <input type="number" name="total" hidden value="{{buyer.cart_total|floatformat}}">
+                      <div class="w-100"></div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="country">Region</label>
+                                <div class="select-wrap">
+                              <div class="icon"><span class="ion-ios-arrow-down"></span></div>
+                              <select name="region" id="" class="form-control">
+                                  {% for region in regions %}
+                                    <option value="{{ region.id }}">{{ region.name|title }}</option>
+                                  {% endfor %}
+                              </select>
+                            </div>
+                            </div>
+                        </div>
+		                <div class="w-100"></div>
+
+
+
+                        <div class="w-100"></div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="phone">Phone</label>
+                                <input required name="phone_number" value="{{  buyer.phone_number  }}" type="tel" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Phone Number">
+                            </div>
+                        </div>
+
+                        <div class="w-100"></div>
+                        <div class="col-md-12">
+                            <div class="form-group mt-4">
+                                <div class="radio">
+                                  <span>Choose a payment options to make an order </span>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+
+					</div>
+            <div class="col-xl-5">
+
+	                <div class="row mt-5 pt-3">
+                        <div class="col-md-12 d-flex mb-5">
+                            <div class="cart-detail cart-total p-3 p-md-4">
+                                <h3 class="billing-heading mb-4">Cart Total</h3>
+                                <p class="d-flex">
+                                    <span>Subtotal</span>
+                                    <span>{{buyer.cart_total|floatformat|intcomma}} KSHs</span>
+                                </p>
+
+                                <hr>
+                                <p class="d-flex total-price">
+                                    <span>Total</span>
+                                    <span>{{buyer.cart_total|floatformat|intcomma}} KSHs</span>
+                                </p>
+                                </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="cart-detail p-3 p-md-4">
+                                <h3 class="billing-heading mb-4">Payment Method</h3>
+                                <div class="form-group">
+                                    <div class="col-md-12">
+                                        <div class="radio">
+                                           <label><input checked type="radio" name="optradio" class="mr-2"> Cash</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-md-12">
+                                        <div class="radio">
+                                           <label><input type="radio" name="optradio" class="mr-2"> Mpesa</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-md-12">
+                                        <div class="checkbox">
+                                           <label><input type="checkbox" value="" class="mr-2"> I have read and accept the terms and conditions</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p><button type="submit" class="btn btn-primary py-3 px-4">Place an order</button></p>
+                            </div>
+                        </div>
+                    </div>
+
+            </div> <!-- .col-md-8 -->
+          </div>
+      </div>
+    </section> <!-- .section -->
+    </form>
+{% endblock content %}
+{% block scripts %}
+{% endblock %}

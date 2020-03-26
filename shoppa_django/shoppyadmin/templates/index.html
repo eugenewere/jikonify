@@ -296,6 +296,8 @@
                                                 <th>Phone Number</th>
                                                 <th>Numbers of Products</th>
                                                 <th>Order_number</th>
+                                                <th>Region</th>
+                                                <th>Address</th>
                                                 <th>Total</th>
                                                 <th>Created At</th>
                                                 <th>Action</th>
@@ -314,6 +316,8 @@
                                                         {{ buyer_order.reference_code }}
 
                                                     </td>
+                                                    <td>{{ buyer_order.region.name }}</td>
+                                                    <td>{{ buyer_order.address }}</td>
                                                     <td>
                                                         {{ buyer_order.total|floatformat|intcomma }} Ksh
 
