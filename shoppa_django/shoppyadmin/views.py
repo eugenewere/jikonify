@@ -1,6 +1,9 @@
 import csv
 from datetime import datetime
 from datetime import timedelta
+
+from django.core.mail import send_mail
+from django.utils.safestring import *
 from openpyxl import Workbook
 from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
@@ -8,7 +11,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 
-from django.shortcuts import render ,redirect ,HttpResponse
+from django.shortcuts import render, redirect, HttpResponse
 
 from django.template.loader import get_template
 from django.views.generic.base import View
@@ -17,6 +20,8 @@ from openpyxl.styles.colors import COLOR_INDEX
 from rest_framework.views import APIView
 from rest_framework.response import Response
 import datetime as dt
+
+from django_project import settings
 from shoppy.forms import *
 from shoppy.models import *
 
@@ -1471,3 +1476,96 @@ def update_Inventory(request, product_id):
         else:
             messages.error(request, "Please update with appropriate quantity")
     return redirect('ShoppyAdmin:shoppy-admin-home')
+
+
+def viewnewsletter(request):
+    newsletters = NewsLetter.objects.all()
+    context = {
+        'newsletters':newsletters,
+    }
+    return render(request, 'newsletter.html', context)
+
+
+def replynewsletter(request):
+    email = request.POST['email']
+    msg = request.POST['msg']
+    if request.method == 'POST':
+        subject = 'E-Mail From Jikonify'
+        email_from = settings.EMAIL_HOST_USER
+        recipient_list = [email, ]
+        # print(SafeString(msg))
+        # print(SafeText(msg))
+        send_mail(
+            subject=subject,
+            message=msg,
+            from_email=email_from,
+            recipient_list=recipient_list
+        )
+        messages.success(request, "Email Sent")
+
+    return redirect('ShoppyAdmin:viewnewsletter')
+
+
+def replymassnewsletter(request):
+    from django.utils.functional import wraps
+    if request.method == 'POST':
+        msg = request.POST['msg']
+        emails = []
+        newsletter = NewsLetter.objects.all()
+        for news in newsletter:
+            emails.append(news.email)
+        subject = 'E-Mail From Jikonify'
+        email_from = settings.EMAIL_HOST_USER
+        recipient_list = emails
+        # print(SafeString(msg))
+        send_mail(
+            subject=subject,
+            message=msg,
+            from_email=email_from,
+            recipient_list=recipient_list
+        )
+        messages.success(request, "Emails sent")
+    return redirect('ShoppyAdmin:viewnewsletter')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -714,3 +714,21 @@ class Order(models.Model):
 
     def __str__(self):
         return '%s (%s)' % (self.order_total, (self.payment_status))
+
+class NewsLetter(models.Model):
+    email = models.CharField(max_length=100, null=False, blank=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return '%s' % (self.email)
+
+class BroadcastNewsLetter(models.Model):
+    newsletter = models.ForeignKey(NewsLetter, on_delete=models.CASCADE)
+    msg= models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return '%s' % (self.msg)
+

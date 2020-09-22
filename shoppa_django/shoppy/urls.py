@@ -82,8 +82,13 @@ urlpatterns =[
 
    path('deleteme/', views.deleteme, name= 'deleteme'),
 
+   path('all_buyers_orders/', views.all_buyers_orders, name= 'all_buyers_orders'),
+   path('all_buyers_order_products/<str:reference_code>', views.all_buyers_order_products, name= 'all_buyers_order_products'),
+   path('orders_payment_opions/<int:checkout_id>', views.orders_payment_opions, name= 'orders_payment_opions'),
 
 
+
+   path('assNewsLetter/<str:source>', views.assNewsLetter, name= 'assNewsLetter'),
 
 
 ]

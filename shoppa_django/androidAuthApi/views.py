@@ -1,4 +1,4 @@
-from shoppy.models import Buyer, Category, Product, Order_Product, Wishlist, Checkout, Region, Product_Variant_Options
+from shoppy.models import Buyer, Category, Product, Order_Product, Wishlist, Checkout, Region, Product_Variant_Options, NewsLetter
 from shoppy.models import Variant_Option, Variant, Carousel, Review, Image, OrderProductVariantOption, Brand, Offer
 from .serializers import buyersSerializer, CategorySerializer, ProductSerializer, OrderProductSerializer, ParentVariantSerializer
 from .serializers import  AllProductsSerializer, AndroidProductSerializer, CustomCartSerializer, wishlistSerializer, CustomWishlistSerializer
@@ -1008,4 +1008,28 @@ def delivery_region(request):
     data = RegionSerializer(regions, many=True)
     return Response(data.data,status=status.HTTP_200_OK)
 
+@csrf_exempt
+@api_view(["POST"])
+
+def subscribertoemail(request):
+    email = request.data.get("email")
+    print(email)
+    if not NewsLetter.objects.filter(email__exact=email):
+        NewsLetter.objects.create(
+            email=email
+        )
+        return Response(
+            data={
+                "message": "Successfully Subscribed"
+            },
+            status=status.HTTP_200_OK
+        )
+    else:
+        return Response(
+            data={
+                "message": "Seems this email has been used, use another one",
+
+            },
+            status=status.HTTP_400_BAD_REQUEST
+        )
 

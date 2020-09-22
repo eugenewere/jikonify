@@ -392,8 +392,9 @@ def user_account(request):
         'wishlist': wishlist,
         'orders':Order_Product.objects.filter(buyer=buyer, checkout__isnull=False , checkout__status='PAID'),
         'buyer' : Buyer.objects.filter(user_ptr_id=user.id).first(),
+        'carousels':Carousel.objects.all()
     }
-    return render(request,'shoppy/user_account.html',context)
+    return render(request,'vegefoods/useracount.html',context)
 
 
 
@@ -853,3 +854,67 @@ def deleteme(request):
         # 'orderproducts': orderproducts
     }
     return render(request, 'shoppy/deleteme.html', context)
+
+
+def all_buyers_orders(request):
+    checkouts = Checkout.objects.filter(status__exact='PENDING').order_by('-created_at')
+    print(checkouts)
+    context ={
+        'checkouts':checkouts,
+        'carousels':Carousel.objects.all()
+    }
+    return render(request, 'vegefoods/pendingorders.html', context)
+def orders_payment_opions(request, checkout_id):
+    user = request.user.id
+    buyer = Buyer.objects.filter(user_ptr_id=user).first()
+    checkout = Checkout.objects.filter(buyer=buyer, id=checkout_id).first()
+    order_total = Order_Product.objects.filter(buyer=buyer, checkout=checkout)
+
+    context = {
+        'order_total': order_total,
+        'checkout': checkout,
+        'carousels':Carousel.objects.all(),
+    }
+    return render(request, 'vegefoods/howtopay.html', context)
+
+
+
+def all_buyers_order_products(request, reference_code):
+    user = request.user.id
+    buyer = Buyer.objects.filter(user_ptr_id=user).first()
+    orders = Order_Product.objects.filter(checkout__reference_code__exact=reference_code)
+    print(orders)
+    procucts = []
+    for order in orders:
+        procucts.append(order.product)
+    print(procucts)
+    context = {
+
+        'products':procucts,
+        'carousels':Carousel.objects.all(),
+    }
+    # return render(request, 'shoppy/view_products/buyer_pending_checkout_products.html', context)
+
+
+def assNewsLetter(request, source):
+    source = source.replace('____', '/')
+    if request.method == 'POST':
+        email = request.POST['email']
+        form = NewsletterForm(request.POST)
+
+        if form.is_valid():
+            if not NewsLetter.objects.filter(email__exact=email):
+                if request.user.email == "":
+                    User.objects.filter(id=request.user.id).update(
+                        email=email,
+                    )
+                form.save()
+                sweetify.success(request, title='Success' 'Successfully Subscribed', button='ok')
+                return redirect(source)
+            else:
+                sweetify.error(request, title='Error' 'Looks like we have your email', button='Retry', timer=5000)
+                return redirect(source)
+        else:
+            sweetify.error(request, title='Error' 'Error Subscribing', button='Retry', timer=5000)
+            return redirect(source)
+    return redirect(source)

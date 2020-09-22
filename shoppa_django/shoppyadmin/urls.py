@@ -96,6 +96,12 @@ urlpatterns = (
    #inventory
    path('updateInventory/<int:product_id>', views.update_Inventory, name='updateInventory'),
 
+
+   #newsletter
+   path('viewnewsletter/', views.viewnewsletter, name='viewnewsletter'),
+   path('replynewsletter/', views.replynewsletter, name='replynewsletter'),
+   path('replymassnewsletter/', views.replymassnewsletter, name='replymassnewsletter'),
+
 )
 
 

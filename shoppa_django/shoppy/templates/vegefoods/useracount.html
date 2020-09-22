@@ -7,6 +7,196 @@
 {% endblock %}
 
 {% block content %}
+     <div class="home-slider owl-carousel" style="height: 252px; !important;">
+        {% for c in carousels %}
+            <div class="" style="background-image: url({{ c.image.url }});">
+              <div class="container">
+                <div class="row no-gutters slider-text align-items-center justify-content-center">
+                  <div class="col-md-9 ftco-animate text-center" style="height: 252px; !important;">
+                    <p class="breadcrumbs text-white"><span class="mr-2">
+                        <a href="{% url 'Shoppy:shoppy-home' %}">Home</a></span>
+                        <span class="mr-2">
+                            <a href="#">Product</a>
+                        </span> <span>{{product.name|title}}</span>
+                    </p>
+                    <h1 class="mb-0 bread text-white">My Wishlist</h1>
+                      <span class="text-white">{{product.short_description|title}}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <section class="ftco-section ftco-cart">
+         <div class="col-sm-10 mx-auto">
+             <div class="row">
+                  <div class="w-100 ">
+                          {% if errors %}
+                            <div class="alert alert-danger text-white" role="alert">
+                                {% for error in errors %}
+                                  <p class="text-white">{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                          {% endif %}
+
+                          {% if messages %}
+                            <div class="messages alert alert-danger text-white" role="alert">
+                              {% for message in messages %}
+                                <p class="text-white " {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</p>
+                              {% endfor %}
+                            </div>
+                          {% endif %}
+
+                          {% if form.errors %}
+                            {% for field in form %}
+                                {% for error in field.errors %}
+                                    <div class="alert alert-danger" role="alert">
+                                      <strong class="text-white">{{ error|escape }}</strong>
+                                    </div>
+                                {% endfor %}
+                            {% endfor %}
+                            {% for error in form.non_field_errors %}
+                                <div class="alert alert-danger text-white" role="alert">
+                                  <strong>{{ error|escape }}</strong>
+                                </div>
+                            {% endfor %}
+                          {% endif %}
+
+                        <h2 class=" page-header py-4">User Account Details</h2>
+                        <form class="needs-validation" novalidate action="{% url 'Shoppy:shoppy-user_account' %}" method="POST">
+                            {% csrf_token %}
+
+                            <div class="col-md-12 row  d-flex justify-content-center align-content-center">
+                                <div class="col-md-6 mb-2 ">
+                                  <label for="validationCustom01">First name</label>
+                                  <input name="first_name" type="text" class="form-control" id="validationCustom01" placeholder="First name" value="{{ buyer.first_name }}" required>
+                                  <div class="valid-feedback">
+                                    Looks good!
+                                  </div>
+                                  <div class="invalid-feedback">
+                                    Enter your First name
+                                  </div>
+                                </div>
+
+                                <div class="col-md-6 mb-2">
+                                  <label for="validationCustom02">Last name</label>
+                                  <input name="last_name" type="text" class="form-control" id="validationCustom02" placeholder="Last name" value="{{ buyer.last_name }}" required>
+                                  <div class="valid-feedback">
+                                    Looks good!
+                                  </div>
+                                  <div class="invalid-feedback">
+                                    Enter your Last name
+                                  </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12 row  -flex justify-content-center align-content-center">
+                                <div class="col-md-6 mb-3">
+                                  <label for="validationCustomUsername">Email</label>
+
+                                    <input name="username" type="email" class="form-control" id="validationCustomUsername" value="{{ buyer.username }}" placeholder="Email" aria-describedby="inputGroupPrepend" required><br>
+
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                  <label for="validationCustom03">Phone number</label>
+                                  <input name="phone_number" type="number" class="form-control" id="validationCustom03" value="{{ buyer.phone_number }}" placeholder="Phone number" required>
+                                  <div class="invalid-feedback">
+                                    Please provide a valid city.
+                                  </div>
+                                  <div class="valid-feedback">
+                                    Nice .
+                                  </div>
+                                </div>
+                          </div>
+
+                          <button  style="width: 100px; border-radius: 10px; height: 42px !important; color: white !important;" class="btn btn-success" type="submit">Save</button>
+
+                        </form>
+
+                    </div>
+             </div>
+         </div>
+        <hr>
+        <div class="col-sm-10 mx-auto">
+                 <div class="row">
+                    <div class="w-100 Account">
+                          {% if errors %}
+                            <ul class="p-0">
+                            {% for error in errors %}
+                                <div class="alert alert-danger" role="alert">
+                                  {{ error }}
+                                </div>
+                            {% endfor %}
+                            </ul>
+                          {% endif %}
+
+                          {% if messages %}
+                            <ul class="messages">
+                              {% for message in messages %}
+                                  <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}" role="alert">
+                                      {{ message }}
+                                  </div>
+                              {% endfor %}
+                            </ul>
+                          {% endif %}
+
+                          {% if form.errors %}
+                            {% for field in form %}
+                                {% for error in field.errors %}
+                                    <div class="alert alert-danger">
+                                      <strong class="text-white">{{ error|escape }}</strong>
+                                    </div>
+                                {% endfor %}
+                            {% endfor %}
+                            {% for error in form.non_field_errors %}
+                                <div class="alert alert-danger text-white">
+                                  <strong>{{ error|escape }}</strong>
+                                </div>
+                            {% endfor %}
+                          {% endif %}
+
+                        <h2 class=" page-header py-4">Change Password</h2>
+                            <form class="needs-validation" novalidate action="{% url 'Shoppy:change_password' %}" method="POST">
+                                {% csrf_token %}
+                                <div class="col-sm-12 py-5 d-flex flex-column">
+                                    <div class="col-md-12 mb-3">
+                                      <label for="validationCustom04"> Current Password</label>
+                                      <input maxlength="4" type="password" name="old_password" class="form-control" id="validationCustom04" placeholder=" Current Pin" required>
+                                        <small id="passwordHelpBlock" class="form-text text-muted">
+                                          Your password must be 4 characters long.
+                                        </small>
+
+                                    </div>
+
+                                    <div class="col-md-12 mb-3">
+                                      <label for="validationCustom05">New Password</label>
+                                      <input maxlength="4" name="new_password1" type="password" class="form-control" id="validationCustom05" placeholder="New Pin" required>
+                                        <small id="passwordHelpBlock" class="form-text text-muted">
+                                          Your password must be 4 characters long.
+                                        </small>
+
+                                    </div>
+
+                                    <div class="col-md-12 mb-3">
+                                      <label for="validationCustom05">Retype Pin</label>
+                                      <input maxlength="4" name="new_password2" type="password" class="form-control" id="validationCustom05" placeholder="Retype Your Pin" required>
+                                        <small id="passwordHelpBlock" class="form-text text-muted">
+                                          Your password must be 4 characters long.
+                                        </small>
+
+                                    </div>
+                                </div>
+                                 <button  style="width: 100px; border-radius: 10px; height: 42px !important; color: white !important;" class="btn btn-success" type="submit">Save</button>
+                            </form>
+
+                    </div>
+                 </div>
+        </div>
+    </section>
+
+
 {% endblock content %}
 {% block scripts %}
 
