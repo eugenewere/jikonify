@@ -81,15 +81,132 @@
                                 </p>
                             </div>
                         </div>
+                        <div class="col-sm-12 col-md-12" style="height: 100%;">
+                            <h3 style="text-align: center;" class="text-capitalize mt-3 ftco-animate">OR</h3>
+                            <h4 class="text-capitalize mt-3 ftco-animate">Pay using PayPal</h4>
+                            <div class="row" style="display: flex; justify-content: center; align-items: center ; padding: 20px;">
+                                <div id="paypal-button-container" style="display: flex; flex-direction: column; justify-content: flex-start; align-items: center;width: 100%; "></div>
+                            </div>
+                       </div>
                     </div>
                     <div class="row w-100">
                         <a class="product-button ml-auto ftco-animate" href="{% url 'Shoppy:shoppy-home' %}">Continue Shopping</a>
                     </div>
                 </div>
           </div>
-
+            <span id="checkout_id" hidden style="display:none">{{ checkout.id }}</span>
+            <span id="checkout_id2" hidden style="display:none">{{ checkout.id }}</span>
           </div>
     </section> <!-- .section -->
 {% endblock content %}
 {% block scripts %}
+        <script src="https://www.paypal.com/sdk/js?client-id=AYvT3OhFdk32s6G9Af6j-7YAOzrOcTLJ1e1l5FvIn_CapqQQyzSksAJaYM1nxRBBeMPEdfzI-xz1xxFy"></script>
+    <script>
+    $(document).ready(function () {
+        let loc = window.location.origin + "/orderdetailspaypalpay/";
+        let ch_id = $('#checkout_id').text();
+        var dta = {
+            'csrfmiddlewaretoken':csrftoken,
+            'chek_id': Number(ch_id),
+        }
+        console.log(loc, ch_id)
+        $.post(loc,dta,
+               function(response){
+                   {#console.log(response);#}
+                   loadPayp(response)
+               }
+        );
+
+    });
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+    function loadPayp(res) {
+        var currency = [108.1,108.2,108.3,108.4,108.5,108.6,108.7,108.8,108.9,108.10]
+        const randomElement = currency[Math.floor(Math.random() * currency.length)];
+        {#console.log(randomElement);#}
+        var amm = res['ammount']
+        var total = amm/randomElement;
+
+        paypal.Buttons({
+        style: {
+            color:  'gold',
+            shape:  'pill',
+            label:  'pay',
+            height: 40
+        },
+        // Set up the transaction
+        createOrder: function(data, actions) {
+            return actions.order.create({
+                purchase_units: [{
+                    amount: {
+                        value: total.toFixed(2),
+                    }
+                }]
+            });
+        },
+
+        // Finalize the transaction
+        onApprove: function(data, actions) {
+            return actions.order.capture().then(function(details) {
+                completePayment(details)
+            });
+        }
+    }).render('#paypal-button-container')
+    }
+    function completePayment(data){
+        var ch_id = $('#checkout_id2').text();
+        var url = window.location.origin+"/payment_complete/"+Number(ch_id)+"/";
+        console.log(url, ch_id)
+        $.ajax({
+            processData: false,
+            headers: {
+                'Content-type': 'application/json',
+                'X-CSRFToken': csrftoken,
+            },
+            type: 'POST',
+            url: url,
+            data: JSON.stringify(data),
+            dataType: 'json',
+            success: function(data){
+                console.log(data)
+                if (data['status'] === 'success' && data['payment'] === 'done' ){
+                    swal.fire({
+                        title: "Success!",
+                        text: 'Payment done',
+                        type: "success",
+                        confirmButtonText: "Ok"
+                    });
+                    window.location = window.location.origin;
+                }
+                else if(data['status'] === 'error' && data['payment'] === 'reversed' ){
+                     swal.fire({
+                        title: "Error",
+                        text: 'Payment not done',
+                        type: "error",
+                        confirmButtonText: "Ok"
+                     });
+                }
+            },
+            error: function(){
+
+            },
+
+        });
+   }
+    </script>
+
 {% endblock %}

@@ -377,16 +377,15 @@ class Checkout(models.Model):
     shipping_cost = models.FloatField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
     CHECKOUT_STATUS = (
         ('PENDING', 'Pending'),
         ('PAID', 'Paid'),
     )
     status = models.CharField(choices=CHECKOUT_STATUS, max_length=100, default='PENDING')
-
     PAYMENTSTATUS=(
         ('CASH','Cash'),
         ('MPESA', 'Mpesa'),
+        ('PAYPAL', 'Paypal'),
     )
     paymentchoice = models.CharField(choices=PAYMENTSTATUS, default="CASH", max_length=200, null=False, blank=False)
     class Meta:
@@ -421,14 +420,39 @@ class Checkout(models.Model):
 
         return list(set(groups))
 
-    # @property
-    # def products_inventory_order(self):
-    #     orderss = Order_Product.objects.filter(checkout=self)
-    #     inventory_count=[]
-    #     for order in orderss:
-    #         inventory_count.a
-    #         print(order.product.inventory_qty)
-    #     return inventory_count
+
+class CheckoutPayment(models.Model):
+    pay_method = models.CharField(max_length=200, null=False, blank=False)
+    checkout = models.ForeignKey(Checkout, on_delete=models.SET_NULL, null=True, blank=True)
+    payer_reg_no = models.CharField(max_length=200, null=True, blank=True)
+    payer_full_name = models.CharField(max_length=200, null=True, blank=True)
+    payer_paying_email = models.CharField(max_length=200, null=True, blank=True)
+    business_email_paid = models.CharField(max_length=200, null=True, blank=True)
+
+    country_code = models.CharField(max_length=200, null=True, blank=True)
+    amount = models.CharField(max_length=200, null=False, blank=False)
+
+    currency_amount = models.CharField(max_length=200, null=True, blank=True)
+    currency_code = models.CharField(max_length=200, null=True, blank=True)
+    currency_value = models.CharField(max_length=200, null=True, blank=True)
+
+    pay_recipt_no = models.CharField(max_length=200, null=False, blank=False)
+    transaction_recipt_no = models.CharField(max_length=200, null=False, blank=False)
+    CUSTOMER_PAYMENT_STATUS = {
+        ('UNPAID', 'Unpaid'),
+        ('CANCELED', 'Canceled'),
+        ('COMPLETED', 'Completed'),
+        ('PARTIAL', 'Partial'),
+    }
+    payment_status = models.CharField(max_length=200, choices=CUSTOMER_PAYMENT_STATUS, default='UNPAYED', null=True,
+                                      blank=True)
+    transaction_status = models.CharField(max_length=200, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return '%s' % (self.payer_reg_no)
+
 
 
 class Order_Product(models.Model):

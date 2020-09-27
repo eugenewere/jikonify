@@ -59,7 +59,7 @@ def home(request):
 
 
     # checkouts = Checkout.objects.filter(status__exact='PENDING', order_product__product__seller=seller, order_product__checkout_id__isnull=False)
-    checkouts = Checkout.objects.filter(status__exact='PENDING').order_by('-created_at')
+    checkouts = Checkout.objects.order_by('-created_at')
 
     # buyers = []
     # for checkout in checkouts:
@@ -82,7 +82,7 @@ def home(request):
 
     adminsles = list(set(admintotalsales))
 
-    admin_orders = Checkout.objects.filter(status__exact='PENDING').order_by('-created_at')
+    admin_orders = Checkout.objects.order_by('-created_at')
 
 
     out_products = []

@@ -584,8 +584,14 @@ def confirmCheckout(request):
         last_name=request.POST['last_name']
         total=request.POST['total']
         phonenumber= request.POST['phone_number']
+        paystatus= request.POST['optradio']
         reference_code =('M'+ get_random_string(length=4, allowed_chars='ABCDEFGHIJLNPQRSTUVWXYZ123456789'))
-
+        def genRegNo(regnopers):
+            if Checkout.objects.filter(reference_code=regnopers):
+                regnoperss = ('JIKONIFY-'+ get_random_string(length=4, allowed_chars='ABCDEFGHIJLNPQRSTUVWXYZ123456789'))
+                genRegNo(regnoperss)
+            else:
+                return regnopers
         if not User.objects.filter(id=request.user.id, last_name__iexact=last_name, first_name__iexact=first_name).exists():
             User.objects.filter(id = request.user.id).update(
                 first_name=first_name,
@@ -593,9 +599,10 @@ def confirmCheckout(request):
             )
         checkout = Checkout.objects.create(
             buyer=buyer,
-            reference_code = reference_code,
+            reference_code = genRegNo(reference_code),
             total = float(total),
-            phonenumber = phonenumber
+            phonenumber = phonenumber,
+            paymentchoice=paystatus.upper(),
         )
         if checkout is not None:
             checkoutt = Checkout.objects.filter(id=int(checkout.id)).first()
@@ -857,19 +864,23 @@ def deleteme(request):
 
 
 def all_buyers_orders(request):
-    checkouts = Checkout.objects.filter(status__exact='PENDING').order_by('-created_at')
-    print(checkouts)
+    user = request.user.id
+    buyer = Buyer.objects.filter(user_ptr_id=user).first()
+    checkouts = Checkout.objects.filter(status__exact='PENDING', buyer=buyer).order_by('-created_at')
+    # print(checkouts)
     context ={
         'checkouts':checkouts,
         'carousels':Carousel.objects.all()
     }
     return render(request, 'vegefoods/pendingorders.html', context)
+
+
 def orders_payment_opions(request, checkout_id):
     user = request.user.id
     buyer = Buyer.objects.filter(user_ptr_id=user).first()
     checkout = Checkout.objects.filter(buyer=buyer, id=checkout_id).first()
     order_total = Order_Product.objects.filter(buyer=buyer, checkout=checkout)
-
+    print(checkout)
     context = {
         'order_total': order_total,
         'checkout': checkout,
@@ -918,3 +929,84 @@ def assNewsLetter(request, source):
             sweetify.error(request, title='Error' 'Error Subscribing', button='Retry', timer=5000)
             return redirect(source)
     return redirect(source)
+
+
+def orderdetailspaypalpay(request):
+    if request.method == 'POST':
+        # print(request)
+        ch_id = request.POST.get('chek_id')
+
+        print(ch_id)
+        ch = Checkout.objects.filter(id=int(ch_id)).first()
+        ammount = []
+        for ord in Order_Product.objects.filter(checkout=ch).all():
+            ammount.append(ord.total)
+        print(ammount)
+        paypal_dict = {
+            'ammount':sum(ammount)
+        }
+        return JsonResponse(paypal_dict)
+    else:
+        pass
+
+
+def payment_complete(request, chk_id):
+    # print(chk_id)
+    chk = Checkout.objects.filter(id=chk_id).first()
+    if chk is not None:
+        body = json.loads(request.body)
+        pay_method = "PAYPAL"
+        payer_reg_no = chk.reference_code
+        payer_paying_email = body['payer']['email_address']
+        business_email_paid = body['purchase_units'][0]['payee']['email_address']
+        country_code = body['payer']['address']['country_code']
+        payer_name = body['payer']['name']['given_name'] + ' ' + body['payer']['name']['surname']
+        amount = body['purchase_units'][0]['amount']['value']
+        currency_amount = body['purchase_units'][0]['amount']['value']
+        currency_code = body['purchase_units'][0]['amount']['currency_code']
+        currency_value = 108
+        pay_recipt_no = body['purchase_units'][0]['payments']['captures'][0]['id']
+        transaction_recipt_no = body['id']
+        transaction_status = body['status']
+
+        if transaction_status == 'COMPLETED':
+            payment_status = 'COMPLETED'
+        elif transaction_status == 'REVERSED':
+            payment_status = 'CANCELED'
+
+        print(payer_reg_no, payer_paying_email, business_email_paid, country_code, payer_name, amount, currency_amount, currency_code,
+              currency_value,pay_recipt_no, transaction_recipt_no,transaction_status)
+        if transaction_status == 'COMPLETED':
+            cp = CheckoutPayment.objects.create(
+                checkout=chk,
+                pay_method=pay_method,
+                payer_reg_no=payer_reg_no,
+                payer_full_name=payer_name,
+                payer_paying_email=payer_paying_email,
+                business_email_paid=business_email_paid,
+                country_code=country_code,
+                amount=amount,
+                currency_amount=currency_amount,
+                currency_code=currency_code,
+                currency_value=currency_value,
+                pay_recipt_no=pay_recipt_no,
+                transaction_recipt_no=transaction_recipt_no,
+                transaction_status=transaction_status,
+                payment_status=payment_status,
+
+            )
+
+            Checkout.objects.filter(reference_code=payer_reg_no).update(
+                status='PAID',
+            )
+            context = {
+                'status': 'success',
+                'payment': 'done',
+            }
+            return JsonResponse(context)
+        elif transaction_status == 'REVERSED':
+            context = {
+                'status': 'error',
+                'payment': 'reversed',
+            }
+            return JsonResponse(context)

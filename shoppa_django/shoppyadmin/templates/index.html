@@ -298,7 +298,10 @@
                                                 <th>Order_number</th>
                                                 <th>Region</th>
                                                 <th>Address</th>
+                                                <th>Status</th>
                                                 <th>Total</th>
+                                                <th>Gateway</th>
+                                                <th>Status</th>
                                                 <th>Created At</th>
                                                 <th>Action</th>
                                             </tr>
@@ -314,18 +317,18 @@
                                                     </td>
                                                     <td>
                                                         {{ buyer_order.reference_code }}
-
                                                     </td>
                                                     <td>{{ buyer_order.region.name }}</td>
                                                     <td>{{ buyer_order.address }}</td>
+                                                    <td>{{ buyer_order.paymentchoice }}</td>
+                                                    <td>{{ buyer_order.status }}</td>
                                                     <td>
                                                         {{ buyer_order.total|floatformat|intcomma }} Ksh
-
                                                     </td>
+                                                    <td>{{ buyer_order.status }}</td>
                                                     <td>
                                                         {{ buyer_order.created_at|naturaltime }}
                                                     </td>
-
                                                     <td>
                                                         <a href="{% url 'ShoppyAdmin:shoppy-buyer_orders' buyer_order.reference_code %}" class="btn btn-success"><i class="fas fa-pencil-alt"></i> View</a>
                                                         <a href="#" data-toggle="modal" data-target="#rd{{ buyer_order.id }}" class="btn btn-danger"><i class="fas fa-trash " style="padding-right: 2px"></i>Cancel Order</a>
@@ -377,7 +380,11 @@
                                                 <th>Numbers of Products</th>
                                                 <th>Order_number</th>
                                                 <th>Total</th>
+                                                <th>Gateway</th>
+                                                <th>Status</th>
                                                 <th>Created At</th>
+
+
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -398,6 +405,8 @@
                                                         {{ buyer_order.total|floatformat|intcomma }} Ksh
 
                                                     </td>
+                                                    <td>{{ buyer_order.paymentchoice }}</td>
+                                                    <td>{{ buyer_order.status }}</td>
                                                     <td>
                                                         {{ buyer_order.created_at|naturaltime }}
                                                     </td>

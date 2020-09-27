@@ -38,7 +38,6 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'shoppy.apps.ShoppyConfig',
     'shoppyadmin.apps.ShoppyadminConfig',
-    'crispy_forms',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -184,4 +183,4 @@ sweetify.DEFAULT_OPTS = {
 }
 
 
-CRISPY_TEMPLATE_PACK ='bootstrap4'
+# CRISPY_TEMPLATE_PACK ='bootstrap4'

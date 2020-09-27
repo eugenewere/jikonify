@@ -10,7 +10,7 @@
     {% else %}
         <title>Jikonify</title>
     {% endif %}
-    <link rel="icon" type="image/png" href="{% static 'sitelogo/favicone.png' %}"/>
+      <link rel="icon" href="{% static 'img/sitelogo/jikonify_black - Copy.png' %}">
 
 
 
@@ -56,7 +56,7 @@
 {#      </div>#}
 {#      <h1 class="loading_text">Loading Mashkys Admin</h1>#}
 {#    </header>#}
-    {#endpreloader#}
+{#    endpreloader#}
     <div class="col-sm-12 col-md-12 col-lg-12">
          <nav style="margin: 0;" class="navbar navbar-custom navbar-fixed-top" role="navigation">
 		<div class="container-fluid">
@@ -159,7 +159,7 @@
                 </li>
                 <li class=""><a href="{%  url 'ShoppyAdmin:shoppy-admin-buyers' %}"><em class="fas fa-user">&nbsp;</em> Buyers</a></li>
                 <li class=""><a href="{% url 'ShoppyAdmin:shoppy-admin-sellers' %}"><em class="fas fa-users">&nbsp;</em> Sellers</a></li>
-                <li class=""><a href="{% url 'ShoppyAdmin:viewnewsletter' %}"><em class="fas fa-mail-reply">&nbsp;</em> Newsletter</a></li>
+                <li class=""><a href="{% url 'ShoppyAdmin:viewnewsletter' %}"><em class="fa fa-mail-reply">&nbsp;</em> Newsletter</a></li>
 			{% endif %}
             {% if request.user|is_seller %}
 {#            <div class="divider" style="margin-bottom: 20px; border: 1px solid white; background-color: white;"></div>#}

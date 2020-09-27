@@ -118,10 +118,10 @@
 
 	      <div class="collapse navbar-collapse" id="ftco-nav">
 	        <ul class="navbar-nav ml-auto">
-	          <li class="nav-item active"><a href="layout.html" class="nav-link">Home</a></li>
+	          <li class="nav-item active"><a href="{% url 'Shoppy:shoppy-home' %}" class="nav-link">Home</a></li>
 	          <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="dropdown04" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Extra</a>
-              <div class="dropdown-menu" aria-labelledby="dropdown04">
+                  <a class="nav-link dropdown-toggle" href="#" id="dropdown04" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Extra</a>
+                  <div class="dropdown-menu" aria-labelledby="dropdown04">
               	<a class="dropdown-item" href="{% url 'Shoppy:product_list' %}">Categories</a>
                 {% if request.user.is_authenticated %}
               	<a class="dropdown-item" href="{% url 'Shoppy:wishlist' %}">Wishlist <span class="badge badge-pill badge-success">{% if request.user.is_authenticated %}
@@ -132,19 +132,22 @@
                         {% endif %}
                      {% else %}
                         0
-                    {% endif %}</span>
+                    {% endif %}
+                </span>
                 </a>
                 {% endif %}
                   {% if request.user.is_authenticated %}
                 <a class="dropdown-item" href="{% url 'Shoppy:shoppy-user_account' %}">User Account</a>
 
-                <a class="dropdown-item" href="{% url 'Shoppy:shoppy-cart' %}">Cart <span class="badge badge-pill badge-success">
-                    {%  if request|cart_count:request.user  %}
+                <a class="dropdown-item" href="{% url 'Shoppy:shoppy-cart' %}">Cart
+                    <span class="badge badge-pill badge-success">
+                        {%  if request|cart_count:request.user  %}
                             {{ request|cart_count:request.user }}
                         {% else %}
                             0
                         {% endif %}
-                </span></a>
+                    </span>
+                </a>
 
                 {% endif %}
                {% if request|how_to_pay_filter %}
@@ -156,25 +159,23 @@
 
 
               </div>
-            </li>
+              </li>
 	          <li class="nav-item"><a href="#footer_d" class="nav-link">Contact</a></li>
 	          <li class="nav-item">
                   {% if request.user.is_authenticated %}
                     <a class="nav-link" href="{% url 'Shoppy:shoppy-logout' %}">Logout</a>
                 {% else %}
                     <a  class="nav-link" href="{% url 'Shoppy:shoppy-login' %}">Login</a>
-
                 {% endif %}
               </li>
-
-	          <li class="nav-item cta cta-colored"><a href="cart.html" class="nav-link"><span class="icon-shopping_cart"></span>[{%  if request|cart_count:request.user  %}
+	          <li class="nav-item cta cta-colored"><a href="{% url 'Shoppy:shoppy-cart' %}" class="nav-link"><span class="icon-shopping_cart"></span>[{%  if request|cart_count:request.user  %}
                             {{ request|cart_count:request.user }}
                         {% else %}
                             0
                         {% endif %}]</a></li>
                 <li class="nav-item"><a href="#footer_d" class="nav-link">
                      {% if request.user.is_authenticated %}
-                        Hi {{ request.user.first_name }}
+                        Hi {{ request.user.username}}
                     {% else %}
                         <span class="">
                             <i class="ion-ios-person-add"></i>
@@ -406,6 +407,8 @@
                 $(this).prev().val(numProduct + 1);
             });
         </script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+    <script src="https://cdn.jsdelivr.net/npm/promise-polyfill"></script>
   {% block scripts %}
 
     {% endblock %}

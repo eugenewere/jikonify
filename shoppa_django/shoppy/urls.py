@@ -89,8 +89,9 @@ urlpatterns =[
 
 
    path('assNewsLetter/<str:source>', views.assNewsLetter, name= 'assNewsLetter'),
+   path('orderdetailspaypalpay/', views.orderdetailspaypalpay, name= 'orderdetailspaypalpay'),
 
-
+   path('payment_complete/<int:chk_id>/', views.payment_complete, name='payment_complete'),
 ]
 
 
