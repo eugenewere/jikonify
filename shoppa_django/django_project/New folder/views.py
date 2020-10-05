@@ -1,3 +1,5 @@
+from django.db.models import Q
+
 from shoppy.models import Buyer, Order_Product, Category, Product
 from .serializers import buyersSerializer, OrdersSerializer, CheckoutSerializer, CategorySerializer, ProductsSerializer
 from rest_framework import generics
@@ -83,9 +85,17 @@ def signup2(request):
 def login(request):
     username = request.data.get("username")
     password = request.data.get("password")
+    # print(username, password)
     if username is None or password is None:
         return Response({'error': 'Please provide both username and password'}, status=HTTP_400_BAD_REQUEST)
-    user = authenticate(username=username, password=password)
+
+    def buyerusername(usernamee):
+        uz = Buyer.objects.filter(Q(phone_number__exact=usernamee) | Q(username__exact=usernamee)).first()
+        usename = User.objects.filter(id=uz.user_ptr_id).first()
+        if uz.phone_number:
+            return usename.username
+        return None
+    user = authenticate(username=buyerusername(username), password=password)
 
     if not user:
         context = {

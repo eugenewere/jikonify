@@ -18,7 +18,7 @@ from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND, HTTP_200_OK, HTTP_201_CREATED
 from rest_framework.views import APIView
 from django_filters.rest_framework import DjangoFilterBackend
-from django.db.models import Sum, FloatField, IntegerField, CharField, Value, DateTimeField
+from django.db.models import Sum, FloatField, IntegerField, CharField, Value, DateTimeField, Q
 from django.utils.crypto import get_random_string
 import africastalking
 
@@ -136,28 +136,33 @@ def signup2(request):
 def login(request):
     phonenumber = request.data.get("username")
     password = request.data.get("password")
-    buyer = Buyer.objects.filter(phone_number = phonenumber).first()
-    username = buyer.username
-    if username is None or password is None:
-        return Response({'error': 'Please provide both username and password'}, status=HTTP_400_BAD_REQUEST)
-    user = authenticate(username=username, password=password)
 
-    if not user:
+    buyer = Buyer.objects.filter(Q(phone_number = phonenumber)| Q(username__exact=phonenumber)).first()
+    if buyer:
+        username = buyer.username
+        if username is None or password is None:
+            return Response({'error': 'Please provide both username and password'}, status=HTTP_400_BAD_REQUEST)
+        user = authenticate(username=username, password=password)
+
+        if not user:
+            context = {
+                'error': 'Invalid Username or Password',
+            }
+            return Response(context, status=HTTP_404_NOT_FOUND)
+        token, _ = Token.objects.get_or_create(user=user)
         context = {
-            'error': 'Invalid Username or Password',
+            'token': token.key,
+            'id': user.id,
+            'username': username,
+            'email': user.email,
+            'first_name': user.first_name,
+            'last_name': user.last_name
         }
-        return Response(context, status=HTTP_404_NOT_FOUND)
-    token, _ = Token.objects.get_or_create(user=user)
-    context = {
-        'token': token.key,
-        'id': user.id,
-        'username': username,
-        'email': user.email,
-        'first_name': user.first_name,
-        'last_name': user.last_name
-    }
-    return Response(context,
-                    status=HTTP_200_OK)
+        return Response(context,
+                        status=HTTP_200_OK)
+    else:
+        return Response({'error': 'Only Buyers are allowed to login'}, status=HTTP_400_BAD_REQUEST)
+
 
 @csrf_exempt
 @api_view(["POST"])
