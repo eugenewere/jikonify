@@ -491,6 +491,12 @@ class Order_Product(models.Model):
         if order_payment is not None:
             return order_payment
         return None
+    @property
+    def orderpaymentttt2(self):
+        checkout_payment = CheckoutPayment.objects.filter(checkout=self.checkout).first()
+        if checkout_payment is not None:
+            return checkout_payment.pay_recipt_no
+        return None
 
     @property
     def buyer_orders(self):

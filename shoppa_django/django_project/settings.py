@@ -170,6 +170,8 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL: False
 
+PAYPAL_BUSINESS_EMAIL="businesseugene@gmail.com"
+
 SWEETIFY_SWEETALERT_LIBRARY = 'sweetalert2'
 
 sweetify.DEFAULT_OPTS = {

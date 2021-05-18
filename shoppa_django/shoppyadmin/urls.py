@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import GeneratePDF, ListUsers, GenerateProductPDF,  ListOrdersadmin
+from .views import  ListUsers, GenerateProductPDF,  ListOrdersadmin
 
 from . import views
 
@@ -21,7 +21,7 @@ urlpatterns = (
    path('buyerOrders/<str:reference_code>', views.buyerOrders, name='shoppy-buyer_orders'),
    path('buyerOrdersCancel/<str:reference_code>', views.buyerOrdersCancel, name='shoppy-buyer_orders_cancel'),
      # extras
-      path('pdf/orders/', GeneratePDF.as_view(), name='orders_generated_pdf'),
+      path('pdf/orders/', views.GeneratePDF, name='orders_generated_pdf'),
       path('xcel/orders/', views.export_users_xls, name='export_users_xl'),
       path('xcel/orders/date', views.export_users_xls_date, name='export_users_xl_date'),
       path('productspdf/', GenerateProductPDF.as_view(), name='products_generated_pdf'),

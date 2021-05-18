@@ -21,12 +21,14 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 import datetime as dt
 
+from xhtml2pdf import pisa
+
 from django_project import settings
 from shoppy.forms import *
 from shoppy.models import *
 
 from datetime import datetime
-from shoppyadmin.utils import render_to_pdf
+from shoppyadmin.utils import render_to_pdf, link_callback
 from openpyxl.descriptors.excel import HexBinary, ExtensionList
 
 from openpyxl.styles import Font, Alignment, Border, Side, PatternFill
@@ -1032,25 +1034,29 @@ def viewAllReports(request):
     return render(request,'reports/reports.html')
 # reports
 
-class GeneratePDF(View):
-    def get(self, request, *args, **kwargs):
-        orders = Order_Product.objects.filter(checkout__isnull=False)
-        template = get_template('invoice.html')
-        context = {
-            'orders': orders,
-        }
-        html = template.render(context)
-        pdf = render_to_pdf('invoice.html', context)
-        if pdf:
-            response = HttpResponse(pdf, content_type='application/pdf')
-            filename = "Invoice_%s.pdf" % ("12341231")
-            content = "inline; filename='%s'" % (filename)
-            # download = request.GET.get("download")
-            response['Content-Disposition'] = content
-            # if download:
-            #     content = "attachment; filename='%s'" % (filename)
-            return pdf
-        return HttpResponse("Not found")
+
+def GeneratePDF(request):
+
+    template_path = 'invoice.html'
+    orders = Order_Product.objects.filter(checkout__isnull=False)
+    context = {
+        'orders': orders,
+    }
+    # context = {'myvar': 'this is your template context'}
+    # Create a Django response object, and specify content_type as pdf
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="report.pdf"'
+    # find the template and render it.
+    template = get_template(template_path)
+    html = template.render(context)
+
+    # create a pdf
+    pisa_status = pisa.CreatePDF(
+        html, dest=response, link_callback=link_callback)
+    # if error then show some funy view
+    if pisa_status.err:
+        return HttpResponse('We had some errors <pre>' + html + '</pre>')
+    return response
 
 class GenerateProductPDF(View):
     def get(self, request, *args, **kwargs):
@@ -1226,15 +1232,7 @@ def export_users_xls(request):
     """
         Downloads all movies as Excel file with a single worksheet
     """
-    if request.method=='POST':
-        user = request.POST.get('buyer', False)
-        datefrom = request.POST['datefrom']
-        dateto = request.POST['dateto']
-        import datetime
-        buyer = Buyer.objects.filter(user_ptr_id=user).first()
-        order_queryset = Order_Product.objects.filter(product__seller_id=request.user.id, checkout__status='PAID', buyer=buyer, created_at__range=[datefrom, dateto])
-    else:
-        order_queryset = Order_Product.objects.filter(product__seller_id=request.user.id, checkout__status='PAID')
+
 
     response = HttpResponse(
         content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -1278,6 +1276,16 @@ def export_users_xls(request):
     ]
     # row_num = 1
     # Iterate through movie categories
+    if request.method == 'POST':
+        user = request.POST.get('buyer', False)
+        datefrom = request.POST['datefrom']
+        dateto = request.POST['dateto']
+        import datetime
+
+        buyer = Buyer.objects.filter(user_ptr_id=user).first()
+        order_queryset = Order_Product.objects.filter(product__seller_id=request.user.id, checkout__status='PAID', buyer=buyer,  created_at__gte=datefrom, created_at__lte=dateto)
+    else:
+        order_queryset = Order_Product.objects.filter(product__seller_id=request.user.id, checkout__status='PAID')
     for category_index, category in enumerate(order_queryset):
         # Create a worksheet/tab with the title of the category
         worksheet = workbook.create_sheet(
@@ -1307,22 +1315,22 @@ def export_users_xls(request):
             column_dimensions.width = column_width
 
         # Iterate through all movies
-        for movie in order_queryset:
+        for order in order_queryset:
             row_num += 1
 
             # Define the data for each cell in the row
             row = [
-                (movie.product.name, 'Normal'),
+                (order.product.name, 'Normal'),
                 # (movie.order_variants_for_excel, 'Normal'),
-                (movie.buyer.first_name + ' '+ movie.buyer.last_name, 'Normal'),
-                (movie.checkout.phonenumber, 'Normal'),
-                (movie.quantity, 'Normal'),
-                (movie.orderpaymentttt.payment_refrence, 'Normal' ),
-                (movie.checkout.reference_code, 'Normal'),
-                (movie.checkout.shipping_cost, 'Normal'),
-                (movie.total , 'Normal'),
-                (movie.checkout.amount_paid, 'Normal'),
-                (datetime.strftime(movie.created_at, "%d/%b/%Y"), 'Normal',),
+                (order.buyer.first_name + ' '+ order.buyer.last_name, 'Normal'),
+                (order.checkout.phonenumber, 'Normal'),
+                (order.quantity, 'Normal'),
+                (order.orderpaymentttt2, 'Normal' ),
+                (order.checkout.reference_code, 'Normal'),
+                (order.checkout.shipping_cost, 'Normal'),
+                (order.total , 'Normal'),
+                (order.checkout.amount_paid, 'Normal'),
+                (datetime.strftime(order.created_at, "%d/%b/%Y"), 'Normal',),
             ]
 
 
@@ -1347,14 +1355,16 @@ def export_users_xls(request):
 
 
 def export_users_xls_date(request):
-    if request.method=='POST':
-
+    if request.method == 'POST':
+        import datetime
         datefrom = request.POST['datefrom']
         dateto = request.POST['dateto']
-        import datetime
-        order_queryset = Order_Product.objects.filter(product__seller_id=request.user.id, checkout__status='PAID', created_at__range=[datefrom, dateto])
+
+        print(datefrom, dateto)
+        order_queryset = Order_Product.objects.filter(product__seller_id=request.user.id, checkout__status='PAID', created_at__gte=datefrom, created_at__lte=dateto).all()
+        print(order_queryset)
     else:
-        order_queryset = Order_Product.objects.filter(product__seller_id=request.user.id, checkout__status='PAID')
+        order_queryset = Order_Product.objects.filter(product__seller_id=request.user.id, checkout__status='PAID').all()
 
     response = HttpResponse(
         content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -1426,21 +1436,22 @@ def export_users_xls_date(request):
             column_dimensions.width = column_width
 
         # Iterate through all movies
-        for movie in order_queryset:
+        for order in order_queryset:
             row_num += 1
 
             # Define the data for each cell in the row
             row = [
-                (movie.product.name, 'Normal'),
+                (order.product.name, 'Normal'),
                 # (movie.order_variants_for_excel, 'Normal'),
-                (movie.buyer.first_name + ' '+ movie.buyer.last_name, 'Normal'),
-                (movie.checkout.phonenumber, 'Normal'),
-                (movie.quantity, 'Normal'),
-                (movie.checkout.reference_code, 'Normal'),
-                (movie.checkout.shipping_cost, 'Normal'),
-                (movie.total, 'Normal'),
-                (movie.checkout.amount_paid, 'Normal'),
-                (datetime.strftime(movie.created_at, "%d/%b/%Y"), 'Normal',),
+                (order.buyer.first_name + ' ' + order.buyer.last_name, 'Normal'),
+                (order.checkout.phonenumber, 'Normal'),
+                (order.quantity, 'Normal'),
+                (order.orderpaymentttt2, 'Normal'),
+                (order.checkout.reference_code, 'Normal'),
+                (order.checkout.shipping_cost, 'Normal'),
+                (order.total, 'Normal'),
+                (order.checkout.amount_paid, 'Normal'),
+                (datetime.strftime(order.created_at, "%d/%b/%Y"), 'Normal',),
             ]
 
             # Assign values, styles, and formatting for each cell in the row

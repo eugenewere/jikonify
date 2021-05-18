@@ -49,12 +49,6 @@ urlpatterns = [
     path('cancelOrder/<int:checkout_id>/',views.cancelOrder),
     path('delivery_region/',views.delivery_region),
     path('subscribetonewsletter/',views.subscribertoemail),
-
-
-
-
-
-
-
+    path('paypal_payments/',views.paypalpayments),
 ]
 

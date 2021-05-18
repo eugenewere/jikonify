@@ -299,7 +299,7 @@ def productsList(request, ):
         }
         # return TemplateResponse(request, "shoppy/view_products/filtered_products.html", context)
         # return render_to_response('shoppy/view_products/filtered_products.html',context)
-        return render(request, 'shoppy/view_products/all_category_products.html', context)
+        return render(request, 'vegefoods/shop.html', context)
 
     else:
         products = Product.objects.filter(status='VERIFIED').order_by('-unit_cost')
@@ -630,8 +630,9 @@ def confirmCheckout(request):
 
                 sms = africastalking.SMS
                 # Use the service synchronously
-                # response = sms.send("<#> Your Orders are: " + str(", ".join( repr(e) for e in orders_products ) ) +'. We will call you to confirm the order', ["+" + new_phone_number], )
+                response = sms.send("<#> Your Orders are: " + str(", ".join( repr(e) for e in orders_products ) ) +'. We will call you to confirm the order', ["+" + new_phone_number], )
                 # print(response)
+                print("done")
                 context = {
                     'results': 'success',
                     'response': "We have text you pin for setting your password, if an account exists with the phonenumber you entered You should receive an SMS shortly. If you don't receive an email, please make sure you've entered the phonenumber you registered with "
@@ -893,8 +894,8 @@ def orders_payment_opions(request, checkout_id):
 def all_buyers_order_products(request, reference_code):
     user = request.user.id
     buyer = Buyer.objects.filter(user_ptr_id=user).first()
-    orders = Order_Product.objects.filter(checkout__reference_code__exact=reference_code)
-    print(orders)
+    orders = Order_Product.objects.filter(checkout__reference_code__exact=reference_code).all()
+    # print(orders)
     procucts = []
     for order in orders:
         procucts.append(order.product)
@@ -961,7 +962,7 @@ def payment_complete(request, chk_id):
         business_email_paid = body['purchase_units'][0]['payee']['email_address']
         country_code = body['payer']['address']['country_code']
         payer_name = body['payer']['name']['given_name'] + ' ' + body['payer']['name']['surname']
-        amount = body['purchase_units'][0]['amount']['value']
+        amount = chk.total
         currency_amount = body['purchase_units'][0]['amount']['value']
         currency_code = body['purchase_units'][0]['amount']['currency_code']
         currency_value = 108

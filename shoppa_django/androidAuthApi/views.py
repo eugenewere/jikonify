@@ -1,4 +1,6 @@
-from shoppy.models import Buyer, Category, Product, Order_Product, Wishlist, Checkout, Region, Product_Variant_Options, NewsLetter
+from django_project import settings
+from shoppy.models import Buyer, Category, Product, Order_Product, Wishlist, Checkout, Region, Product_Variant_Options, \
+    NewsLetter, CheckoutPayment
 from shoppy.models import Variant_Option, Variant, Carousel, Review, Image, OrderProductVariantOption, Brand, Offer
 from .serializers import buyersSerializer, CategorySerializer, ProductSerializer, OrderProductSerializer, ParentVariantSerializer
 from .serializers import  AllProductsSerializer, AndroidProductSerializer, CustomCartSerializer, wishlistSerializer, CustomWishlistSerializer
@@ -603,7 +605,7 @@ def checkout(request):
         sms = africastalking.SMS
         # Use the service synchronously
         response = sms.send("<#> Your Orders are: " + str(
-            ", ".join(repr(e) for e in orders_products)) + ". We will call you to confirm the order. You are required to pay "+ str(checkoutt.total) + "Ksh. To confirm your order or pay via mpesa, please use the order number " + checkoutt.reference_code ,
+            ", ".join(repr(e) for e in orders_products)) + ". We will call you to confirm the order. You are required to pay "+ str(checkoutt.total) + "Ksh. To confirm your order or pay via mpesa or paypal, please use the order number " + checkoutt.reference_code ,
                             ["+" + new_phone_number], )
 
     except Exception as e:
@@ -1015,7 +1017,6 @@ def delivery_region(request):
 
 @csrf_exempt
 @api_view(["POST"])
-
 def subscribertoemail(request):
     email = request.data.get("email")
     print(email)
@@ -1038,3 +1039,72 @@ def subscribertoemail(request):
             status=status.HTTP_400_BAD_REQUEST
         )
 
+@csrf_exempt
+@api_view(["POST"])
+# @permission_classes((AllowAny,))
+def paypalpayments(request):
+    print(request.data)
+    # print(request.data['checkout_id'])
+    print(request.data.get('checkout_id'))
+    checkout_id = request.data.get("checkout_id")
+    payment_id = request.data.get("payment_id")
+    state = request.data.get("state")
+
+    r_token = request.META['HTTP_AUTHORIZATION']
+    new_token = r_token.split(' ', 1)[1]
+
+    token = Token.objects.filter(key=new_token).first()
+    buyer = Buyer.objects.filter(user_ptr_id=token.user.id).first()
+
+
+    print(checkout_id, state,payment_id)
+    chk = Checkout.objects.filter(id=int(checkout_id)).first()
+    if chk:
+        print(chk)
+        pay_method = "PAYPAL"
+        payer_reg_no = chk.reference_code
+        amount = chk.total
+        currency_value = 108
+        if state.lower() == 'approved':
+            payment_status = 'COMPLETED'
+            transaction_status = 'COMPLETED'
+        elif state.lower() == 'approved':
+            payment_status = 'CANCELED'
+            transaction_status = 'CANCELED'
+        cp = CheckoutPayment.objects.create(
+            checkout=chk,
+            pay_method=pay_method,
+            payer_reg_no=payer_reg_no,
+            payer_full_name=buyer.first_name,
+            payer_paying_email=buyer.email,
+            business_email_paid=settings.PAYPAL_BUSINESS_EMAIL,
+            country_code="KE",
+            amount=amount,
+            currency_amount=(chk.total)/108,
+            currency_code="USD",
+            currency_value=currency_value,
+            pay_recipt_no=payment_id,
+            transaction_recipt_no=payment_id,
+            transaction_status=transaction_status,
+            payment_status=payment_status,
+
+        )
+        print(cp)
+
+        Checkout.objects.filter(reference_code=payer_reg_no).update(
+            status='PAID',
+        )
+        print(buyer)
+        return Response(
+            data={
+                "message": "Successfully Subscribed"
+            },
+            status=status.HTTP_200_OK
+        )
+    return Response(
+        data={
+            "message": "Wrong Transactipon",
+
+        },
+        status=status.HTTP_400_BAD_REQUEST
+    )

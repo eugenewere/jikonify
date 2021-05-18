@@ -275,7 +275,7 @@
 
 
 
-        <div class="row">
+{#        <div class="row">#}
             <div class="col-md-12">
 				<div class="panel panel-default ">
 					<div class="panel-heading  panel-warning-custom">
@@ -312,23 +312,15 @@
                                                     <td>{{ forloop.counter }}</td>
                                                     <td>{{ buyer_order.buyer.last_name }} {{ buyer_order.buyer.first_name}}</td>
                                                     <td>{{ buyer_order.buyer.phone_number}}</td>
-                                                    <td>
-                                                        {{ buyer_order.reference_code|seller_buyer_quantities }}
-                                                    </td>
-                                                    <td>
-                                                        {{ buyer_order.reference_code }}
-                                                    </td>
+                                                    <td>{{ buyer_order.reference_code|seller_buyer_quantities }}</td>
+                                                    <td>{{ buyer_order.reference_code }}</td>
                                                     <td>{{ buyer_order.region.name }}</td>
                                                     <td>{{ buyer_order.address }}</td>
                                                     <td>{{ buyer_order.paymentchoice }}</td>
+                                                    <td>{{ buyer_order.total|floatformat|intcomma }} Ksh </td>
                                                     <td>{{ buyer_order.status }}</td>
-                                                    <td>
-                                                        {{ buyer_order.total|floatformat|intcomma }} Ksh
-                                                    </td>
                                                     <td>{{ buyer_order.status }}</td>
-                                                    <td>
-                                                        {{ buyer_order.created_at|naturaltime }}
-                                                    </td>
+                                                    <td>{{ buyer_order.created_at|naturaltime }}</td>
                                                     <td>
                                                         <a href="{% url 'ShoppyAdmin:shoppy-buyer_orders' buyer_order.reference_code %}" class="btn btn-success"><i class="fas fa-pencil-alt"></i> View</a>
                                                         <a href="#" data-toggle="modal" data-target="#rd{{ buyer_order.id }}" class="btn btn-danger"><i class="fas fa-trash " style="padding-right: 2px"></i>Cancel Order</a>
@@ -383,8 +375,6 @@
                                                 <th>Gateway</th>
                                                 <th>Status</th>
                                                 <th>Created At</th>
-
-
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -399,18 +389,15 @@
                                                     </td>
                                                     <td>
                                                         {{ buyer_order.reference_code }}
-
                                                     </td>
                                                     <td>
                                                         {{ buyer_order.total|floatformat|intcomma }} Ksh
-
                                                     </td>
                                                     <td>{{ buyer_order.paymentchoice }}</td>
                                                     <td>{{ buyer_order.status }}</td>
                                                     <td>
                                                         {{ buyer_order.created_at|naturaltime }}
                                                     </td>
-
                                                     <td>
                                                         <a href="{% url 'ShoppyAdmin:shoppy-buyer_orders' buyer_order.reference_code %}" class="btn btn-success"><i class="fas fa-pencil-alt"></i> View</a>
                                                     </td>
@@ -432,10 +419,10 @@
 					</div>
 				</div>
 			</div><!--/.col-->
-        </div>
+{#        </div>#}
         {% if  request.user|is_seller %}
             {% if out_of_stock_products %}
-                <div class="row">
+{#                <div class="row">#}
                     <div class="col-md-12">
                         <div class="panel panel-default ">
                             <div class="panel-heading  panel-warning-custom">
@@ -536,7 +523,7 @@
                             </div>
                         </div>
                     </div><!--/.col-->
-                </div>
+{#                </div>#}
             {% endif %}
         {% endif %}
 
@@ -545,8 +532,8 @@
 
 
          {% if  request.user|is_seller %}
-            <div class="row">
-                <div class="col-lg-12">
+{#            <div class="row">#}
+                <div class="col-md-12">
                     <div class="panel panel-default">
                         <div class="panel-heading panel-warning-custom">
                             Reports
@@ -567,11 +554,11 @@
 
                                                     <div class="col-sm-12 col-md-6">
                                                          <label for="d1"> Date From</label>
-                                                         <input name="datefrom" required id="d1" type="date" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
+                                                         <input style="border: 1px solid black" name="datefrom" required id="d1" type="date" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
                                                     </div>
                                                     <div class="col-sm-12 col-md-6">
                                                          <label for="d2">Date TO</label>
-                                                         <input name="dateto" required id="d2" type="date" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
+                                                         <input style="border: 1px solid black" name="dateto" required id="d2" type="date" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
                                                     </div>
                                                     <div class="col " style="padding: 20px 30px;">
                                                         <button style="margin-top: 20px;" class="btn btn-success" type="submit">Filter</button>
@@ -593,21 +580,17 @@
                                                                  <option value="{{ buyer.id }}">{{ buyer.first_name }} {{ buyer.last_name }} </option>
                                                               {% endfor %}
                                                           </select>
-                                                            <script>
-                                                                $(document).ready(function() {
-                                                                    $("#buyerz").select2();
-                                                                });
-                                                            </script>
+
                                                         </div>
                                                     </div>
 
                                                     <div class="col-sm-12 col-md-6">
                                                          <label for="d1"> Date From</label>
-                                                         <input name="datefrom" required id="d1" type="date" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
+                                                         <input style="border: 1px solid black" name="datefrom" required id="d1" type="date" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
                                                     </div>
                                                     <div class="col-sm-12 col-md-6">
                                                          <label for="d2">Date TO</label>
-                                                         <input name="dateto" required id="d2" type="date" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
+                                                         <input style="border: 1px solid black" name="dateto" required id="d2" type="date" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
                                                     </div>
                                                     <div class="col " style="padding: 20px 30px;">
                                                         <button style="margin-top: 20px;" class="btn btn-success" type="submit">Filter</button>
@@ -618,12 +601,25 @@
 
                                         <div class="row p-3" >
                                             <a href="{%  url 'ShoppyAdmin:export_users_xl' %}">
+
                                                 <div class="report_wrapper col-sm-4 col-xs-12">
                                                     <div class="pdfImage">
-                                                        <img src="{% static 'images/siteimages/reportspdf.png' %}" alt="">
+{#                                                        <img src="{% static 'images/siteimages/reportspdf.png' %}" alt="">#}
+                                                        <img src="{% static 'images/siteimages/microsoft-excel-2019--v1.png' %}" alt="">
                                                     </div>
                                                     <div class="report_subject">
                                                         <h3 class="text-capitalize">Export Orders To Excel (Excel)</h3>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                            <a href="{%  url 'ShoppyAdmin:orders_generated_pdf' %}">
+                                                <div class="report_wrapper col-sm-4 col-xs-12">
+                                                    <div class="pdfImage">
+                                                        <img style="height: 215px; object-fit: contain; margin-top: 16px;" src="{% static 'images/siteimages/reportspdf.png' %}" alt="">
+{#                                                        <img src="{% static 'images/siteimages/microsoft-excel-2019--v1.png' %}" alt="">#}
+                                                    </div>
+                                                    <div class="report_subject">
+                                                        <h3 class="text-capitalize">Export Orders To PDF (PDF)</h3>
                                                     </div>
                                                 </div>
                                             </a>
@@ -634,15 +630,17 @@
                         </div>
                     </div>
                 </div>
-            </div><!--/.row-->
+{#            </div><!--/.row-->#}
          {% endif %}
-	</div>	<!--/.main-->
+        </div>	<!--/.main-->
+    </div>
+
 
 	
 {% endblock %}
 {% block scripts %}
 
-{#    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/bootstrap-select.min.js"></script>#}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/bootstrap-select.min.js"></script>
     <script>
         ClassicEditor
             .create( document.querySelector( '#ckeditor' ) )
@@ -665,8 +663,13 @@
           $('.selectpicker').selectpicker();
         });
     </script>
-
+    <script>
+        $(document).ready(function() {
+            $("#buyerz").select2();
+        });
+    </script>
     <script >
+     {#$(document).ready(function() {#}
         var endpoint = '{% url 'ShoppyAdmin:users_chart' %}';
         var defaultData =  [];
         var labels = [];
@@ -942,7 +945,7 @@
             }
         });
         }
-
+     {# });#}
     </script>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
