@@ -99,9 +99,7 @@ or it you don't want to do fresh of these data just use command below. However f
 
 ### Authors
 * **Eugene Were**
-* **Brian Gachiri**
-* **Kevin Kiarie**
-* **Martin Cornel**
+
 
 
 ## Company
