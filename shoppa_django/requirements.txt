@@ -6,7 +6,7 @@ async-timeout==3.0.1
 attrs==19.3.0
 autobahn==18.10.1
 Automat==0.7.0
-certifi==2020.6.20
+certifi==2022.12.7
 cffi==1.14.0
 channels==2.1.5
 channels-redis==2.3.1
